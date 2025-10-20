@@ -19,7 +19,7 @@ const Footer = () => {
               <span>© {currentYear}</span>
               <span className="text-foreground">João Gabriel</span>
               <span>·</span>
-              <span>Front-End Developer</span>
+              <span>Full-Stack Developer</span>
             </div>
 
             <div className="text-xs text-muted-foreground">

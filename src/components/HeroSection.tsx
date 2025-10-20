@@ -6,7 +6,6 @@ import { AuroraBackground } from '@/components/ui/aurora-background';
 const HeroSection = () => {
   return (
     <section id="home" className="relative min-h-screen overflow-hidden">
-      {/* Background Gradient Animation */}
       <AuroraBackground
         containerClassName="absolute inset-0"
         interactive={true}
@@ -36,7 +35,7 @@ const HeroSection = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <Button 
                 size="lg" 
-                className="group relative overflow-hidden bg-foreground text-background hover:bg-foreground/90 transition-smooth"
+                className="group relative hover-lift overflow-hidden bg-foreground text-background hover:bg-foreground/90 transition-smooth"
                 onClick={() => window.location.href = '#contact'}
               >
                 <Mail className="w-5 h-5 mr-2" />
@@ -44,13 +43,19 @@ const HeroSection = () => {
               </Button>
               
               <Button 
-                variant="outline" 
-                size="lg" 
-                className="glass hover-lift group border-border hover:border-primary/50 transition-smooth"
-              >
-                <Download className="w-5 h-5 mr-2 transition-smooth" />
-                Baixar CV
-              </Button>
+                    variant="outline" 
+                    size="lg" 
+                    className="glass hover-lift group border-border hover:border-primary/50 transition-smooth"
+                    asChild
+                  >
+                    <a 
+                      href="/CV_JoaoMachado.pdf"
+                      download="CV_JoaoMachado.pdf"
+                    >
+                      <Download className="w-5 h-5 mr-2 transition-smooth" />
+                      Baixar CV
+                    </a>
+                  </Button>
             </div>
           </div>
 

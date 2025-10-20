@@ -30,7 +30,7 @@ const ContactSection = () => {
   ];
 
   const socialLinks = [
-    { icon: Github, href: 'https://github.com/liroujohn', label: 'GitHub' },
+    { icon: Github, href: 'https://github.com/joao-gabriel-machado', label: 'GitHub' },
     { icon: Linkedin, href: 'https://www.linkedin.com/in/jo%C3%A3o-gabriel-machado-231880205/', label: 'LinkedIn' },
     { icon: Instagram, href: 'https://www.instagram.com/liroujohn_/', label: 'Instagram' },
   ];
@@ -41,7 +41,6 @@ const ContactSection = () => {
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
       }`}>
         <div className="max-w-6xl mx-auto">
-          {/* Section Header */}
           <div className="mb-12 md:mb-20 text-center lg:text-left">
             <p className="text-sm uppercase tracking-widest text-primary font-medium mb-4">
               Contato

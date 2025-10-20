@@ -26,8 +26,8 @@ const Navbar = () => {
 
   const socialLinks = [
     { icon: Github, href: 'https://github.com/joao-gabriel-machado', label: 'GitHub' },
-    { icon: Linkedin, href: '#', label: 'LinkedIn' },
-    { icon: Instagram, href: '#', label: 'Instagram' },
+    { icon: Linkedin, href: 'https://www.linkedin.com/in/jo%C3%A3o-gabriel-machado-231880205/', label: 'LinkedIn' },
+    { icon: Instagram, href: 'https://www.instagram.com/liroujohn_/', label: 'Instagram' },
   ];
 
   return (
