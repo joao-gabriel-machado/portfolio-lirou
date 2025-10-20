@@ -1,0 +1,200 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Minimalist Dark Theme - Professional & Futuristic */
+    --background: 0 0% 3%;
+    --foreground: 0 0% 98%;
+
+    --card: 220 15% 8%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 220 15% 8%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 230 60% 65%;
+    --primary-foreground: 0 0% 5%;
+
+    --secondary: 220 15% 12%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 220 15% 12%;
+    --muted-foreground: 0 0% 60%;
+
+    --accent: 250 70% 70%;
+    --accent-foreground: 0 0% 5%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 220 15% 15%;
+    --input: 220 15% 15%;
+    --ring: 230 60% 65%;
+
+    --radius: 0.5rem;
+
+    /* Subtle Gradients - Minimalist */
+    --gradient-primary: linear-gradient(135deg, hsl(230 60% 65% / 0.15), hsl(250 70% 70% / 0.1));
+    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 3%), hsl(220 15% 5%));
+    --gradient-card: linear-gradient(145deg, hsl(220 15% 8% / 0.6), hsl(220 15% 10% / 0.9));
+    --gradient-accent: linear-gradient(135deg, hsl(230 60% 65%), hsl(250 70% 70%));
+    
+    /* Subtle Glow Effects */
+    --glow-subtle: 0 0 30px hsl(230 60% 65% / 0.2);
+    --glow-accent: 0 0 25px hsl(250 70% 70% / 0.2);
+    
+    /* Minimal Shadows */
+    --shadow-sm: 0 2px 10px hsl(0 0% 0% / 0.3);
+    --shadow-md: 0 4px 20px hsl(0 0% 0% / 0.4);
+    --shadow-lg: 0 10px 40px hsl(0 0% 0% / 0.5);
+    
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-spring: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .light {
+    /* Minimalist Light Theme - Clean & Professional */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 5%;
+
+    --card: 0 0% 98%;
+    --card-foreground: 0 0% 5%;
+
+    --popover: 0 0% 98%;
+    --popover-foreground: 0 0% 5%;
+
+    --primary: 230 60% 55%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 5%;
+
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 40%;
+
+    --accent: 250 70% 60%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 230 60% 55%;
+
+    /* Light Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(230 60% 55% / 0.08), hsl(250 70% 60% / 0.05));
+    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 100%), hsl(0 0% 98%));
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 98%), hsl(0 0% 96%));
+    --gradient-accent: linear-gradient(135deg, hsl(230 60% 55%), hsl(250 70% 60%));
+    
+    /* Light Glow */
+    --glow-subtle: 0 0 20px hsl(230 60% 55% / 0.15);
+    --glow-accent: 0 0 15px hsl(250 70% 60% / 0.15);
+    
+    /* Light Shadows */
+    --shadow-sm: 0 2px 10px hsl(0 0% 0% / 0.06);
+    --shadow-md: 0 4px 20px hsl(0 0% 0% / 0.08);
+    --shadow-lg: 0 10px 40px hsl(0 0% 0% / 0.1);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground min-h-screen;
+    background: var(--gradient-dark);
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer utilities {
+  /* Gradient utilities */
+  .gradient-primary {
+    background: var(--gradient-primary);
+  }
+  
+  .gradient-card {
+    background: var(--gradient-card);
+  }
+  
+  .gradient-accent {
+    background: var(--gradient-accent);
+  }
+  
+  .gradient-subtle {
+    background: var(--gradient-subtle);
+  }
+  
+  /* Glow effects */
+  .glow-subtle {
+    box-shadow: var(--glow-subtle);
+  }
+  
+  .glow-accent {
+    box-shadow: var(--glow-accent);
+  }
+  
+  /* Shadows */
+  .shadow-sm {
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .shadow-md {
+    box-shadow: var(--shadow-md);
+  }
+  
+  .shadow-lg {
+    box-shadow: var(--shadow-lg);
+  }
+  
+  /* Transitions */
+  .transition-smooth {
+    transition: var(--transition-smooth);
+  }
+  
+  .transition-spring {
+    transition: var(--transition-spring);
+  }
+  
+  /* Glass effect - Minimal */
+  .glass {
+    background: hsl(var(--card) / 0.5);
+    backdrop-filter: blur(20px);
+    border: 1px solid hsl(var(--border));
+  }
+  
+  /* Subtle hover effects */
+  .hover-lift {
+    @apply transition-smooth hover:-translate-y-1;
+  }
+  
+  .hover-glow {
+    @apply transition-smooth hover:glow-subtle;
+  }
+  
+  .hover-scale {
+    @apply transition-smooth hover:scale-[1.02];
+  }
+  
+  /* Text gradient */
+  .text-gradient {
+    background: var(--gradient-accent);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
