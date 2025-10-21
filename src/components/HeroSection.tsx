@@ -18,11 +18,11 @@ const HeroSection = () => {
                     </p>
                   </div>
                   
-                  <h1 className="text-4xl sm:text-5xl dark:text-white md:text-6xl lg:text-6xl font-bold leading-tight">
+                  <h1 className="text-4xl sm:text-5xl dark:text-white text-primary md:text-6xl lg:text-6xl font-bold leading-tight">
                     Olá, meu nome é João Gabriel
                   </h1>
                   
-                  <p className="text-lg sm:text-xl dark:text-white/80 max-w-lg tracking-tighter leading-relaxed mx-auto lg:mx-0">
+                  <p className="text-lg sm:text-xl dark:text-white/80 max-w-lg text-primary tracking-tighter leading-relaxed mx-auto lg:mx-0">
                     Transformando ideias em interfaces modernas e funcionais
                   </p>
                 </div>
