@@ -122,7 +122,6 @@ All colors MUST be HSL.
 }
 
 @layer utilities {
-  /* Gradient utilities */
   .gradient-primary {
     background: var(--gradient-primary);
   }
@@ -139,7 +138,6 @@ All colors MUST be HSL.
     background: var(--gradient-subtle);
   }
   
-  /* Glow effects */
   .glow-subtle {
     box-shadow: var(--glow-subtle);
   }
@@ -148,7 +146,6 @@ All colors MUST be HSL.
     box-shadow: var(--glow-accent);
   }
   
-  /* Shadows */
   .shadow-sm {
     box-shadow: var(--shadow-sm);
   }
@@ -161,7 +158,6 @@ All colors MUST be HSL.
     box-shadow: var(--shadow-lg);
   }
   
-  /* Transitions */
   .transition-smooth {
     transition: var(--transition-smooth);
   }
@@ -170,14 +166,12 @@ All colors MUST be HSL.
     transition: var(--transition-spring);
   }
   
-  /* Glass effect - Minimal */
   .glass {
     background: hsl(var(--card) / 0.5);
     backdrop-filter: blur(20px);
     border: 1px solid hsl(var(--border));
   }
   
-  /* Subtle hover effects */
   .hover-lift {
     @apply transition-smooth hover:-translate-y-1;
   }
@@ -190,7 +184,6 @@ All colors MUST be HSL.
     @apply transition-smooth hover:scale-[1.02];
   }
   
-  /* Text gradient */
   .text-gradient {
     background: var(--gradient-accent);
     -webkit-background-clip: text;

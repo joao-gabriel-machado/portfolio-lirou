@@ -1,4 +1,6 @@
 import type { Config } from "tailwindcss";
+import tailwindcssAnimate from "tailwindcss-animate";
+import flattenColorPalette from "tailwindcss/lib/util/flattenColorPalette";
 
 export default {
   darkMode: ["class"],
@@ -76,70 +78,16 @@ export default {
           "0%": { opacity: "0", transform: "translateY(20px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
-        "fade-in-up": {
-          "0%": { opacity: "0", transform: "translateY(30px)" },
-          "100%": { opacity: "1", transform: "translateY(0)" },
-        },
-        "fade-in-down": {
-          "0%": { opacity: "0", transform: "translateY(-30px)" },
-          "100%": { opacity: "1", transform: "translateY(0)" },
-        },
-        "slide-in": {
-          "0%": { opacity: "0", transform: "translateX(-30px)" },
-          "100%": { opacity: "1", transform: "translateX(0)" },
-        },
         "scale-in": {
           "0%": { opacity: "0", transform: "scale(0.95)" },
           "100%": { opacity: "1", transform: "scale(1)" },
         },
-        "float": {
-          "0%, 100%": { transform: "translateY(0px)" },
-          "50%": { transform: "translateY(-10px)" },
-        },
-        "glow-pulse": {
-          "0%, 100%": { 
-            boxShadow: "0 0 20px hsl(230 60% 65% / 0.2)" 
+        aurora: {
+          from: {
+            backgroundPosition: "50% 50%, 50% 50%",
           },
-          "50%": { 
-            boxShadow: "0 0 30px hsl(230 60% 65% / 0.4), 0 0 50px hsl(250 70% 70% / 0.2)" 
-          },
-        },
-        "first": "moveVertical 30s ease infinite",
-        "second": "moveInCircle 20s reverse infinite",
-        "third": "moveInCircle 40s linear infinite",
-        "fourth": "moveHorizontal 40s ease infinite",
-        "fifth": "moveInCircle 20s ease infinite",
-        "moveHorizontal": {
-          "0%": {
-            transform: "translateX(-50%) translateY(-10%)",
-          },
-          "50%": {
-            transform: "translateX(50%) translateY(10%)",
-          },
-          "100%": {
-            transform: "translateX(-50%) translateY(-10%)",
-          },
-        },
-        "moveInCircle": {
-          "0%": {
-            transform: "rotate(0deg)",
-          },
-          "50%": {
-            transform: "rotate(180deg)",
-          },
-          "100%": {
-            transform: "rotate(360deg)",
-          },
-        },
-        "moveVertical": {
-          "0%": {
-            transform: "translateY(-50%)",
-          },
-          "50%": {
-            transform: "translateY(50%)",
-          },
-          "100%": {
-            transform: "translateY(-50%)",
+          to: {
+            backgroundPosition: "350% 50%, 350% 50%",
           },
         },
       },
@@ -147,19 +95,24 @@ export default {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-in": "fade-in 0.8s ease-out",
-        "fade-in-up": "fade-in-up 0.8s ease-out",
-        "fade-in-down": "fade-in-down 0.8s ease-out",
-        "slide-in": "slide-in 0.8s ease-out",
         "scale-in": "scale-in 0.6s ease-out",
-        "float": "float 8s ease-in-out infinite",
-        "glow-pulse": "glow-pulse 3s ease-in-out infinite",
-        "first": "first 30s ease infinite",
-        "second": "second 20s reverse infinite",
-        "third": "third 40s linear infinite",
-        "fourth": "fourth 40s ease infinite",
-        "fifth": "fifth 20s ease infinite",
+        aurora: "aurora 60s linear infinite",
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    tailwindcssAnimate,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ({ addBase, theme }: any) => {
+      const allColors = flattenColorPalette(theme("colors"));
+      const newVars = Object.fromEntries(
+        Object.entries(allColors).map(([key, val]) => [`--${key}`, val])
+      );
+
+      addBase({
+        ":root": newVars,
+      });
+    },
+  ],
 } satisfies Config;
+

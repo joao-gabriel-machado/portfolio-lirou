@@ -64,7 +64,6 @@ const ProjectsSection = () => {
             </p>
           </div>
 
-          {/* Featured Projects */}
           <div className="grid md:grid-cols-2 gap-8 mb-12">
             {projects.filter(p => p.featured).map((project, index) => (
               <Card 
@@ -81,7 +80,6 @@ const ProjectsSection = () => {
                     />
                   </div>
                   
-                  {/* Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-smooth flex items-end justify-center pb-6">
                     <div className="flex gap-4">
                       <Button size="sm" className="gradient-primary">
@@ -170,7 +168,7 @@ const ProjectsSection = () => {
           {/* View More Button */}
           <div className="text-center mt-12 animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
             <Button size="lg" variant="outline" className="glass hover-lift">
-              <a href='https://github.com/liroujohn?tab=repositories' target='_blank' className='flex items-center'>
+              <a href='https://github.com/joao-gabriel-machado?tab=repositories' target='_blank' className='flex items-center'>
                 <Github className="w-5 h-5 mr-2" />
                   Ver mais no GitHub
               </a>

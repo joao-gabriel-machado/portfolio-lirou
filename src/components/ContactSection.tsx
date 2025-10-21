@@ -1,13 +1,7 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Mail, Phone, MapPin, Github, Linkedin, Instagram } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Mail, Phone, MapPin, Send, Github, Linkedin, Instagram } from 'lucide-react';
-import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 const ContactSection = () => {
-  const { ref, isVisible } = useScrollAnimation();
-  
   const contactInfo = [
     {
       icon: Mail,
@@ -17,7 +11,7 @@ const ContactSection = () => {
     },
     {
       icon: Phone,
-      label: 'Telefone',
+      label: 'Whatsapp',
       value: '+55 (12) 98708-3178',
       href: 'tel:+5512987083178',
     },
@@ -36,26 +30,25 @@ const ContactSection = () => {
   ];
 
   return (
-    <section id="contact" className="py-12 md:py-20 relative bg-gradient-subtle" ref={ref}>
-      <div className={`container mx-auto px-4 transition-all duration-1000 ${
-        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-      }`}>
+    <section id="contact" className="py-12 md:py-20 relative bg-gradient-subtle">
+      <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
-          <div className="mb-12 md:mb-20 text-center lg:text-left">
+          {/* --- Cabeçalho Centralizado --- */}
+          <div className="mb-12 md:mb-20 text-center">
             <p className="text-sm uppercase tracking-widest text-primary font-medium mb-4">
               Contato
             </p>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4 md:mb-6">
               Vamos conversar?
             </h2>
-            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto lg:mx-0">
+            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
               Aberto a novos projetos e oportunidades
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-5 gap-8 md:gap-12">
-            {/* Contact Info */}
-            <div className="lg:col-span-2 space-y-6 md:space-y-8">
+          {/* --- Conteúdo Centralizado --- */}
+          <div className="flex justify-center">
+            <div className="w-full max-w-lg space-y-6 md:space-y-8">
               <div className="space-y-4 md:space-y-6">
                 {contactInfo.map((info, index) => {
                   const Icon = info.icon;
@@ -81,12 +74,11 @@ const ContactSection = () => {
                 })}
               </div>
 
-              {/* Social Links */}
-              <div className="pt-6 md:pt-8 border-t border-border">
+              <div className="pt-6 md:pt-8 border-t border-border text-center">
                 <p className="text-sm font-medium text-foreground mb-4">
                   Redes Sociais
                 </p>
-                <div className="flex gap-3">
+                <div className="flex gap-3 justify-center">
                   {socialLinks.map((social) => {
                     const Icon = social.icon;
                     return (
@@ -105,67 +97,6 @@ const ContactSection = () => {
                 </div>
               </div>
             </div>
-
-            {/* Contact Form */}
-            <Card className="lg:col-span-3 glass border-border">
-              <CardHeader>
-                <CardTitle className="text-lg md:text-xl text-foreground">
-                  Enviar mensagem
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4 md:space-y-6">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">
-                      Nome
-                    </label>
-                    <Input 
-                      placeholder="Seu nome" 
-                      className="glass border-border focus:border-primary transition-smooth"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">
-                      Email
-                    </label>
-                    <Input 
-                      type="email" 
-                      placeholder="seu@email.com" 
-                      className="glass border-border focus:border-primary transition-smooth"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground">
-                    Assunto
-                  </label>
-                  <Input 
-                    placeholder="Assunto da mensagem" 
-                    className="glass border-border focus:border-primary transition-smooth"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground">
-                    Mensagem
-                  </label>
-                  <Textarea 
-                    placeholder="Conte-me sobre seu projeto..." 
-                    rows={6}
-                    className="glass border-border focus:border-primary transition-smooth resize-none"
-                  />
-                </div>
-
-                <Button 
-                  size="lg" 
-                  className="w-full bg-foreground text-background hover:bg-foreground/90 transition-smooth group"
-                >
-                  <Send className="w-4 h-4 mr-2 group-hover:translate-x-1 transition-smooth" />
-                  Enviar mensagem
-                </Button>
-              </CardContent>
-            </Card>
           </div>
         </div>
       </div>

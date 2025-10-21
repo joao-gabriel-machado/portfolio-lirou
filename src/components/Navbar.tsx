@@ -38,7 +38,6 @@ const Navbar = () => {
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
           <a href="#home" className="flex items-center space-x-3 group">
             <div className="relative">
               <img
@@ -52,7 +51,6 @@ const Navbar = () => {
             </span>
           </a>
 
-          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-1">
             {navItems.map((item) => (
               <a
@@ -66,7 +64,6 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* Social Links & Theme Toggle */}
           <div className="hidden md:flex items-center space-x-2">
             {socialLinks.map((social) => {
               const Icon = social.icon;
@@ -75,7 +72,7 @@ const Navbar = () => {
                   key={social.label}
                   variant="ghost"
                   size="icon"
-                  className="hover:bg-secondary transition-smooth"
+                  className="dark:hover:bg-white/30 hover:bg-white/50 hover:text-black/50 transition-smooth"
                   onClick={() => window.open(social.href, '_blank')}
                   aria-label={social.label}
                 >
@@ -88,7 +85,7 @@ const Navbar = () => {
               variant="ghost"
               size="icon"
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="hover:bg-secondary transition-smooth"
+              className="dark:hover:bg-white/30 hover:bg-white/50 hover:text-black/50 transition-smooth"
             >
               <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
               <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
@@ -96,7 +93,6 @@ const Navbar = () => {
             </Button>
           </div>
 
-          {/* Mobile Menu Button */}
           <Button
             variant="ghost"
             size="icon"
@@ -107,7 +103,6 @@ const Navbar = () => {
           </Button>
         </div>
 
-        {/* Mobile Menu */}
         {isMobileMenuOpen && (
           <div className="md:hidden absolute top-16 left-0 right-0 bg-background/95 backdrop-blur-xl border-b border-border shadow-lg animate-fade-in">
             <div className="p-6 space-y-1">

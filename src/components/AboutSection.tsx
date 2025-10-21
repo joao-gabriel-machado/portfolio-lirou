@@ -5,9 +5,9 @@ const AboutSection = () => {
   const { ref, isVisible } = useScrollAnimation();
 
   const stats = [
-    { label: 'Anos de Experiência', value: '3+', icon: Code },
-    { label: 'Projetos Entregues', value: '20+', icon: Target },
-    { label: 'Tecnologias', value: '15+', icon: Heart },
+    { label: 'Anos de Experiência', value: '+3', icon: Code },
+    { label: 'Projetos Entregues', value: '+10', icon: Target },
+    { label: 'Tecnologias', value: '+15', icon: Heart },
   ];
 
   return (
@@ -16,7 +16,6 @@ const AboutSection = () => {
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
       }`}>
         <div className="max-w-6xl mx-auto">
-          {/* Section Header */}
           <div className="mb-12 md:mb-20 text-center lg:text-left">
             <p className="text-sm uppercase tracking-widest text-primary font-medium mb-4">
               Sobre
@@ -56,7 +55,7 @@ const AboutSection = () => {
                   3+ anos criando soluções completas e modernas.
                 </p>
                 <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-                  Especialista em React, TypeScript e Tailwind CSS no front-end, e Java com Spring Boot no back-end. 
+                  Especialista em React, TypeScript e Tailwind CSS no front-end, e Java com QUARKUS no back-end. 
                   Transformo designs em código limpo e performático, com foco em UX e arquitetura escalável.
                 </p>
               </div>
