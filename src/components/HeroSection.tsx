@@ -10,7 +10,7 @@ const HeroSection = () => {
         <div className="relative min-h-screen flex items-center justify-center pt-20 md:pt-0 z-10">
           <div className="container mx-auto px-4 py-12 md:py-8">
             <div className="max-w-5xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-              <div className="space-y-8 mt-24 md:mt-0 animate-fade-in text-center lg:text-left">
+              <div className="space-y-8 mt-36 md:mt-0 animate-fade-in text-center lg:text-left">
                 <div className="space-y-6">
                   <div className="inline-block">
                     <p className="text-sm uppercase tracking-widest dark:text-white/80 text-primary font-medium">
