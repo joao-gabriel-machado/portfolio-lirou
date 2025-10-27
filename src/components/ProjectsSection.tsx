@@ -24,7 +24,7 @@ const ProjectsSection = () => {
       image: twinitiImg,
       technologies: ['React', 'Vite', 'TypeScript', 'TailwindCSS'],
       github: '#',
-      live: '#',
+      live: 'https://www.twiniti.com.br/',
       featured: true,
     },
     {
