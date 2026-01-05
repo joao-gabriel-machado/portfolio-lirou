@@ -2,8 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ExternalLink, Github } from 'lucide-react';
-import redesDoValeImg from '@/assets/redes-do-vale.png'
-import twinitiImg from '@/assets/twiniti.png'
+import redesDoValeImg from '@/assets/redes-do-vale.webp'
+import twinitiImg from '@/assets/twiniti.webp'
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { translations } from '@/utils/translations';

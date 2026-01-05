@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { ArrowDown, Download, Mail } from 'lucide-react';
-import profileImage from '@/assets/perfil.jpg';
+import profileImage from '@/assets/perfil.webp';
 import { AuroraBackground } from '@/components/ui/aurora-background';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { translations } from '@/utils/translations';
