@@ -2,8 +2,13 @@ import { Button } from '@/components/ui/button';
 import { ArrowDown, Download, Mail } from 'lucide-react';
 import profileImage from '@/assets/perfil.jpg';
 import { AuroraBackground } from '@/components/ui/aurora-background';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { translations } from '@/utils/translations';
 
 const HeroSection = () => {
+  const { language } = useLanguage();
+  const t = translations[language].hero;
+
   return (
     <section id="home" className="relative min-h-screen  overflow-hidden">
       <AuroraBackground>
@@ -14,16 +19,16 @@ const HeroSection = () => {
                 <div className="space-y-6">
                   <div className="inline-block">
                     <p className="text-sm uppercase tracking-widest dark:text-white/80 text-primary font-medium">
-                      Full-Stack Developer
+                      {t.role}
                     </p>
                   </div>
 
                   <h1 className="text-4xl sm:text-5xl dark:text-white text-primary md:text-6xl lg:text-6xl font-bold leading-tight">
-                    Olá, meu nome é João Gabriel
+                    {t.greeting}
                   </h1>
 
                   <p className="text-lg sm:text-xl dark:text-white/80 max-w-lg text-primary tracking-tighter leading-relaxed mx-auto lg:mx-0">
-                    Transformando ideias em interfaces modernas e funcionais
+                    {t.tagline}
                   </p>
                 </div>
 
@@ -34,7 +39,7 @@ const HeroSection = () => {
                     onClick={() => window.location.href = '#contact'}
                   >
                     <Mail className="w-5 h-5 mr-2" />
-                    Contato
+                    {t.contactBtn}
                   </Button>
 
                   <Button
@@ -44,11 +49,11 @@ const HeroSection = () => {
                     asChild
                   >
                     <a
-                      href="/CV_JoaoMachado.pdf"
-                      download="CV_JoaoMachado.pdf"
+                      href={t.downloadCvLink}
+                      download={t.downloadCvLink.split('/').pop()}
                     >
                       <Download className="w-5 h-5 mr-2 transition-smooth" />
-                      Baixar CV
+                      {t.downloadCvBtn}
                     </a>
                   </Button>
                 </div>

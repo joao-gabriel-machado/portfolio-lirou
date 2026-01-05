@@ -1,23 +1,28 @@
 import { Mail, Phone, MapPin, Github, Linkedin, Instagram } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { translations } from '@/utils/translations';
 
 const ContactSection = () => {
+  const { language } = useLanguage();
+  const t = translations[language].contact;
+
   const contactInfo = [
     {
       icon: Mail,
-      label: 'Email',
+      label: t.email,
       value: 'jgomachado@hotmail.com',
       href: 'mailto:jgomachado@hotmail.com',
     },
     {
       icon: Phone,
-      label: 'Whatsapp',
+      label: t.whatsapp,
       value: '+55 (12) 98708-3178',
       href: 'tel:+5512987083178',
     },
     {
       icon: MapPin,
-      label: 'Localização',
+      label: t.location,
       value: 'São José dos Campos, SP',
       href: '#',
     },
@@ -36,13 +41,13 @@ const ContactSection = () => {
           {/* --- Cabeçalho Centralizado --- */}
           <div className="mb-12 md:mb-20 text-center">
             <p className="text-sm uppercase tracking-widest text-primary font-medium mb-4">
-              Contato
+              {t.label}
             </p>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4 md:mb-6">
-              Vamos conversar?
+              {t.title}
             </h2>
             <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
-              Aberto a novos projetos e oportunidades
+              {t.subtitle}
             </p>
           </div>
 
@@ -76,7 +81,7 @@ const ContactSection = () => {
 
               <div className="pt-6 md:pt-8 border-t border-border text-center">
                 <p className="text-sm font-medium text-foreground mb-4">
-                  Redes Sociais
+                  {t.socials}
                 </p>
                 <div className="flex gap-3 justify-center">
                   {socialLinks.map((social) => {

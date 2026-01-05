@@ -5,13 +5,19 @@ import { ExternalLink, Github } from 'lucide-react';
 import redesDoValeImg from '@/assets/redes-do-vale.png'
 import twinitiImg from '@/assets/twiniti.png'
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { translations } from '@/utils/translations';
+
+type ProjectKey = 'redes' | 'twiniti' | 'vitta' | 'coffee';
 
 const ProjectsSection = () => {
   const { ref, isVisible } = useScrollAnimation();
-  const projects = [
+  const { language } = useLanguage();
+  const t = translations[language].projects;
+
+  const projectsAssets: { key: ProjectKey; image: string; technologies: string[]; github: string; live: string; featured: boolean }[] = [
     {
-      title: 'Redes do vale',
-      description: 'Site institucional desenvolvido para uma empresa de redes de proteção, com foco em navegação simples, visual limpo e comunicação direta dos serviços. O projeto reforça a confiança e facilita o contato com clientes da região.',
+      key: 'redes',
       image: redesDoValeImg,
       technologies: ['React', 'Next.js', 'TypeScript', 'EmailJs', 'TailwindCSS'],
       github: '#',
@@ -19,8 +25,7 @@ const ProjectsSection = () => {
       featured: true,
     },
     {
-      title: 'Twiniti Tech',
-      description: 'Site institucional desenvolvido para uma empresa de tecnologia especializada em softwares sob medida, com foco em inovação, performance e apresentação clara dos serviços e cases.',
+      key: 'twiniti',
       image: twinitiImg,
       technologies: ['React', 'Vite', 'TypeScript', 'TailwindCSS'],
       github: '#',
@@ -28,8 +33,7 @@ const ProjectsSection = () => {
       featured: true,
     },
     {
-      title: 'Vitta Soluções Ergonômicas',
-      description: 'Site institucional desenvolvido para uma empresa de ergonomia, com design limpo, navegação intuitiva e foco na apresentação clara dos serviços e captação de clientes.',
+      key: 'vitta',
       image: '',
       technologies: ['React', 'Next.js', 'TypeScript', 'TailwindCSS'],
       github: '#',
@@ -37,8 +41,7 @@ const ProjectsSection = () => {
       featured: false,
     },
     {
-      title: 'Coffee Delivery (projeto de front-end para estudo)',
-      description: 'Protótipo de site focado em entrega de café, desenvolvido com ênfase em front-end. Interface moderna, responsiva, boa usabilidade, visual atraente e detalhamento na apresentação dos produtos.',
+      key: 'coffee',
       image: '#',
       technologies: ['React', 'TailwindCSS', 'Vite'],
       github: '#',
@@ -47,6 +50,11 @@ const ProjectsSection = () => {
     },
   ];
 
+  const projects = projectsAssets.map(asset => ({
+    ...asset,
+    ...t.items[asset.key]
+  }));
+
   return (
     <section id="projects" className="py-12 md:py-20 relative" ref={ref}>
       <div className={`container mx-auto px-4 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
@@ -54,38 +62,38 @@ const ProjectsSection = () => {
           {/* Section Header */}
           <div className="text-center mb-12 md:mb-16 animate-fade-in-up">
             <p className="text-sm uppercase tracking-widest text-primary font-medium mb-4">
-              Portfólio
+              {t.label}
             </p>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
-              Projetos Recentes
+              {t.title}
             </h2>
             <p className="text-base md:text-lg text-muted-foreground">
-              Trabalhos desenvolvidos com tecnologias modernas
+              {t.subtitle}
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 mb-12">
             {projects.filter(p => p.featured).map((project, index) => (
-              <Card 
-                key={index} 
+              <Card
+                key={index}
                 className="gradient-card border-primary/20 hover-lift group overflow-hidden animate-fade-in-up"
                 style={{ animationDelay: `${index * 0.2}s` }}
               >
                 <div className="relative overflow-hidden">
                   <div className="h-64 flex items-center justify-center overflow-hidden">
-                    <img 
-                      src={project.image} 
-                      alt={project.title} 
+                    <img
+                      src={project.image}
+                      alt={project.title}
                       className="object-cover object-left-top w-full h-full group-hover:scale-105 transition-transform duration-500"
                     />
                   </div>
-                  
+
                   <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-smooth flex items-end justify-center pb-6">
                     <div className="flex gap-4">
                       <Button size="sm" className="gradient-primary">
                         <a href={project.live} target='_blank' className='flex items-center'>
-                        <ExternalLink className="w-4 h-4 mr-2" />
-                        Ver projeto
+                          <ExternalLink className="w-4 h-4 mr-2" />
+                          {t.viewProject}
                         </a>
                       </Button>
                     </div>
@@ -101,12 +109,12 @@ const ProjectsSection = () => {
                   <p className="text-muted-foreground mb-4 leading-relaxed">
                     {project.description}
                   </p>
-                  
+
                   <div className="flex flex-wrap gap-2">
                     {project.technologies.map((tech, techIndex) => (
-                      <Badge 
+                      <Badge
                         key={techIndex}
-                        variant="secondary" 
+                        variant="secondary"
                         className="glass border border-primary/20"
                       >
                         {tech}
@@ -120,8 +128,8 @@ const ProjectsSection = () => {
 
           <div className="grid md:grid-cols-2 gap-6">
             {projects.filter(p => !p.featured).map((project, index) => (
-              <Card 
-                key={index + 2} 
+              <Card
+                key={index + 2}
                 className="gradient-card border-primary/20 hover-lift group animate-fade-in-up"
                 style={{ animationDelay: `${(index + 2) * 0.2}s` }}
               >
@@ -133,7 +141,7 @@ const ProjectsSection = () => {
                     <div className="flex gap-2">
                       <Button size="sm" variant="ghost" className="p-2">
                         <a href={project.live} target='_blank' className='flex items-center'>
-                        <ExternalLink className="w-4 h-4" />
+                          <ExternalLink className="w-4 h-4" />
                         </a>
                       </Button>
                     </div>
@@ -143,12 +151,12 @@ const ProjectsSection = () => {
                   <p className="text-muted-foreground mb-4 text-sm leading-relaxed">
                     {project.description}
                   </p>
-                  
+
                   <div className="flex flex-wrap gap-1">
                     {project.technologies.slice(0, 3).map((tech, techIndex) => (
-                      <Badge 
+                      <Badge
                         key={techIndex}
-                        variant="secondary" 
+                        variant="secondary"
                         className="text-xs glass border border-primary/20"
                       >
                         {tech}
@@ -170,7 +178,7 @@ const ProjectsSection = () => {
             <Button size="lg" variant="outline" className="glass hover-lift">
               <a href='https://github.com/joao-gabriel-machado?tab=repositories' target='_blank' className='flex items-center'>
                 <Github className="w-5 h-5 mr-2" />
-                  Ver mais no GitHub
+                {t.viewGithub}
               </a>
             </Button>
           </div>

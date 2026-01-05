@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Menu, X, Github, Linkedin, Instagram, Moon, Sun } from 'lucide-react';
+import { Menu, X, Github, Linkedin, Instagram, Moon, Sun, Languages } from 'lucide-react';
 import { useTheme } from 'next-themes';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { translations } from '@/utils/translations';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { theme, setTheme } = useTheme();
+  const { language, toggleLanguage } = useLanguage();
+  const t = translations[language].navbar;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -17,11 +21,11 @@ const Navbar = () => {
   }, []);
 
   const navItems = [
-    { href: '#home', label: 'Home' },
-    { href: '#about', label: 'Sobre' },
-    { href: '#experience', label: 'Experiência' },
-    { href: '#projects', label: 'Projetos' },
-    { href: '#contact', label: 'Contato' },
+    { href: '#home', label: t.home },
+    { href: '#about', label: t.about },
+    { href: '#experience', label: t.experience },
+    { href: '#projects', label: t.projects },
+    { href: '#contact', label: t.contact },
   ];
 
   const socialLinks = [
@@ -32,9 +36,8 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-smooth ${
-        isScrolled ? 'glass border-b border-border shadow-sm' : 'bg-transparent'
-      }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-smooth ${isScrolled ? 'glass border-b border-border shadow-sm' : 'bg-transparent'
+        }`}
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
@@ -81,6 +84,17 @@ const Navbar = () => {
               );
             })}
             <div className="w-px h-5 bg-border mx-2" />
+
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleLanguage}
+              className="dark:hover:bg-white/30 hover:bg-white/50 hover:text-black/50 transition-smooth"
+              title={t.toggleLang}
+            >
+              <span className="font-bold text-xs">{language === 'pt' ? 'BR' : 'EN'}</span>
+            </Button>
+
             <Button
               variant="ghost"
               size="icon"
@@ -89,7 +103,7 @@ const Navbar = () => {
             >
               <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
               <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-              <span className="sr-only">Alternar tema</span>
+              <span className="sr-only">{t.toggleTheme}</span>
             </Button>
           </div>
 
@@ -132,6 +146,15 @@ const Navbar = () => {
                   );
                 })}
                 <div className="w-px h-5 bg-border mx-1" />
+
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={toggleLanguage}
+                >
+                  <span className="font-bold text-xs">{language === 'pt' ? 'BR' : 'EN'}</span>
+                </Button>
+
                 <Button
                   variant="ghost"
                   size="icon"

@@ -2,47 +2,33 @@ import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, MapPin } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { translations } from '@/utils/translations';
 
 const ExperienceSection = () => {
   const { ref, isVisible } = useScrollAnimation();
-  const experiences = [
+  const { language } = useLanguage();
+  const t = translations[language].experience;
+
+  const experienceAssets = [
     {
-      title: 'Freelancer',
-      company: 'Autônomo',
-      period: 'Jan/2024',
-      location: 'Remote',
-      type: 'Freelance',
-      description: 'Desenvolvedor Full-Stack especializado na criação de soluções web completas. Utilizo Java para construir back-ends robustos e Next.js para desenvolver interfaces de usuário modernas e performáticas.',
       technologies: ["Java", 'React', 'Next.js', 'Figma', 'UI/UX', 'TailwindCSS', "Quarkus", "Prototipagem"],
       current: true,
     },
     {
-      title: 'Desenvolvedor de Software',
-      company: 'Titaniumfix',
-      period: 'Jan/2024',
-      location: 'São José dos Campos, SP',
-      type: 'CLT',
-      description: `Atuo no desenvolvimento de soluções de software completas, trabalhando com frontend em Next.js e backend em C# e Java, utilizando arquiteturas modernas, escaláveis e baseadas em microserviços.
-
-  Desenvolvo interfaces intuitivas e funcionais com apoio de Figma e atuo na manutenção, evolução e refatoração de sistemas existentes. Também desenvolvo relatórios personalizados, realizo análise de dados e implemento integrações entre sistemas, incluindo comunicação entre microserviços.
-
-  Atuo com controle de versão utilizando Git e automação de pipelines CI/CD com GitHub Actions, garantindo deploy contínuo, seguro e automatizado.
-
-  Participo do planejamento técnico, da definição de arquitetura de projetos e da modelagem de soluções, atuando com metodologias ágeis, especialmente Scrum, para garantir entregas eficientes e escaláveis.`,
       technologies: ['C#', 'Java', 'Quarkus', 'React', 'Next.js', 'SQL Server', 'Relatórios', 'Scrum', 'Git'],
       current: true,
     },
     {
-      title: 'Auxiliar de Informática',
-      company: 'Titaniumfix',
-      period: 'fev/2023 - Dez/2023',
-      location: 'São José dos Campos, SP',
-      type: 'CLT',
-      description: 'Auxílio na implementação de software (ERP), e mapeamento de processos com objetivo de estudar e implementar o sistema de acordo com as regras de negócio, e trabalho diretamente com o desenvolvimento e manutenção dos softwares da empresa, utilizando a linguagem de programação C#, JavaScript, e ReactJS. E realizo consultas e alterações no BD com SQL.',
       technologies: ['Mapeamento de processos', 'SQL Server', 'Relatórios', 'Análise de Dados'],
       current: false,
     },
   ];
+
+  const experiences = t.list.map((exp, index) => ({
+    ...exp,
+    ...experienceAssets[index]
+  }));
 
   return (
     <section id="experience" className="py-12 md:py-20 relative" ref={ref}>
@@ -51,13 +37,13 @@ const ExperienceSection = () => {
           {/* Section Header */}
           <div className="text-center mb-12 md:mb-16 animate-fade-in-up">
             <p className="text-sm uppercase tracking-widest text-primary font-medium mb-4">
-              Experiência
+              {t.label}
             </p>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
-              Trajetória Profissional
+              {t.title}
             </h2>
             <p className="text-base md:text-lg text-muted-foreground">
-              Principais experiências e tecnologias
+              {t.subtitle}
             </p>
           </div>
 
@@ -100,7 +86,7 @@ const ExperienceSection = () => {
                             </div>
                             {exp.current && (
                               <Badge className="bg-primary text-primary-foreground border-primary animate-pulse-glow">
-                                Atual
+                                {t.current}
                               </Badge>
                             )}
                           </div>
@@ -112,7 +98,7 @@ const ExperienceSection = () => {
                         </p>
 
                         <div className="space-y-3">
-                          <h5 className="text-sm md:text-base font-semibold text-foreground">Tecnologias:</h5>
+                          <h5 className="text-sm md:text-base font-semibold text-foreground">{t.technologies}</h5>
                           <div className="flex flex-wrap gap-2">
                             {exp.technologies.map((tech, techIndex) => (
                               <Badge
