@@ -22,7 +22,13 @@ const ExperienceSection = () => {
       period: 'Jan/2024',
       location: 'São José dos Campos, SP',
       type: 'CLT',
-      description: 'Desenvolvedor com experiência em criação de soluções completas, incluindo desenvolvimento frontend com Next.js e backend em C# e Java. Proficiente na criação de interfaces intuitivas com Figma, manutenção e evolução de softwares existentes.',
+      description: `Atuo no desenvolvimento de soluções de software completas, trabalhando com frontend em Next.js e backend em C# e Java, utilizando arquiteturas modernas, escaláveis e baseadas em microserviços.
+
+  Desenvolvo interfaces intuitivas e funcionais com apoio de Figma e atuo na manutenção, evolução e refatoração de sistemas existentes. Também desenvolvo relatórios personalizados, realizo análise de dados e implemento integrações entre sistemas, incluindo comunicação entre microserviços.
+
+  Atuo com controle de versão utilizando Git e automação de pipelines CI/CD com GitHub Actions, garantindo deploy contínuo, seguro e automatizado.
+
+  Participo do planejamento técnico, da definição de arquitetura de projetos e da modelagem de soluções, atuando com metodologias ágeis, especialmente Scrum, para garantir entregas eficientes e escaláveis.`,
       technologies: ['C#', 'Java', 'Quarkus', 'React', 'Next.js', 'SQL Server', 'Relatórios', 'Scrum', 'Git'],
       current: true,
     },
@@ -62,14 +68,14 @@ const ExperienceSection = () => {
 
             <div className="space-y-8 md:space-y-12">
               {experiences.map((exp, index) => (
-                <div 
-                  key={index} 
+                <div
+                  key={index}
                   className="relative animate-fade-in-up"
                   style={{ animationDelay: `${index * 0.2}s` }}
                 >
                   {/* Timeline dot */}
                   <div className="absolute left-4 md:left-6 lg:left-10 w-4 h-4 bg-primary rounded-full border-4 border-background animate-pulse-glow z-10" />
-                  
+
                   {/* Content */}
                   <div className="ml-16 md:ml-20 lg:ml-24">
                     <Card className="gradient-card border-primary/20 hover-lift">
@@ -83,35 +89,35 @@ const ExperienceSection = () => {
                               {exp.company}
                             </h4>
                           </div>
-                        <div className="flex items-center gap-3 flex-wrap">
-                          <div className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground">
-                            <Calendar className="w-4 h-4" />
-                            {exp.period}
+                          <div className="flex items-center gap-3 flex-wrap">
+                            <div className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground">
+                              <Calendar className="w-4 h-4" />
+                              {exp.period}
+                            </div>
+                            <div className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground">
+                              <MapPin className="w-4 h-4" />
+                              {exp.location}
+                            </div>
+                            {exp.current && (
+                              <Badge className="bg-primary text-primary-foreground border-primary animate-pulse-glow">
+                                Atual
+                              </Badge>
+                            )}
                           </div>
-                          <div className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground">
-                            <MapPin className="w-4 h-4" />
-                            {exp.location}
-                          </div>
-                          {exp.current && (
-                            <Badge className="bg-primary text-primary-foreground border-primary animate-pulse-glow">
-                              Atual
-                            </Badge>
-                          )}
-                        </div>
                         </div>
                       </CardHeader>
                       <CardContent>
-                        <p className="text-sm md:text-base text-muted-foreground leading-relaxed mb-4 md:mb-6">
+                        <p className="text-sm md:text-base text-muted-foreground leading-relaxed mb-4 md:mb-6 whitespace-pre-line">
                           {exp.description}
                         </p>
-                        
+
                         <div className="space-y-3">
                           <h5 className="text-sm md:text-base font-semibold text-foreground">Tecnologias:</h5>
                           <div className="flex flex-wrap gap-2">
                             {exp.technologies.map((tech, techIndex) => (
-                              <Badge 
+                              <Badge
                                 key={techIndex}
-                                variant="secondary" 
+                                variant="secondary"
                                 className="glass border border-primary/20 hover:border-primary/40 transition-smooth"
                               >
                                 {tech}
