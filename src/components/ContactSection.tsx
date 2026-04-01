@@ -1,7 +1,8 @@
-import { Mail, Phone, MapPin, Github, Linkedin, Instagram } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Mail, Phone, MapPin, Github, Linkedin, Instagram, ArrowUpRight } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { translations } from '@/utils/translations';
+import { revealVariants, staggerContainer, staggerChild, viewportConfig } from '@/lib/motion';
 
 const ContactSection = () => {
   const { language } = useLanguage();
@@ -35,74 +36,103 @@ const ContactSection = () => {
   ];
 
   return (
-    <section id="contact" className="py-12 md:py-20 relative bg-gradient-subtle">
+    <section id="contact" className="py-24 relative">
       <div className="container mx-auto px-4">
-        <div className="max-w-6xl mx-auto">
-          {/* --- Cabeçalho Centralizado --- */}
-          <div className="mb-12 md:mb-20 text-center">
+        <div className="max-w-5xl mx-auto">
+          {/* Header */}
+          <motion.div
+            variants={revealVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewportConfig}
+            className="mb-16 text-center"
+          >
             <p className="text-sm uppercase tracking-widest text-primary font-medium mb-4">
               {t.label}
             </p>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4 md:mb-6">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
               {t.title}
             </h2>
             <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
               {t.subtitle}
             </p>
-          </div>
+          </motion.div>
 
-          {/* --- Conteúdo Centralizado --- */}
-          <div className="flex justify-center">
-            <div className="w-full max-w-lg space-y-6 md:space-y-8">
-              <div className="space-y-4 md:space-y-6">
-                {contactInfo.map((info, index) => {
-                  const Icon = info.icon;
-                  return (
-                    <a
-                      key={index}
-                      href={info.href}
-                      className="group flex items-start gap-3 md:gap-4 p-3 md:p-4 glass border-border hover:border-primary/50 rounded-lg transition-smooth hover-lift"
-                    >
-                      <div className="p-2 rounded-lg bg-primary/10">
-                        <Icon className="w-4 h-4 md:w-5 md:h-5 text-primary" />
+          {/* Contact cards - horizontal grid */}
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewportConfig}
+            className="grid sm:grid-cols-3 gap-5 mb-14"
+          >
+            {contactInfo.map((info, index) => {
+              const Icon = info.icon;
+              return (
+                <motion.a
+                  key={index}
+                  href={info.href}
+                  variants={staggerChild}
+                  className="block"
+                >
+                  <motion.div
+                    whileHover={{ y: -4 }}
+                    transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                    className="card-outer group glow-primary-hover transition-shadow duration-300 h-full"
+                  >
+                    <div className="card-inner h-full flex flex-col items-center text-center gap-4 py-8">
+                      <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/10 flex items-center justify-center group-hover:bg-primary/20 group-hover:border-primary/20 transition-all duration-300">
+                        <Icon className="w-5 h-5 text-primary" />
                       </div>
                       <div>
-                        <p className="text-xs uppercase tracking-wide text-muted-foreground mb-1">
+                        <p className="text-xs uppercase tracking-widest text-muted-foreground mb-2 font-medium">
                           {info.label}
                         </p>
-                        <p className="text-sm md:text-base text-foreground font-medium group-hover:text-primary transition-smooth">
+                        <p className="text-sm md:text-base text-foreground font-semibold group-hover:text-primary transition-colors duration-200">
                           {info.value}
                         </p>
                       </div>
-                    </a>
-                  );
-                })}
-              </div>
+                      {info.href !== '#' && (
+                        <ArrowUpRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-colors duration-200" />
+                      )}
+                    </div>
+                  </motion.div>
+                </motion.a>
+              );
+            })}
+          </motion.div>
 
-              <div className="pt-6 md:pt-8 border-t border-border text-center">
-                <p className="text-sm font-medium text-foreground mb-4">
-                  {t.socials}
-                </p>
-                <div className="flex gap-3 justify-center">
-                  {socialLinks.map((social) => {
-                    const Icon = social.icon;
-                    return (
-                      <Button
-                        key={social.label}
-                        size="icon"
-                        variant="outline"
-                        className="glass hover-lift border-border hover:border-primary/50 transition-smooth"
-                        onClick={() => window.open(social.href, '_blank')}
-                        aria-label={social.label}
-                      >
-                        <Icon className="w-4 h-4" />
-                      </Button>
-                    );
-                  })}
-                </div>
-              </div>
+          {/* Social Links */}
+          <motion.div
+            variants={revealVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewportConfig}
+            className="text-center"
+          >
+            <p className="text-sm font-medium text-muted-foreground mb-6 uppercase tracking-widest">
+              {t.socials}
+            </p>
+            <div className="flex gap-4 justify-center">
+              {socialLinks.map((social) => {
+                const Icon = social.icon;
+                return (
+                  <motion.a
+                    key={social.label}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    whileHover={{ scale: 1.1, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="w-12 h-12 rounded-xl glass flex items-center justify-center border border-white/[0.06] hover:border-primary/30 glow-primary-hover text-muted-foreground hover:text-primary transition-all duration-300"
+                    aria-label={social.label}
+                  >
+                    <Icon className="w-5 h-5" />
+                  </motion.a>
+                );
+              })}
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>

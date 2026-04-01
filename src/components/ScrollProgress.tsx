@@ -1,24 +1,26 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 const ScrollProgress = () => {
-    const [scrollProgress, setScrollProgress] = useState(0);
+    const barRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const handleScroll = () => {
+            if (!barRef.current) return;
             const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
-            const progress = (window.scrollY / totalHeight) * 100;
-            setScrollProgress(progress);
+            const progress = totalHeight > 0 ? window.scrollY / totalHeight : 0;
+            barRef.current.style.transform = `scaleX(${progress})`;
         };
 
-        window.addEventListener('scroll', handleScroll);
+        window.addEventListener('scroll', handleScroll, { passive: true });
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
     return (
-        <div className="fixed top-0 left-0 w-full h-1 z-[60] bg-transparent">
+        <div className="fixed top-0 left-0 w-full h-[2px] z-[60]">
             <div
-                className="h-full bg-primary origin-left transition-all duration-100"
-                style={{ width: `${scrollProgress}%` }}
+                ref={barRef}
+                className="h-full bg-primary origin-left will-change-transform"
+                style={{ transform: 'scaleX(0)' }}
             />
         </div>
     );

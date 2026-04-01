@@ -1,12 +1,10 @@
-import { useScrollAnimation } from '@/hooks/useScrollAnimation';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Calendar, MapPin } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { translations } from '@/utils/translations';
+import { revealVariants, staggerContainer, staggerChild, viewportConfig } from '@/lib/motion';
 
 const ExperienceSection = () => {
-  const { ref, isVisible } = useScrollAnimation();
   const { language } = useLanguage();
   const t = translations[language].experience;
 
@@ -27,15 +25,21 @@ const ExperienceSection = () => {
 
   const experiences = t.list.map((exp, index) => ({
     ...exp,
-    ...experienceAssets[index]
+    ...experienceAssets[index],
   }));
 
   return (
-    <section id="experience" className="py-12 md:py-20 relative" ref={ref}>
-      <div className={`container mx-auto px-4 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+    <section id="experience" className="py-24 relative">
+      <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
           {/* Section Header */}
-          <div className="text-center mb-12 md:mb-16 animate-fade-in-up">
+          <motion.div
+            variants={revealVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewportConfig}
+            className="text-center mb-16"
+          >
             <p className="text-sm uppercase tracking-widest text-primary font-medium mb-4">
               {t.label}
             </p>
@@ -45,79 +49,86 @@ const ExperienceSection = () => {
             <p className="text-base md:text-lg text-muted-foreground">
               {t.subtitle}
             </p>
-          </div>
+          </motion.div>
 
-          {/* Experience Timeline */}
-          <div className="relative">
+          {/* Timeline */}
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewportConfig}
+            className="relative"
+          >
             {/* Timeline line */}
-            <div className="absolute left-6 md:left-8 lg:left-12 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary via-accent to-primary opacity-30" />
+            <div className="absolute left-6 md:left-8 top-0 bottom-0 w-px bg-gradient-to-b from-primary/30 via-primary/10 to-transparent" />
 
-            <div className="space-y-8 md:space-y-12">
+            <div className="space-y-10">
               {experiences.map((exp, index) => (
-                <div
+                <motion.div
                   key={index}
-                  className="relative animate-fade-in-up"
-                  style={{ animationDelay: `${index * 0.2}s` }}
+                  variants={staggerChild}
+                  className="relative"
                 >
                   {/* Timeline dot */}
-                  <div className="absolute left-4 md:left-6 lg:left-10 w-4 h-4 bg-primary rounded-full border-4 border-background animate-pulse-glow z-10" />
+                  <div className="absolute left-[18px] md:left-[26px] w-3 h-3 rounded-full bg-primary animate-pulse-soft z-10" />
 
                   {/* Content */}
-                  <div className="ml-16 md:ml-20 lg:ml-24">
-                    <Card className="gradient-card border-primary/20 hover-lift">
-                      <CardHeader>
-                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4">
+                  <div className="ml-14 md:ml-20">
+                    <div className="card-outer hover-lift glow-primary-hover transition-all duration-300">
+                      <div className="card-inner">
+                        {/* Header */}
+                        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 mb-4">
                           <div>
-                            <CardTitle className="text-xl md:text-2xl text-foreground mb-2">
+                            <h3 className="text-xl md:text-2xl font-bold text-foreground mb-1">
                               {exp.title}
-                            </CardTitle>
-                            <h4 className="text-lg md:text-xl text-accent font-semibold">
+                            </h3>
+                            <p className="text-lg text-primary font-semibold">
                               {exp.company}
-                            </h4>
+                            </p>
                           </div>
                           <div className="flex items-center gap-3 flex-wrap">
-                            <div className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground">
-                              <Calendar className="w-4 h-4" />
+                            <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+                              <Calendar className="w-3.5 h-3.5" />
                               {exp.period}
-                            </div>
-                            <div className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground">
-                              <MapPin className="w-4 h-4" />
+                            </span>
+                            <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+                              <MapPin className="w-3.5 h-3.5" />
                               {exp.location}
-                            </div>
+                            </span>
                             {exp.current && (
-                              <Badge className="bg-primary text-primary-foreground border-primary animate-pulse-glow">
+                              <span className="px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-semibold border border-primary/20">
                                 {t.current}
-                              </Badge>
+                              </span>
                             )}
                           </div>
                         </div>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-sm md:text-base text-muted-foreground leading-relaxed mb-4 md:mb-6 whitespace-pre-line">
+
+                        {/* Description */}
+                        <p className="text-sm md:text-base text-muted-foreground leading-relaxed mb-5 whitespace-pre-line">
                           {exp.description}
                         </p>
 
-                        <div className="space-y-3">
-                          <h5 className="text-sm md:text-base font-semibold text-foreground">{t.technologies}</h5>
+                        {/* Technologies */}
+                        <div>
+                          <p className="text-sm font-semibold text-foreground mb-3">{t.technologies}</p>
                           <div className="flex flex-wrap gap-2">
                             {exp.technologies.map((tech, techIndex) => (
-                              <Badge
+                              <span
                                 key={techIndex}
-                                variant="secondary"
-                                className="glass border border-primary/20 hover:border-primary/40 transition-smooth"
+                                className="px-3 py-1 rounded-full glass text-xs text-muted-foreground border border-primary/10 hover:border-primary/30 transition-colors duration-200"
                               >
                                 {tech}
-                              </Badge>
+                              </span>
                             ))}
                           </div>
                         </div>
-                      </CardContent>
-                    </Card>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>

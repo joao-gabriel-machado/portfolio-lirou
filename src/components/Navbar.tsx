@@ -1,24 +1,26 @@
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Menu, X, Github, Linkedin, Instagram, Moon, Sun, Languages } from 'lucide-react';
-import { useTheme } from 'next-themes';
+import { Menu, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { translations } from '@/utils/translations';
+import { navbarVariants, staggerChild } from '@/lib/motion';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { theme, setTheme } = useTheme();
   const { language, toggleLanguage } = useLanguage();
   const t = translations[language].navbar;
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener('scroll', handleScroll);
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = isMobileMenuOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [isMobileMenuOpen]);
 
   const navItems = [
     { href: '#home', label: t.home },
@@ -28,147 +30,117 @@ const Navbar = () => {
     { href: '#contact', label: t.contact },
   ];
 
-  const socialLinks = [
-    { icon: Github, href: 'https://github.com/joao-gabriel-machado', label: 'GitHub' },
-    { icon: Linkedin, href: 'https://www.linkedin.com/in/jo%C3%A3o-gabriel-machado-231880205/', label: 'LinkedIn' },
-    { icon: Instagram, href: 'https://www.instagram.com/liroujohn_/', label: 'Instagram' },
-  ];
-
   return (
-    <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-smooth ${isScrolled ? 'glass border-b border-border shadow-sm' : 'bg-transparent'
+    <>
+      <motion.nav
+        variants={navbarVariants}
+        initial="hidden"
+        animate="visible"
+        className={`fixed top-5 left-0 right-0 mx-auto w-fit z-50 transition-all duration-500 ease-out-expo rounded-full ${
+          isScrolled
+            ? 'glass px-3 py-2 shadow-lg shadow-black/30'
+            : 'bg-white/[0.03] backdrop-blur-md border border-white/[0.04] px-3 py-2'
         }`}
-    >
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          <a href="#home" className="flex items-center space-x-3 group">
-            <div className="relative">
-              <img
-                src="https://github.com/joao-gabriel-machado.png"
-                alt="João Gabriel"
-                className="w-9 h-9 rounded-full border border-border group-hover:border-primary transition-smooth"
-              />
-            </div>
-            <span className="text-lg font-semibold text-foreground group-hover:text-primary transition-smooth">
+      >
+        <div className="flex items-center gap-1">
+          {/* Logo */}
+          <a
+            href="#home"
+            className="flex items-center gap-2.5 px-4 py-2 rounded-full hover:bg-white/[0.06] transition-colors duration-200"
+          >
+            <img
+              src="https://github.com/joao-gabriel-machado.png"
+              alt="João Gabriel"
+              className="w-8 h-8 rounded-full border border-white/10"
+            />
+            <span className="text-sm font-semibold text-foreground hidden sm:inline">
               LirouDev
             </span>
           </a>
 
-          <div className="hidden md:flex items-center space-x-1">
+          {/* Separator */}
+          <div className="hidden md:block w-px h-5 bg-white/10 mx-1" />
+
+          {/* Desktop Nav Links */}
+          <div className="hidden md:flex items-center gap-0.5">
             {navItems.map((item) => (
               <a
                 key={item.href}
                 href={item.href}
-                className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-smooth relative group"
+                className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground rounded-full hover:bg-white/[0.06] transition-colors duration-200"
               >
                 {item.label}
-                <span className="absolute bottom-0 left-4 right-4 h-px bg-primary scale-x-0 group-hover:scale-x-100 transition-smooth" />
               </a>
             ))}
           </div>
 
-          <div className="hidden md:flex items-center space-x-2">
-            {socialLinks.map((social) => {
-              const Icon = social.icon;
-              return (
-                <Button
-                  key={social.label}
-                  variant="ghost"
-                  size="icon"
-                  className="dark:hover:bg-white/30 hover:bg-white/50 hover:text-black/50 transition-smooth"
-                  onClick={() => window.open(social.href, '_blank')}
-                  aria-label={social.label}
-                >
-                  <Icon className="w-4 h-4" />
-                </Button>
-              );
-            })}
-            <div className="w-px h-5 bg-border mx-2" />
+          {/* Separator */}
+          <div className="hidden md:block w-px h-5 bg-white/10 mx-1" />
 
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleLanguage}
-              className="dark:hover:bg-white/30 hover:bg-white/50 hover:text-black/50 transition-smooth"
-              title={t.toggleLang}
-            >
-              <span className="font-bold text-xs">{language === 'pt' ? 'BR' : 'EN'}</span>
-            </Button>
-
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="dark:hover:bg-white/30 hover:bg-white/50 hover:text-black/50 transition-smooth"
-            >
-              <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-              <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-              <span className="sr-only">{t.toggleTheme}</span>
-            </Button>
-          </div>
-
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          {/* Language Toggle */}
+          <button
+            onClick={toggleLanguage}
+            className="px-4 py-2 text-xs font-bold text-muted-foreground hover:text-foreground rounded-full hover:bg-white/[0.06] transition-colors duration-200 uppercase tracking-widest"
+            title={t.toggleLang}
           >
-            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </Button>
-        </div>
+            {language === 'pt' ? 'BR' : 'EN'}
+          </button>
 
+          {/* Mobile Hamburger */}
+          <button
+            className="md:hidden p-2.5 rounded-full hover:bg-white/[0.06] transition-colors duration-200 text-foreground"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label="Menu"
+          >
+            {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+        </div>
+      </motion.nav>
+
+      {/* Mobile Fullscreen Overlay */}
+      <AnimatePresence>
         {isMobileMenuOpen && (
-          <div className="md:hidden absolute top-16 left-0 right-0 bg-background/95 backdrop-blur-xl border-b border-border shadow-lg animate-fade-in">
-            <div className="p-6 space-y-1">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed inset-0 z-40 bg-background/95 backdrop-blur-2xl flex flex-col items-center justify-center"
+          >
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+              variants={{
+                hidden: {},
+                visible: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
+              }}
+              className="flex flex-col items-center gap-8"
+            >
               {navItems.map((item) => (
-                <a
+                <motion.a
                   key={item.href}
                   href={item.href}
-                  className="block text-muted-foreground hover:text-foreground transition-smooth px-4 py-3 rounded-lg hover:bg-secondary"
+                  variants={staggerChild}
                   onClick={() => setIsMobileMenuOpen(false)}
+                  className="text-3xl font-medium text-foreground hover:text-primary transition-colors duration-200"
                 >
                   {item.label}
-                </a>
+                </motion.a>
               ))}
-              <div className="flex justify-center items-center gap-2 pt-6 mt-4 border-t border-border">
-                {socialLinks.map((social) => {
-                  const Icon = social.icon;
-                  return (
-                    <Button
-                      key={social.label}
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => window.open(social.href, '_blank')}
-                      aria-label={social.label}
-                    >
-                      <Icon className="w-4 h-4" />
-                    </Button>
-                  );
-                })}
-                <div className="w-px h-5 bg-border mx-1" />
 
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={toggleLanguage}
-                >
-                  <span className="font-bold text-xs">{language === 'pt' ? 'BR' : 'EN'}</span>
-                </Button>
-
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                >
-                  <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-                  <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-                </Button>
-              </div>
-            </div>
-          </div>
+              <motion.button
+                variants={staggerChild}
+                onClick={() => { toggleLanguage(); setIsMobileMenuOpen(false); }}
+                className="mt-6 px-8 py-3 rounded-full glass text-sm font-bold text-muted-foreground hover:text-foreground transition-colors duration-200 uppercase tracking-widest"
+              >
+                {language === 'pt' ? 'English' : 'Português'}
+              </motion.button>
+            </motion.div>
+          </motion.div>
         )}
-      </div>
-    </nav>
+      </AnimatePresence>
+    </>
   );
 };
 

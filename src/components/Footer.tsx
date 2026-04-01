@@ -1,34 +1,43 @@
+import { motion } from 'framer-motion';
+import { revealVariants, viewportConfig } from '@/lib/motion';
+
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="py-8 md:py-12 border-t border-border">
+    <motion.footer
+      variants={revealVariants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={viewportConfig}
+      className="py-8 border-t border-border"
+    >
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6 text-center md:text-left">
-            <div className="flex items-center space-x-3">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
+            <div className="flex items-center gap-2">
               <img
                 src="https://github.com/joao-gabriel-machado.png"
                 alt="João Gabriel"
-                className="w-8 h-8 rounded-full border border-border"
+                className="w-6 h-6 rounded-full border border-white/10"
               />
-              <span className="text-sm font-medium text-foreground">LirouDev</span>
+              <span className="text-xs font-medium text-foreground">LirouDev</span>
             </div>
 
-            <div className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground">
-              <span>© {currentYear}</span>
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <span>&copy; {currentYear}</span>
               <span className="text-foreground">João Gabriel</span>
-              <span>·</span>
+              <span>&middot;</span>
               <span>Full-Stack Developer</span>
             </div>
 
             <div className="text-xs text-muted-foreground">
-              <span>React + Tailwind CSS</span>
+              React + Tailwind CSS
             </div>
           </div>
         </div>
       </div>
-    </footer>
+    </motion.footer>
   );
 };
 

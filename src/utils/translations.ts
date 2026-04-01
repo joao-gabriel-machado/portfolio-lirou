@@ -100,6 +100,9 @@ Participo do planejamento técnico, da definição de arquitetura de projetos e 
             whatsapp: 'Whatsapp',
             location: 'Localização',
             socials: 'Redes Sociais'
+        },
+        whatsapp: {
+            tooltip: 'Vamos conversar?'
         }
     },
     en: {
@@ -203,6 +206,9 @@ Participating in technical planning, project architecture definition, and soluti
             whatsapp: 'Whatsapp',
             location: 'Location',
             socials: 'Social Media'
+        },
+        whatsapp: {
+            tooltip: 'Let\'s chat?'
         }
     }
 };

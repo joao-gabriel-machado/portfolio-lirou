@@ -1,10 +1,10 @@
 import { Code, Heart, Target } from 'lucide-react';
-import { useScrollAnimation } from '@/hooks/useScrollAnimation';
+import { motion } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { translations } from '@/utils/translations';
+import { revealVariants, staggerContainer, staggerChild, viewportConfig } from '@/lib/motion';
 
 const AboutSection = () => {
-  const { ref, isVisible } = useScrollAnimation();
   const { language } = useLanguage();
   const t = translations[language].about;
 
@@ -15,42 +15,61 @@ const AboutSection = () => {
   ];
 
   return (
-    <section id="about" className="py-12 md:py-20 relative" ref={ref}>
-      <div className={`container mx-auto px-4 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-        }`}>
+    <section id="about" className="py-24 relative">
+      <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
-          <div className="mb-12 md:mb-20 text-center lg:text-left">
+          {/* Section Header */}
+          <motion.div
+            variants={revealVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewportConfig}
+            className="mb-16 text-center lg:text-left"
+          >
             <p className="text-sm uppercase tracking-widest text-primary font-medium mb-4">
               {t.label}
             </p>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6">
               {t.title}<br className="hidden sm:block" /> {t.titleSuffix}
             </h2>
-          </div>
+          </motion.div>
 
-          <div className="grid sm:grid-cols-3 gap-6 md:gap-8 mb-12 md:mb-16">
+          {/* Stats Grid */}
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewportConfig}
+            className="grid sm:grid-cols-3 gap-6 md:gap-8 mb-16"
+          >
             {stats.map((stat, index) => {
               const Icon = stat.icon;
               return (
-                <div
-                  key={index}
-                  className="group p-6 md:p-8 glass border-border hover:border-primary/50 rounded-lg transition-smooth hover-lift text-center"
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                >
-                  <Icon className="w-8 h-8 text-primary mb-4 group-hover:scale-110 transition-smooth mx-auto" />
-                  <div className="text-3xl md:text-4xl font-bold text-foreground mb-2">
-                    {stat.value}
+                <motion.div key={index} variants={staggerChild}>
+                  <div className="card-outer group hover-lift glow-primary-hover transition-all duration-300">
+                    <div className="card-inner text-center">
+                      <Icon className="w-8 h-8 text-primary mb-4 mx-auto group-hover:scale-110 transition-transform duration-300 ease-out-expo" />
+                      <div className="text-3xl md:text-4xl font-bold text-foreground mb-2">
+                        {stat.value}
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        {stat.label}
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-sm text-muted-foreground">
-                    {stat.label}
-                  </div>
-                </div>
+                </motion.div>
               );
             })}
-          </div>
+          </motion.div>
 
           {/* About Content */}
-          <div className="prose prose-invert max-w-none">
+          <motion.div
+            variants={revealVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewportConfig}
+            className="prose prose-invert max-w-none"
+          >
             <div className="grid md:grid-cols-2 gap-8 md:gap-12">
               <div className="space-y-4">
                 <p className="text-base md:text-lg text-foreground leading-relaxed">
@@ -69,7 +88,7 @@ const AboutSection = () => {
                 </p>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>

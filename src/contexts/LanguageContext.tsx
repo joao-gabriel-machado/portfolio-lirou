@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
 type Language = 'pt' | 'en';
 
@@ -10,22 +10,18 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [language, setLanguage] = useState<Language>('pt');
+function getInitialLanguage(): Language {
+    const saved = localStorage.getItem('language') as Language | null;
+    if (saved === 'pt' || saved === 'en') return saved;
+    const browserLang = navigator.language.split('-')[0];
+    return browserLang === 'en' ? 'en' : 'pt';
+}
 
-    useEffect(() => {
-        const savedLang = localStorage.getItem('language') as Language;
-        if (savedLang) {
-            setLanguage(savedLang);
-        } else {
-            // Auto-detect? For now default to PT as requested, or maybe detect browser
-            const browserLang = navigator.language.split('-')[0];
-            if (browserLang === 'en') setLanguage('en');
-        }
-    }, []);
+export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const [language, setLanguageState] = useState<Language>(getInitialLanguage);
 
     const handleSetLanguage = (lang: Language) => {
-        setLanguage(lang);
+        setLanguageState(lang);
         localStorage.setItem('language', lang);
     };
 
