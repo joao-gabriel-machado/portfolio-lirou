@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { translations } from '@/utils/translations';
 import { revealVariants, staggerContainer, staggerChild, viewportConfig } from '@/lib/motion';
+import perfilImg from '@/assets/perfil.webp';
 
 const AboutSection = () => {
   const { language } = useLanguage();
@@ -24,7 +25,7 @@ const AboutSection = () => {
             initial="hidden"
             whileInView="visible"
             viewport={viewportConfig}
-            className="mb-16 text-center lg:text-left"
+            className="mb-16 text-center"
           >
             <p className="text-sm uppercase tracking-widest text-primary font-medium mb-4">
               {t.label}
@@ -34,13 +35,59 @@ const AboutSection = () => {
             </h2>
           </motion.div>
 
+          {/* Photo + About Content */}
+          <motion.div
+            variants={revealVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewportConfig}
+            className="mb-16"
+          >
+            <div className="grid md:grid-cols-[280px_1fr] lg:grid-cols-[320px_1fr] gap-10 md:gap-14 items-start">
+              {/* Photo */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                className="mx-auto md:mx-0"
+              >
+                <div className="card-outer glow-primary-hover transition-shadow duration-500 w-fit">
+                  <div className="card-inner !p-2">
+                    <img
+                      src={perfilImg}
+                      alt="João Gabriel"
+                      className="w-56 h-56 md:w-64 md:h-64 lg:w-72 lg:h-72 object-cover rounded-lg"
+                    />
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Text Content */}
+              <div className="space-y-5">
+                <p className="text-base md:text-lg text-foreground leading-relaxed">
+                  {t.p1}
+                </p>
+                <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
+                  {t.p2}
+                </p>
+                <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
+                  {t.p3}
+                </p>
+                <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
+                  {t.p4}
+                </p>
+              </div>
+            </div>
+          </motion.div>
+
           {/* Stats Grid */}
           <motion.div
             variants={staggerContainer}
             initial="hidden"
             whileInView="visible"
             viewport={viewportConfig}
-            className="grid sm:grid-cols-3 gap-6 md:gap-8 mb-16"
+            className="grid sm:grid-cols-3 gap-6 md:gap-8"
           >
             {stats.map((stat, index) => {
               const Icon = stat.icon;
@@ -60,34 +107,6 @@ const AboutSection = () => {
                 </motion.div>
               );
             })}
-          </motion.div>
-
-          {/* About Content */}
-          <motion.div
-            variants={revealVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={viewportConfig}
-            className="prose prose-invert max-w-none"
-          >
-            <div className="grid md:grid-cols-2 gap-8 md:gap-12">
-              <div className="space-y-4">
-                <p className="text-base md:text-lg text-foreground leading-relaxed">
-                  {t.p1}
-                </p>
-                <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-                  {t.p2}
-                </p>
-              </div>
-              <div className="space-y-4">
-                <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-                  {t.p3}
-                </p>
-                <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-                  {t.p4}
-                </p>
-              </div>
-            </div>
           </motion.div>
         </div>
       </div>

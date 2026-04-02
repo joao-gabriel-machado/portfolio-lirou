@@ -3,8 +3,10 @@ export const translations = {
         navbar: {
             home: 'Home',
             about: 'Sobre',
+            skills: 'Skills',
             experience: 'Experiência',
             projects: 'Projetos',
+            education: 'Formação',
             contact: 'Contato',
             toggleTheme: 'Alternar tema',
             toggleLang: 'English'
@@ -27,9 +29,19 @@ export const translations = {
                 technologies: 'Tecnologias'
             },
             p1: 'Desenvolvedor Full-Stack com 3+ anos criando soluções completas e modernas.',
-            p2: 'Especialista em React, TypeScript e Tailwind CSS no front-end, e Java com QUARKUS no back-end. Transformo designs em código limpo e performático, com foco em UX e arquitetura escalável.',
+            p2: 'Especialista em React, TypeScript e Tailwind CSS no front-end, e Java com Quarkus no back-end. Transformo designs em código limpo e performático, com foco em UX e arquitetura escalável.',
             p3: 'Experiência sólida com Java me permite desenvolver APIs RESTful robustas, implementar padrões de design e garantir qualidade através de testes automatizados.',
             p4: 'Busco sempre o equilíbrio entre design, performance e boas práticas. Movido por desafios e pela evolução constante em toda a stack de desenvolvimento.'
+        },
+        techStack: {
+            label: 'Tech Stack',
+            title: 'Tecnologias & Ferramentas',
+            subtitle: 'As ferramentas que uso para criar soluções completas',
+            categories: {
+                frontend: 'Frontend',
+                backend: 'Backend',
+                tools: 'Ferramentas'
+            }
         },
         experience: {
             label: 'Experiência',
@@ -50,20 +62,14 @@ export const translations = {
                     company: 'Titaniumfix',
                     period: 'Jan/2024 - Presente',
                     location: 'São José dos Campos, SP',
-                    description: `Atuo no desenvolvimento de soluções de software completas, trabalhando com frontend em Next.js e backend em C# e Java, utilizando arquiteturas modernas, escaláveis e baseadas em microserviços.
-
-Desenvolvo interfaces intuitivas e funcionais com apoio de Figma e atuo na manutenção, evolução e refatoração de sistemas existentes. Também desenvolvo relatórios personalizados, realizo análise de dados e implemento integrações entre sistemas, incluindo comunicação entre microserviços.
-
-Atuo com controle de versão utilizando Git e automação de pipelines CI/CD com GitHub Actions, garantindo deploy contínuo, seguro e automatizado.
-
-Participo do planejamento técnico, da definição de arquitetura de projetos e da modelagem de soluções, atuando com metodologias ágeis, especialmente Scrum, para garantir entregas eficientes e escaláveis.`
+                    description: 'Desenvolvimento full-stack com Next.js, C# e Java em arquitetura de microserviços. Criação de interfaces com Figma, relatórios dinâmicos, integrações entre sistemas e pipelines CI/CD com GitHub Actions. Atuação com Scrum no planejamento técnico e modelagem de soluções.'
                 },
                 {
                     title: 'Auxiliar de Informática',
                     company: 'Titaniumfix',
                     period: 'Fev/2023 - Dez/2023',
                     location: 'São José dos Campos, SP',
-                    description: 'Auxílio na implementação de software (ERP), e mapeamento de processos com objetivo de estudar e implementar o sistema de acordo com as regras de negócio, e trabalho diretamente com o desenvolvimento e manutenção dos softwares da empresa, utilizando a linguagem de programação C#, JavaScript, e ReactJS. E realizo consultas e alterações no BD com SQL.'
+                    description: 'Implementação de ERP e mapeamento de processos. Desenvolvimento e manutenção de softwares internos com C#, JavaScript e ReactJS. Consultas e manutenção de banco de dados SQL Server.'
                 }
             ]
         },
@@ -75,27 +81,47 @@ Participo do planejamento técnico, da definição de arquitetura de projetos e 
             viewGithub: 'Ver mais no GitHub',
             items: {
                 redes: {
-                    title: 'Redes do vale',
-                    description: 'Site institucional desenvolvido para uma empresa de redes de proteção, com foco em navegação simples, visual limpo e comunicação direta dos serviços. O projeto reforça a confiança e facilita o contato com clientes da região.'
+                    title: 'Redes do Vale',
+                    description: 'Site institucional para empresa de redes de proteção, com navegação simples, visual limpo e comunicação direta dos serviços.'
                 },
                 twiniti: {
                     title: 'Twiniti Tech',
-                    description: 'Site institucional desenvolvido para uma empresa de tecnologia especializada em softwares sob medida, com foco em inovação, performance e apresentação clara dos serviços e cases.'
+                    description: 'Site institucional para empresa de tecnologia especializada em softwares sob medida, com foco em inovação e apresentação clara dos serviços.'
                 },
                 vitta: {
                     title: 'Vitta Soluções Ergonômicas',
-                    description: 'Site institucional desenvolvido para uma empresa de ergonomia, com design limpo, navegação intuitiva e foco na apresentação clara dos serviços e captação de clientes.'
+                    description: 'Site institucional para empresa de ergonomia, com design limpo, navegação intuitiva e foco na captação de clientes.'
                 },
                 coffee: {
-                    title: 'Coffee Delivery (projeto de front-end para estudo)',
-                    description: 'Protótipo de site focado em entrega de café, desenvolvido com ênfase em front-end. Interface moderna, responsiva, boa usabilidade, visual atraente e detalhamento na apresentação dos produtos.'
+                    title: 'Coffee Delivery',
+                    description: 'Protótipo de e-commerce de café com interface moderna, responsiva e detalhamento na apresentação dos produtos. Projeto de estudo em front-end.'
                 }
             }
         },
+        education: {
+            label: 'Formação',
+            title: 'Formação Acadêmica',
+            subtitle: 'Educação e qualificações',
+            degree: {
+                title: 'Engenharia da Computação',
+                institution: 'UNIP – Universidade Paulista',
+                period: 'Bacharelado · Pausado no 7º período',
+                description: 'Base sólida em lógica de programação, estrutura de dados, algoritmos e resolução de problemas técnicos.'
+            },
+            coursesTitle: 'Cursos & Certificações',
+            courses: [
+                { name: 'Discovery | Programação Web', provider: 'Rocketseat' },
+                { name: 'Fundamentos do Next.js', provider: 'Rocketseat' },
+                { name: 'HTTP e Performance', provider: 'Rocketseat' },
+                { name: 'Masterizando Tailwind | React', provider: 'Rocketseat' },
+                { name: 'Figma for Devs', provider: 'Rocketseat' },
+            ]
+        },
         contact: {
             label: 'Contato',
-            title: 'Vamos conversar?',
-            subtitle: 'Aberto a novos projetos e oportunidades',
+            title: 'Tem um projeto em mente?',
+            subtitle: 'Vamos transformar sua ideia em realidade. Estou disponível para projetos freelance e oportunidades CLT.',
+            cta: 'Iniciar conversa',
             email: 'Email',
             whatsapp: 'Whatsapp',
             location: 'Localização',
@@ -109,8 +135,10 @@ Participo do planejamento técnico, da definição de arquitetura de projetos e 
         navbar: {
             home: 'Home',
             about: 'About',
+            skills: 'Skills',
             experience: 'Experience',
             projects: 'Projects',
+            education: 'Education',
             contact: 'Contact',
             toggleTheme: 'Toggle theme',
             toggleLang: 'Português'
@@ -133,9 +161,19 @@ Participo do planejamento técnico, da definição de arquitetura de projetos e 
                 technologies: 'Technologies'
             },
             p1: 'Full-Stack Developer with 3+ years creating complete and modern solutions.',
-            p2: 'Specialist in React, TypeScript, and Tailwind CSS on the front-end, and Java with QUARKUS on the back-end. I transform designs into clean and performant code, focusing on UX and scalable architecture.',
+            p2: 'Specialist in React, TypeScript, and Tailwind CSS on the front-end, and Java with Quarkus on the back-end. I transform designs into clean and performant code, focusing on UX and scalable architecture.',
             p3: 'Solid experience with Java allowing me to develop robust RESTful APIs, implement design patterns, and ensure quality through automated testing.',
             p4: 'I always seek the balance between design, performance, and best practices. Driven by challenges and constant evolution across the entire development stack.'
+        },
+        techStack: {
+            label: 'Tech Stack',
+            title: 'Technologies & Tools',
+            subtitle: 'The tools I use to build complete solutions',
+            categories: {
+                frontend: 'Frontend',
+                backend: 'Backend',
+                tools: 'Tools'
+            }
         },
         experience: {
             label: 'Experience',
@@ -156,20 +194,14 @@ Participo do planejamento técnico, da definição de arquitetura de projetos e 
                     company: 'Titaniumfix',
                     period: 'Jan/2024 - Present',
                     location: 'São José dos Campos, SP',
-                    description: `Developing complete software solutions, working with frontend in Next.js and backend in C# and Java, using modern, scalable, and microservices-based architectures.
-
-Developing intuitive and functional interfaces supported by Figma and working on maintenance, evolution, and refactoring of existing systems. Also developing custom reports, performing data analysis, and implementing integrations between systems, including microservices communication.
-
-Working with version control using Git and CI/CD pipeline automation with GitHub Actions, ensuring continuous, secure, and automated deployment.
-
-Participating in technical planning, project architecture definition, and solution modeling, working with agile methodologies, especially Scrum, to ensure efficient and scalable deliveries.`
+                    description: 'Full-stack development with Next.js, C# and Java in microservices architecture. UI creation with Figma, dynamic reports, system integrations and CI/CD pipelines with GitHub Actions. Working with Scrum for technical planning and solution modeling.'
                 },
                 {
                     title: 'IT Assistant',
                     company: 'Titaniumfix',
                     period: 'Feb/2023 - Dec/2023',
                     location: 'São José dos Campos, SP',
-                    description: 'Assisted in software implementation (ERP) and process mapping to study and implement the system according to business rules. Worked directly with development and maintenance of company software using C#, JavaScript, and ReactJS. Also performed database queries and updates with SQL.'
+                    description: 'ERP implementation and process mapping. Development and maintenance of internal software with C#, JavaScript and ReactJS. SQL Server database queries and maintenance.'
                 }
             ]
         },
@@ -181,27 +213,47 @@ Participating in technical planning, project architecture definition, and soluti
             viewGithub: 'View on GitHub',
             items: {
                 redes: {
-                    title: 'Redes do vale',
-                    description: 'Institutional website developed for a safety net company, focused on simple navigation, clean visual, and direct service communication. The project reinforces trust and improved customer contact in the region.'
+                    title: 'Redes do Vale',
+                    description: 'Institutional website for a safety net company, with simple navigation, clean visual and direct service communication.'
                 },
                 twiniti: {
                     title: 'Twiniti Tech',
-                    description: 'Institutional website developed for a technology company specializing in custom software, focusing on innovation, performance, and clear presentation of services and cases.'
+                    description: 'Institutional website for a custom software company, focused on innovation and clear presentation of services.'
                 },
                 vitta: {
                     title: 'Vitta Ergonomic Solutions',
-                    description: 'Institutional website developed for an ergonomics company, with clean design, intuitive navigation, and focus on clear service presentation and client acquisition.'
+                    description: 'Institutional website for an ergonomics company, with clean design, intuitive navigation and focus on client acquisition.'
                 },
                 coffee: {
-                    title: 'Coffee Delivery (Front-end Study)',
-                    description: 'Coffee delivery site prototype focused on front-end study. Modern interface, responsive, good usability, attractive visuals, and detailed product presentation.'
+                    title: 'Coffee Delivery',
+                    description: 'Coffee e-commerce prototype with modern, responsive interface and detailed product presentation. Front-end study project.'
                 }
             }
         },
+        education: {
+            label: 'Education',
+            title: 'Academic Background',
+            subtitle: 'Education and qualifications',
+            degree: {
+                title: 'Computer Engineering',
+                institution: 'UNIP – Universidade Paulista',
+                period: "Bachelor's · Paused at 7th semester",
+                description: 'Strong foundation in programming logic, data structures, algorithms and technical problem-solving.'
+            },
+            coursesTitle: 'Courses & Certifications',
+            courses: [
+                { name: 'Discovery | Web Development', provider: 'Rocketseat' },
+                { name: 'Next.js Fundamentals', provider: 'Rocketseat' },
+                { name: 'HTTP & Performance', provider: 'Rocketseat' },
+                { name: 'Mastering Tailwind | React', provider: 'Rocketseat' },
+                { name: 'Figma for Devs', provider: 'Rocketseat' },
+            ]
+        },
         contact: {
             label: 'Contact',
-            title: 'Let\'s talk?',
-            subtitle: 'Open to new projects and opportunities',
+            title: 'Have a project in mind?',
+            subtitle: "Let's turn your idea into reality. I'm available for freelance projects and full-time opportunities.",
+            cta: 'Start a conversation',
             email: 'Email',
             whatsapp: 'Whatsapp',
             location: 'Location',
