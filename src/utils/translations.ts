@@ -17,7 +17,7 @@ export const translations = {
             tagline: 'Transformando ideias em interfaces modernas e funcionais',
             contactBtn: 'Contato',
             downloadCvBtn: 'Baixar CV',
-            downloadCvLink: '/CV_JoaoMachado.pdf'
+            downloadCvLink: '/CV_JoaoGabriel_PT.pdf'
         },
         about: {
             label: 'Sobre',
@@ -154,7 +154,7 @@ export const translations = {
             tagline: 'Transforming ideas into modern and functional interfaces',
             contactBtn: 'Contact Me',
             downloadCvBtn: 'Download CV',
-            downloadCvLink: '/CV_JoaoMachado_EN.pdf'
+            downloadCvLink: '/CV_JoaoGabriel_EN.pdf'
         },
         about: {
             label: 'About',
