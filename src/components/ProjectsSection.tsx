@@ -1,12 +1,15 @@
 import { ExternalLink, Github } from 'lucide-react';
 import { motion } from 'framer-motion';
+import metrificaImg from '@/assets/metrifica.webp';
 import redesDoValeImg from '@/assets/redes-do-vale.webp';
 import twinitiImg from '@/assets/twiniti.webp';
+import delpupoImg from '@/assets/delpupo-homes.webp';
+import coffeeImg from '@/assets/coffee.webp';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { translations } from '@/utils/translations';
 import { revealVariants, staggerContainer, staggerChild, viewportConfig } from '@/lib/motion';
 
-type ProjectKey = 'redes' | 'twiniti' | 'vitta' | 'coffee';
+type ProjectKey = 'metrifica' | 'redes' | 'twiniti' | 'delpupo' | 'coffee';
 
 const ProjectsSection = () => {
   const { language } = useLanguage();
@@ -18,6 +21,12 @@ const ProjectsSection = () => {
     technologies: string[];
     live: string;
   }[] = [
+    {
+      key: 'metrifica',
+      image: metrificaImg,
+      technologies: ['React', 'TypeScript', 'Supabase', 'TailwindCSS', 'PWA', 'jsPDF'],
+      live: 'https://metrifica.vercel.app/',
+    },
     {
       key: 'redes',
       image: redesDoValeImg,
@@ -31,14 +40,14 @@ const ProjectsSection = () => {
       live: 'https://www.twiniti.com.br/',
     },
     {
-      key: 'vitta',
-      image: '',
+      key: 'delpupo',
+      image: delpupoImg,
       technologies: ['React', 'Next.js', 'TypeScript', 'TailwindCSS'],
-      live: 'https://vittasolucoesergonomicas.com.br/',
+      live: 'https://www.delpupohomes.com/',
     },
     {
       key: 'coffee',
-      image: '',
+      image: coffeeImg,
       technologies: ['React', 'TailwindCSS', 'Vite'],
       live: 'https://coffee-delivery-two-murex.vercel.app/',
     },

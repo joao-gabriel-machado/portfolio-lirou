@@ -10,7 +10,10 @@ const assetsDir = path.resolve(__dirname, '../src/assets');
 const images = [
     'perfil.jpg',
     'redes-do-vale.png',
-    'twiniti.png'
+    'twiniti.png',
+    'metrifica.png',
+    'delpupo-homes.png',
+    'coffee.png'
 ];
 
 async function convertImages() {

@@ -28,10 +28,10 @@ export const translations = {
                 projects: 'Projetos Entregues',
                 technologies: 'Tecnologias'
             },
-            p1: 'Desenvolvedor Full-Stack com 3+ anos criando soluções completas e modernas.',
-            p2: 'Especialista em React, TypeScript e Tailwind CSS no front-end, e Java com Quarkus no back-end. Transformo designs em código limpo e performático, com foco em UX e arquitetura escalável.',
-            p3: 'Experiência sólida com Java me permite desenvolver APIs RESTful robustas, implementar padrões de design e garantir qualidade através de testes automatizados.',
-            p4: 'Busco sempre o equilíbrio entre design, performance e boas práticas. Movido por desafios e pela evolução constante em toda a stack de desenvolvimento.'
+            p1: 'Dev Full-Stack com 3+ anos construindo coisas de verdade — de sites institucionais a sistemas internos com microserviços.',
+            p2: 'No dia a dia trabalho com React, Next.js e TailwindCSS no front, e Java com Spring Boot e Quarkus no back. Gosto de pegar um design no Figma e transformar em algo que funciona bonito e rápido.',
+            p3: 'Tenho uma queda por UI bem feita. Não sou o dev que entrega "funciona mas é feio" — me importo com o detalhe visual tanto quanto com o código por trás.',
+            p4: 'Acredito que na era da IA, o diferencial está no **pensamento crítico**, na **visão de produto** e na capacidade de **resolver problemas reais**. Código virou commodity — o que importa é **comunicar**, **julgar** e usar a IA como **multiplicador**, não como muleta.'
         },
         techStack: {
             label: 'Tech Stack',
@@ -40,7 +40,8 @@ export const translations = {
             categories: {
                 frontend: 'Frontend',
                 backend: 'Backend',
-                tools: 'Ferramentas'
+                tools: 'Ferramentas',
+                ai: 'Ferramentas IA'
             }
         },
         experience: {
@@ -80,6 +81,10 @@ export const translations = {
             viewProject: 'Ver projeto',
             viewGithub: 'Ver mais no GitHub',
             items: {
+                metrifica: {
+                    title: 'Metrifica',
+                    description: 'Produto próprio — sistema de gestão e orçamentos inteligentes para quem trabalha com medidas. Cadastro de empreendimentos, plantas com medições automáticas em m², geração de orçamentos e recibos em PDF, com condições de pagamento flexíveis. PWA instalável.'
+                },
                 redes: {
                     title: 'Redes do Vale',
                     description: 'Site institucional para empresa de redes de proteção, com navegação simples, visual limpo e comunicação direta dos serviços.'
@@ -88,9 +93,9 @@ export const translations = {
                     title: 'Twiniti Tech',
                     description: 'Site institucional para empresa de tecnologia especializada em softwares sob medida, com foco em inovação e apresentação clara dos serviços.'
                 },
-                vitta: {
-                    title: 'Vitta Soluções Ergonômicas',
-                    description: 'Site institucional para empresa de ergonomia, com design limpo, navegação intuitiva e foco na captação de clientes.'
+                delpupo: {
+                    title: 'Delpupo Homes',
+                    description: 'Site institucional para construtora de luxo, com design premium, apresentação de empreendimentos e foco na experiência visual sofisticada.'
                 },
                 coffee: {
                     title: 'Coffee Delivery',
@@ -160,10 +165,10 @@ export const translations = {
                 projects: 'Projects Delivered',
                 technologies: 'Technologies'
             },
-            p1: 'Full-Stack Developer with 3+ years creating complete and modern solutions.',
-            p2: 'Specialist in React, TypeScript, and Tailwind CSS on the front-end, and Java with Quarkus on the back-end. I transform designs into clean and performant code, focusing on UX and scalable architecture.',
-            p3: 'Solid experience with Java allowing me to develop robust RESTful APIs, implement design patterns, and ensure quality through automated testing.',
-            p4: 'I always seek the balance between design, performance, and best practices. Driven by challenges and constant evolution across the entire development stack.'
+            p1: 'Full-Stack Dev with 3+ years building real things — from institutional websites to internal systems with microservices.',
+            p2: 'Day to day I work with React, Next.js and TailwindCSS on the front, and Java with Spring Boot and Quarkus on the back. I enjoy taking a Figma design and turning it into something that looks good and runs fast.',
+            p3: "I have a thing for well-crafted UI. I'm not the dev who delivers \"it works but it's ugly\" — I care about visual detail as much as the code behind it.",
+            p4: 'I believe that in the AI era, what sets a developer apart is **critical thinking**, **product vision** and the ability to **solve real problems**. Code became commodity — what matters is to **communicate**, **judge** and use AI as a **multiplier**, not a crutch.'
         },
         techStack: {
             label: 'Tech Stack',
@@ -172,7 +177,8 @@ export const translations = {
             categories: {
                 frontend: 'Frontend',
                 backend: 'Backend',
-                tools: 'Tools'
+                tools: 'Tools',
+                ai: 'AI Tools'
             }
         },
         experience: {
@@ -212,6 +218,10 @@ export const translations = {
             viewProject: 'View project',
             viewGithub: 'View on GitHub',
             items: {
+                metrifica: {
+                    title: 'Metrifica',
+                    description: 'Own product — smart management and budgeting system for professionals who work with measurements. Property registration, floor plans with automatic m² calculations, PDF budget and receipt generation with flexible payment terms. Installable PWA.'
+                },
                 redes: {
                     title: 'Redes do Vale',
                     description: 'Institutional website for a safety net company, with simple navigation, clean visual and direct service communication.'
@@ -220,9 +230,9 @@ export const translations = {
                     title: 'Twiniti Tech',
                     description: 'Institutional website for a custom software company, focused on innovation and clear presentation of services.'
                 },
-                vitta: {
-                    title: 'Vitta Ergonomic Solutions',
-                    description: 'Institutional website for an ergonomics company, with clean design, intuitive navigation and focus on client acquisition.'
+                delpupo: {
+                    title: 'Delpupo Homes',
+                    description: 'Institutional website for a luxury construction company, with premium design, property showcase and focus on a sophisticated visual experience.'
                 },
                 coffee: {
                     title: 'Coffee Delivery',

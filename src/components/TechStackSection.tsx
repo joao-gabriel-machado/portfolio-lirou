@@ -15,8 +15,10 @@ const techStack = {
   ],
   backend: [
     { name: 'Java', icon: '☕' },
+    { name: 'Spring Boot', icon: '🍃' },
     { name: 'Quarkus', icon: 'Q' },
     { name: 'C#', icon: 'C#' },
+    { name: 'Delphi', icon: 'D' },
     { name: 'Node.js', icon: 'N' },
     { name: 'SQL Server', icon: 'DB' },
     { name: 'REST APIs', icon: '{}' },
@@ -28,6 +30,12 @@ const techStack = {
     { name: 'Scrum', icon: '🔄' },
     { name: 'Docker', icon: '🐳' },
   ],
+  ai: [
+    { name: 'Claude Code', icon: '🤖' },
+    { name: 'Lovable', icon: '💜' },
+    { name: 'Antigravity', icon: '🚀' },
+    { name: 'Gemini Code', icon: '✦' },
+  ],
 };
 
 const TechStackSection = () => {
@@ -38,6 +46,7 @@ const TechStackSection = () => {
     { key: 'frontend' as const, label: t.categories.frontend, items: techStack.frontend },
     { key: 'backend' as const, label: t.categories.backend, items: techStack.backend },
     { key: 'tools' as const, label: t.categories.tools, items: techStack.tools },
+    { key: 'ai' as const, label: t.categories.ai, items: techStack.ai },
   ];
 
   return (
@@ -82,12 +91,13 @@ const TechStackSection = () => {
                   initial="hidden"
                   whileInView="visible"
                   viewport={viewportConfig}
-                  className="flex flex-wrap justify-center gap-3"
+                  className="flex flex-wrap justify-center gap-3 max-w-4xl mx-auto"
                 >
                   {category.items.map((tech) => (
                     <motion.div
                       key={tech.name}
                       variants={staggerChild}
+                      className="w-[calc(20%-0.6rem)] min-w-[140px]"
                     >
                       <motion.div
                         whileHover={{ y: -4, scale: 1.05 }}
@@ -95,7 +105,7 @@ const TechStackSection = () => {
                         className="card-outer group glow-primary-hover transition-shadow duration-300"
                       >
                         <div className="card-inner !p-0">
-                          <div className="flex items-center gap-3 px-5 py-3">
+                          <div className="flex items-center gap-3 px-5 py-3 justify-center">
                             <span className="text-lg w-7 text-center font-mono text-primary/70 group-hover:text-primary transition-colors duration-200 select-none">
                               {tech.icon}
                             </span>

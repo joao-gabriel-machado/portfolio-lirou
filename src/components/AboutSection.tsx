@@ -5,6 +5,22 @@ import { translations } from '@/utils/translations';
 import { revealVariants, staggerContainer, staggerChild, viewportConfig } from '@/lib/motion';
 import perfilImg from '@/assets/perfil.webp';
 
+/** Parses **bold** markers into <span> with primary color */
+const HighlightedText = ({ text, className }: { text: string; className?: string }) => {
+  const parts = text.split(/\*\*(.*?)\*\*/g);
+  return (
+    <p className={className}>
+      {parts.map((part, i) =>
+        i % 2 === 1 ? (
+          <span key={i} className="text-primary font-semibold">{part}</span>
+        ) : (
+          <span key={i}>{part}</span>
+        )
+      )}
+    </p>
+  );
+};
+
 const AboutSection = () => {
   const { language } = useLanguage();
   const t = translations[language].about;
@@ -74,9 +90,10 @@ const AboutSection = () => {
                 <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
                   {t.p3}
                 </p>
-                <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-                  {t.p4}
-                </p>
+                <HighlightedText
+                  text={t.p4}
+                  className="text-sm md:text-base text-muted-foreground leading-relaxed border-l-2 border-primary/30 pl-4"
+                />
               </div>
             </div>
           </motion.div>
