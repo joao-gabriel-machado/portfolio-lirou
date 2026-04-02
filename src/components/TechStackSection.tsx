@@ -21,10 +21,13 @@ const techStack = {
     { name: 'Delphi', icon: 'D' },
     { name: 'Node.js', icon: 'N' },
     { name: 'SQL Server', icon: 'DB' },
+    { name: 'MySQL', icon: '🐬' },
+    { name: 'PostgreSQL', icon: '🐘' },
     { name: 'REST APIs', icon: '{}' },
   ],
   tools: [
     { name: 'Git', icon: '⎇' },
+    { name: 'Supabase', icon: '⚡' },
     { name: 'GitHub Actions', icon: 'CI' },
     { name: 'Figma', icon: 'F' },
     { name: 'Scrum', icon: '🔄' },
