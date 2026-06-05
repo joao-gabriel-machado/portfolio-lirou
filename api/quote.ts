@@ -193,10 +193,28 @@ async function sendToSheet(data: QuoteFormData) {
   const url = process.env.SHEETS_WEBHOOK_URL;
   if (!url) return; // disabled when no webhook configured
 
+  // Send human-readable labels (same as the email) instead of raw codes.
+  const o = translations[data.locale].quote.options;
+  const payload = {
+    submittedAt: new Date().toISOString(),
+    projectType: o.projectType[data.projectType] ?? data.projectType,
+    scope: data.scope.map((s) => o.scope[s] ?? s),
+    design: o.design[data.design] ?? data.design,
+    timeline: o.timeline[data.timeline] ?? data.timeline,
+    budget: data.budget ? o.budget[data.budget] : '',
+    references: data.references || '',
+    name: data.name,
+    email: data.email,
+    whatsapp: data.whatsapp,
+    company: data.company || '',
+    message: data.message || '',
+    locale: data.locale === 'pt' ? 'Português' : 'English',
+  };
+
   const resp = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ ...data, submittedAt: new Date().toISOString() }),
+    body: JSON.stringify(payload),
   });
   if (!resp.ok) throw new Error(`Sheet webhook responded ${resp.status}`);
 }
