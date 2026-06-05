@@ -83,36 +83,99 @@ async function sendEmail(data: QuoteFormData) {
   const timeline = o.timeline[data.timeline] ?? data.timeline;
   const budget = data.budget ? o.budget[data.budget] : '—';
 
-  const rows: [string, string][] = [
+  // Build a clickable WhatsApp link (assume BR if no country code present).
+  const waDigits = data.whatsapp.replace(/\D/g, '');
+  const waLink = `https://wa.me/${waDigits.length <= 11 ? '55' + waDigits : waDigits}`;
+  const companyLine = data.company
+    ? `<span style="color:#6b7177;font-weight:500;"> · ${escapeHtml(data.company)}</span>`
+    : '';
+
+  // Only the project details go in the table; the contact lives in the hero.
+  const details: [string, string][] = [
     ['Tipo de projeto', projectType],
     ['Funcionalidades', scope],
     ['Design', design],
     ['Prazo', timeline],
     ['Investimento', budget],
     ['Referências', data.references || '—'],
-    ['Nome', data.name],
-    ['E-mail', data.email],
-    ['WhatsApp', data.whatsapp],
-    ['Empresa', data.company || '—'],
     ['Mensagem', data.message || '—'],
   ];
 
-  const html = `
-    <div style="font-family: -apple-system, Segoe UI, Roboto, sans-serif; max-width: 560px; margin: 0 auto; color: #1a1a1a;">
-      <h2 style="margin: 0 0 4px;">Novo pedido de orçamento</h2>
-      <p style="margin: 0 0 20px; color: #666;">Enviado pelo formulário do portfólio.</p>
-      <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
-        ${rows
-          .map(
-            ([label, value]) => `
+  const detailRows = details
+    .map(
+      ([label, value]) => `
           <tr>
-            <td style="padding: 10px 12px; background: #f5f5f5; border: 1px solid #eee; font-weight: 600; white-space: nowrap; vertical-align: top;">${label}</td>
-            <td style="padding: 10px 12px; border: 1px solid #eee;">${escapeHtml(value)}</td>
+            <td bgcolor="#ffffff" style="padding:13px 16px;border-bottom:1px solid #eef0f2;color:#8a9097;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;white-space:nowrap;vertical-align:top;">${label}</td>
+            <td bgcolor="#ffffff" style="padding:13px 16px;border-bottom:1px solid #eef0f2;color:#16191d;font-size:14px;line-height:1.5;vertical-align:top;">${escapeHtml(value)}</td>
           </tr>`
-          )
-          .join('')}
-      </table>
-    </div>`;
+    )
+    .join('');
+
+  const html = `<!DOCTYPE html>
+<html lang="${data.locale}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="supported-color-schemes" content="light">
+  <style>
+    :root { color-scheme: light; supported-color-schemes: light; }
+  </style>
+</head>
+<body style="margin:0;padding:0;background:#eef0f3;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#eef0f3" style="background:#eef0f3;padding:32px 12px;">
+      <tr><td align="center">
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:100%;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;">
+
+          <!-- Brand bar -->
+          <tr><td style="padding:0 4px 18px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
+              <td align="left" style="color:#16191d;font-size:14px;font-weight:700;letter-spacing:0.02em;">
+                <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#12a89f;"></span>
+                &nbsp;LirouDev
+              </td>
+              <td align="right" style="color:#0e9b93;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.18em;">Novo orçamento</td>
+            </tr></table>
+          </td></tr>
+
+          <!-- Hero: client name + contact (destaque) -->
+          <tr><td bgcolor="#ffffff" style="background:#ffffff;border:1px solid #e3e6ea;border-left:3px solid #12a89f;border-radius:12px;padding:24px;">
+            <p style="margin:0 0 6px;color:#8a9097;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.16em;">Cliente</p>
+            <p style="margin:0 0 18px;color:#16191d;font-size:24px;font-weight:700;line-height:1.2;">${escapeHtml(data.name)}${companyLine}</p>
+            <table role="presentation" cellpadding="0" cellspacing="0"><tr>
+              <td style="padding-right:10px;">
+                <a href="mailto:${escapeHtml(data.email)}" style="display:inline-block;background:#12a89f;color:#ffffff;font-size:13px;font-weight:700;text-decoration:none;padding:10px 18px;border-radius:999px;">Responder e-mail</a>
+              </td>
+              <td>
+                <a href="${waLink}" style="display:inline-block;background:#ffffff;color:#0e9b93;font-size:13px;font-weight:700;text-decoration:none;padding:10px 18px;border-radius:999px;border:1px solid #bfe7e4;">WhatsApp</a>
+              </td>
+            </tr></table>
+            <p style="margin:16px 0 0;font-size:13px;color:#6b7177;line-height:1.6;">
+              <a href="mailto:${escapeHtml(data.email)}" style="color:#3f464c;text-decoration:none;">${escapeHtml(data.email)}</a>
+              &nbsp;·&nbsp;
+              <a href="${waLink}" style="color:#3f464c;text-decoration:none;">${escapeHtml(data.whatsapp)}</a>
+            </p>
+          </td></tr>
+
+          <tr><td style="height:16px;line-height:16px;">&nbsp;</td></tr>
+
+          <!-- Project details -->
+          <tr><td>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#ffffff" style="background:#ffffff;border:1px solid #e3e6ea;border-radius:12px;overflow:hidden;">
+              ${detailRows}
+            </table>
+          </td></tr>
+
+          <!-- Footer -->
+          <tr><td style="padding:22px 4px 0;color:#9aa0a6;font-size:11px;line-height:1.6;">
+            Enviado pelo formulário de orçamento do portfólio · liroudev
+          </td></tr>
+
+        </table>
+      </td></tr>
+    </table>
+</body>
+</html>`;
 
   const { error } = await resend.emails.send({
     from,
