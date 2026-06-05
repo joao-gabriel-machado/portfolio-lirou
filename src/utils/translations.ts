@@ -15,6 +15,7 @@ export const translations = {
             role: 'Full-Stack Developer',
             greeting: 'Olá, meu nome é João Gabriel',
             tagline: 'Transformando ideias em interfaces modernas e funcionais',
+            quoteBtn: 'Peça um orçamento',
             contactBtn: 'Contato',
             downloadCvBtn: 'Baixar CV',
             downloadCvLink: '/CV_JoaoGabriel_PT.pdf'
@@ -127,6 +128,7 @@ export const translations = {
             title: 'Tem um projeto em mente?',
             subtitle: 'Vamos transformar sua ideia em realidade. Estou disponível para projetos freelance e oportunidades CLT.',
             cta: 'Iniciar conversa',
+            quoteCta: 'Peça um orçamento',
             email: 'Email',
             whatsapp: 'Whatsapp',
             location: 'Localização',
@@ -134,6 +136,136 @@ export const translations = {
         },
         whatsapp: {
             tooltip: 'Vamos conversar?'
+        },
+        quote: {
+            meta: {
+                title: 'Solicitar orçamento',
+                backToSite: 'Voltar ao site',
+                seo: 'Orçamento de sites e sistemas — João Gabriel'
+            },
+            nav: {
+                back: 'Voltar',
+                next: 'Continuar',
+                send: 'Enviar orçamento',
+                sending: 'Enviando...'
+            },
+            progress: 'Passo {current} de {total}',
+            steps: {
+                type: {
+                    title: 'Que tipo de projeto você precisa?',
+                    subtitle: 'Escolha a opção que mais se aproxima.'
+                },
+                scope: {
+                    title: 'O que ele precisa ter?',
+                    subtitle: 'Selecione as funcionalidades (pode marcar várias ou nenhuma).'
+                },
+                design: {
+                    title: 'Como está o design?',
+                    subtitle: 'Isso me ajuda a entender o ponto de partida.',
+                    refsLabel: 'Links de referência (opcional)',
+                    refsPlaceholder: 'Sites, Figma, Behance, concorrentes que você curte...'
+                },
+                timeline: {
+                    title: 'Prazo e investimento',
+                    subtitle: 'Sem compromisso — só pra alinhar expectativas.',
+                    timelineLabel: 'Prazo desejado',
+                    budgetLabel: 'Faixa de investimento (opcional)'
+                },
+                contact: {
+                    title: 'Como falo com você?',
+                    subtitle: 'Vou usar isso só pra responder seu orçamento.',
+                    name: 'Nome',
+                    namePlaceholder: 'Seu nome',
+                    email: 'E-mail',
+                    emailPlaceholder: 'voce@email.com',
+                    whatsapp: 'WhatsApp',
+                    whatsappPlaceholder: '(12) 99999-9999',
+                    company: 'Empresa (opcional)',
+                    companyPlaceholder: 'Nome da sua empresa'
+                },
+                review: {
+                    title: 'Quase lá! Confira tudo',
+                    subtitle: 'Revise os dados antes de enviar.',
+                    messageLabel: 'Quer adicionar algo? (opcional)',
+                    messagePlaceholder: 'Detalhes, contexto, alguma dúvida...',
+                    edit: 'Editar',
+                    type: 'Tipo de projeto',
+                    scope: 'Funcionalidades',
+                    design: 'Design',
+                    timeline: 'Prazo',
+                    budget: 'Investimento',
+                    contact: 'Contato',
+                    empty: 'Não informado'
+                }
+            },
+            options: {
+                projectType: {
+                    institutional: 'Site institucional',
+                    landing: 'Landing page',
+                    ecommerce: 'E-commerce',
+                    system: 'Sistema web / SaaS',
+                    app: 'Aplicativo',
+                    other: 'Outro'
+                },
+                projectTypeDesc: {
+                    institutional: 'Presença online da sua empresa',
+                    landing: 'Página única focada em conversão',
+                    ecommerce: 'Loja virtual com vendas online',
+                    system: 'Plataforma com login e regras de negócio',
+                    app: 'Aplicação mobile ou web app',
+                    other: 'Me conte o que tem em mente'
+                },
+                scope: {
+                    auth: 'Login / cadastro de usuários',
+                    admin: 'Painel administrativo',
+                    payments: 'Pagamentos / checkout',
+                    dashboard: 'Dashboard / relatórios',
+                    blog: 'Blog / conteúdo',
+                    cms: 'Gerenciador de conteúdo (CMS)',
+                    multilang: 'Multi-idioma',
+                    integrations: 'Integrações / APIs externas',
+                    chat: 'Chat / atendimento',
+                    seo: 'SEO / performance',
+                    responsive: 'Responsivo (mobile)',
+                    animations: 'Animações / interações'
+                },
+                design: {
+                    has_figma: 'Já tenho o design pronto (Figma)',
+                    has_brand: 'Tenho identidade visual, mas não o design',
+                    from_scratch: 'Preciso criar tudo do zero'
+                },
+                timeline: {
+                    urgent: 'Urgente (menos de 1 mês)',
+                    '1to3': '1 a 3 meses',
+                    '3to6': '3 a 6 meses',
+                    flexible: 'Flexível / sem pressa'
+                },
+                budget: {
+                    undecided: 'Ainda não sei / prefiro conversar',
+                    lt5: 'Até R$ 5 mil',
+                    '5to15': 'R$ 5 mil – 15 mil',
+                    '15to30': 'R$ 15 mil – 30 mil',
+                    gt30: 'Acima de R$ 30 mil'
+                }
+            },
+            validation: {
+                required: 'Campo obrigatório',
+                selectOne: 'Selecione uma opção',
+                nameMin: 'Informe seu nome',
+                email: 'E-mail inválido',
+                whatsapp: 'Informe um WhatsApp válido',
+                tooLong: 'Texto muito longo'
+            },
+            success: {
+                title: 'Orçamento enviado! 🎉',
+                subtitle: 'Recebi seu pedido e respondo em breve, geralmente em até 24h.',
+                cta: 'Voltar ao site'
+            },
+            error: {
+                title: 'Ops, algo deu errado',
+                subtitle: 'Não consegui enviar agora. Tente de novo ou fale comigo no WhatsApp.',
+                retry: 'Tentar novamente'
+            }
         }
     },
     en: {
@@ -152,6 +284,7 @@ export const translations = {
             role: 'Full-Stack Developer',
             greeting: 'Hello, I am João Gabriel',
             tagline: 'Transforming ideas into modern and functional interfaces',
+            quoteBtn: 'Request a quote',
             contactBtn: 'Contact Me',
             downloadCvBtn: 'Download CV',
             downloadCvLink: '/CV_JoaoGabriel_EN.pdf'
@@ -264,6 +397,7 @@ export const translations = {
             title: 'Have a project in mind?',
             subtitle: "Let's turn your idea into reality. I'm available for freelance projects and full-time opportunities.",
             cta: 'Start a conversation',
+            quoteCta: 'Request a quote',
             email: 'Email',
             whatsapp: 'Whatsapp',
             location: 'Location',
@@ -271,6 +405,136 @@ export const translations = {
         },
         whatsapp: {
             tooltip: 'Let\'s chat?'
+        },
+        quote: {
+            meta: {
+                title: 'Request a quote',
+                backToSite: 'Back to site',
+                seo: 'Website & system quote — João Gabriel'
+            },
+            nav: {
+                back: 'Back',
+                next: 'Continue',
+                send: 'Send request',
+                sending: 'Sending...'
+            },
+            progress: 'Step {current} of {total}',
+            steps: {
+                type: {
+                    title: 'What kind of project do you need?',
+                    subtitle: 'Pick the closest option.'
+                },
+                scope: {
+                    title: 'What should it have?',
+                    subtitle: 'Select the features (pick several or none).'
+                },
+                design: {
+                    title: 'How about the design?',
+                    subtitle: 'This helps me understand the starting point.',
+                    refsLabel: 'Reference links (optional)',
+                    refsPlaceholder: 'Sites, Figma, Behance, competitors you like...'
+                },
+                timeline: {
+                    title: 'Timeline and budget',
+                    subtitle: 'No commitment — just to align expectations.',
+                    timelineLabel: 'Desired timeline',
+                    budgetLabel: 'Budget range (optional)'
+                },
+                contact: {
+                    title: 'How can I reach you?',
+                    subtitle: "I'll only use this to reply to your request.",
+                    name: 'Name',
+                    namePlaceholder: 'Your name',
+                    email: 'Email',
+                    emailPlaceholder: 'you@email.com',
+                    whatsapp: 'WhatsApp',
+                    whatsappPlaceholder: '+55 12 99999-9999',
+                    company: 'Company (optional)',
+                    companyPlaceholder: 'Your company name'
+                },
+                review: {
+                    title: 'Almost there! Review everything',
+                    subtitle: 'Check your details before sending.',
+                    messageLabel: 'Anything to add? (optional)',
+                    messagePlaceholder: 'Details, context, any questions...',
+                    edit: 'Edit',
+                    type: 'Project type',
+                    scope: 'Features',
+                    design: 'Design',
+                    timeline: 'Timeline',
+                    budget: 'Budget',
+                    contact: 'Contact',
+                    empty: 'Not provided'
+                }
+            },
+            options: {
+                projectType: {
+                    institutional: 'Institutional website',
+                    landing: 'Landing page',
+                    ecommerce: 'E-commerce',
+                    system: 'Web system / SaaS',
+                    app: 'Application',
+                    other: 'Other'
+                },
+                projectTypeDesc: {
+                    institutional: 'Your company online presence',
+                    landing: 'Single page focused on conversion',
+                    ecommerce: 'Online store with sales',
+                    system: 'Platform with login and business rules',
+                    app: 'Mobile app or web app',
+                    other: 'Tell me what you have in mind'
+                },
+                scope: {
+                    auth: 'User login / signup',
+                    admin: 'Admin panel',
+                    payments: 'Payments / checkout',
+                    dashboard: 'Dashboard / reports',
+                    blog: 'Blog / content',
+                    cms: 'Content manager (CMS)',
+                    multilang: 'Multi-language',
+                    integrations: 'Integrations / external APIs',
+                    chat: 'Chat / support',
+                    seo: 'SEO / performance',
+                    responsive: 'Responsive (mobile)',
+                    animations: 'Animations / interactions'
+                },
+                design: {
+                    has_figma: 'I already have the design (Figma)',
+                    has_brand: 'I have branding, but not the design',
+                    from_scratch: 'I need everything from scratch'
+                },
+                timeline: {
+                    urgent: 'Urgent (less than 1 month)',
+                    '1to3': '1 to 3 months',
+                    '3to6': '3 to 6 months',
+                    flexible: 'Flexible / no rush'
+                },
+                budget: {
+                    undecided: "Not sure yet / let's talk",
+                    lt5: 'Up to $1k',
+                    '5to15': '$1k – $3k',
+                    '15to30': '$3k – $6k',
+                    gt30: 'Above $6k'
+                }
+            },
+            validation: {
+                required: 'Required field',
+                selectOne: 'Select an option',
+                nameMin: 'Enter your name',
+                email: 'Invalid email',
+                whatsapp: 'Enter a valid WhatsApp',
+                tooLong: 'Text too long'
+            },
+            success: {
+                title: 'Request sent! 🎉',
+                subtitle: 'I got your request and will reply soon, usually within 24h.',
+                cta: 'Back to site'
+            },
+            error: {
+                title: 'Oops, something went wrong',
+                subtitle: "I couldn't send it right now. Try again or reach me on WhatsApp.",
+                retry: 'Try again'
+            }
         }
     }
 };

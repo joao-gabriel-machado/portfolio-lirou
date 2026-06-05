@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Download, Mail } from 'lucide-react';
+import { Download, Mail, FileText } from 'lucide-react';
 import Spotlight from '@/components/ui/Spotlight';
 import MeshGradient from '@/components/ui/MeshGradient';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { translations } from '@/utils/translations';
 
 const ease = [0.16, 1, 0.3, 1] as const;
+
+const MotionLink = motion(Link);
 
 // Characters to cycle through during decode
 const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%&*!?<>/';
@@ -219,14 +222,24 @@ const HeroSection = () => {
             transition={{ duration: 0.6, ease, delay: 2.2 }}
             className="flex flex-col sm:flex-row gap-4 justify-center"
           >
-            <motion.a
-              href="#contact"
+            <MotionLink
+              to="/orcamento"
               whileHover={{
                 scale: 1.05,
                 boxShadow: '0 0 40px hsl(178 70% 41% / 0.35)',
               }}
               whileTap={{ scale: 0.96 }}
               className="inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-full bg-primary text-primary-foreground font-semibold text-sm transition-colors duration-200 hover:bg-primary/90"
+            >
+              <FileText className="w-4 h-4" />
+              {t.quoteBtn}
+            </MotionLink>
+
+            <motion.a
+              href="#contact"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.96 }}
+              className="inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-full border border-white/10 text-foreground font-semibold text-sm glass hover:border-primary/30 transition-all duration-200"
             >
               <Mail className="w-4 h-4" />
               {t.contactBtn}

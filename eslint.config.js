@@ -23,4 +23,11 @@ export default tseslint.config(
       "@typescript-eslint/no-unused-vars": "off",
     },
   },
+  {
+    // Serverless functions run on Node, not the browser.
+    files: ["api/**/*.ts"],
+    languageOptions: {
+      globals: globals.node,
+    },
+  },
 );

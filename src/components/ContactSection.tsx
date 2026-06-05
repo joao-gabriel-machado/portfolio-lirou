@@ -1,8 +1,11 @@
-import { Mail, Phone, MapPin, Github, Linkedin, Instagram, ArrowUpRight, MessageCircle } from 'lucide-react';
+import { Mail, Phone, MapPin, Github, Linkedin, Instagram, ArrowUpRight, MessageCircle, FileText } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { translations } from '@/utils/translations';
 import { revealVariants, staggerContainer, staggerChild, viewportConfig } from '@/lib/motion';
+
+const MotionLink = motion(Link);
 
 const ContactSection = () => {
   const { language } = useLanguage();
@@ -64,10 +67,8 @@ const ContactSection = () => {
                   </p>
 
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <motion.a
-                      href="https://wa.me/5512987083178"
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <MotionLink
+                      to="/orcamento"
                       whileHover={{
                         scale: 1.05,
                         boxShadow: '0 0 40px hsl(178 70% 41% / 0.35)',
@@ -75,17 +76,19 @@ const ContactSection = () => {
                       whileTap={{ scale: 0.96 }}
                       className="inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-full bg-primary text-primary-foreground font-semibold text-sm transition-colors duration-200 hover:bg-primary/90"
                     >
-                      <MessageCircle className="w-4 h-4" />
-                      {t.cta}
-                    </motion.a>
+                      <FileText className="w-4 h-4" />
+                      {t.quoteCta}
+                    </MotionLink>
                     <motion.a
-                      href="mailto:jgomachado@hotmail.com"
+                      href="https://wa.me/5512987083178"
+                      target="_blank"
+                      rel="noopener noreferrer"
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.96 }}
                       className="inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-full border border-white/10 text-foreground font-semibold text-sm glass hover:border-primary/30 transition-all duration-200"
                     >
-                      <Mail className="w-4 h-4" />
-                      Email
+                      <MessageCircle className="w-4 h-4" />
+                      {t.cta}
                     </motion.a>
                   </div>
                 </div>
