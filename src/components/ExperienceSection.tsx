@@ -10,7 +10,7 @@ const ExperienceSection = () => {
 
   const experienceAssets = [
     {
-      technologies: ["Java", 'React', 'Next.js', 'Figma', 'UI/UX', 'TailwindCSS', "Quarkus", "Prototipagem"],
+      technologies: ['Java', 'Quarkus', 'Spring Boot', 'Microserviços', 'Delphi', 'Docker', 'Claude Code', 'REST APIs'],
       current: true,
     },
     {

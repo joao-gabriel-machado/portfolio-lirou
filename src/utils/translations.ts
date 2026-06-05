@@ -53,11 +53,11 @@ export const translations = {
             technologies: 'Tecnologias:',
             list: [
                 {
-                    title: 'Freelancer',
-                    company: 'Autônomo',
-                    period: 'Jan/2024 - Presente',
+                    title: 'Desenvolvedor Full-Stack',
+                    company: 'Twiniti',
+                    period: 'Mai/2024 - Presente',
                     location: 'Remoto',
-                    description: 'Desenvolvedor Full-Stack especializado na criação de soluções web completas. Utilizo Java para construir back-ends robustos e Next.js para desenvolver interfaces de usuário modernas e performáticas.'
+                    description: 'Desenvolvimento back-end e full-stack em arquitetura de microserviços com Java, Quarkus e Spring Boot, além da manutenção e evolução de sistemas legados em Delphi. Atuação em diversos projetos com containerização via Docker e uso de IA (Claude Code) como ferramenta de produtividade no dia a dia de desenvolvimento.'
                 },
                 {
                     title: 'Desenvolvedor de Software',
@@ -322,11 +322,11 @@ export const translations = {
             technologies: 'Technologies:',
             list: [
                 {
-                    title: 'Freelancer',
-                    company: 'Self-employed',
-                    period: 'Jan/2024 - Present',
+                    title: 'Full-Stack Developer',
+                    company: 'Twiniti',
+                    period: 'May/2024 - Present',
                     location: 'Remote',
-                    description: 'Full-Stack Developer specialized in creating complete web solutions. I use Java to build robust back-ends and Next.js to develop modern and performant user interfaces.'
+                    description: 'Back-end and full-stack development in a microservices architecture with Java, Quarkus and Spring Boot, plus maintenance and evolution of legacy systems in Delphi. Working across multiple projects with Docker containerization and AI (Claude Code) as a daily development productivity tool.'
                 },
                 {
                     title: 'Software Developer',
