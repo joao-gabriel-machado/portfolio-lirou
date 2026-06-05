@@ -266,6 +266,15 @@ export const translations = {
                 subtitle: 'Não consegui enviar agora. Tente de novo ou fale comigo no WhatsApp.',
                 retry: 'Tentar novamente'
             }
+        },
+        links: {
+            role: 'Desenvolvedor Full-Stack',
+            tagline: 'Transformo ideias em sites e sistemas modernos.',
+            portfolio: 'Ver portfólio',
+            portfolioDesc: 'Conheça meus projetos e trajetória',
+            quote: 'Fazer um orçamento',
+            quoteDesc: 'Conte seu projeto e receba uma proposta',
+            seo: 'João Gabriel | Links'
         }
     },
     en: {
@@ -535,6 +544,15 @@ export const translations = {
                 subtitle: "I couldn't send it right now. Try again or reach me on WhatsApp.",
                 retry: 'Try again'
             }
+        },
+        links: {
+            role: 'Full-Stack Developer',
+            tagline: 'I turn ideas into modern websites and systems.',
+            portfolio: 'View portfolio',
+            portfolioDesc: 'See my projects and background',
+            quote: 'Request a quote',
+            quoteDesc: 'Tell me about your project and get a proposal',
+            seo: 'João Gabriel | Links'
         }
     }
 };
