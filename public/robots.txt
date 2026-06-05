@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://joao-gabriel-machado.github.io/sitemap.xml
+Sitemap: https://portfolio-liroudev.vercel.app/sitemap.xml
