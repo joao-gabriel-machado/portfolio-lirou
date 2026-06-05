@@ -1,16 +1,91 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { Resend } from 'resend';
-import { createQuoteSchema, type QuoteFormData } from '../src/lib/quoteSchema';
-import { translations } from '../src/utils/translations';
+import { z } from 'zod';
 
 /**
- * POST /api/quote — receives a quote request, validates it (same zod schema as
- * the frontend), then fans out to Resend (email) and an optional Google Sheets
- * webhook in parallel. Email is the primary channel: if it fails we report an
- * error; if only the sheet fails we still succeed (the lead isn't lost).
+ * POST /api/quote — receives a quote request, validates it, then fans out to
+ * Resend (email) and an optional Google Sheets webhook in parallel. Email is
+ * the primary channel: if it fails we report an error; if only the sheet fails
+ * we still succeed (the lead isn't lost).
+ *
+ * NOTE: this file is intentionally self-contained (no imports from ../src).
+ * Vercel compiles each api/* file as an ESM function and cannot resolve
+ * extensionless relative imports to files outside api/. The schema + option
+ * labels below mirror src/lib/quoteSchema.ts and src/utils/translations.ts —
+ * keep them in sync if those change.
  */
 
-// Best-effort in-memory rate limit (resets on cold start; not a hard guarantee).
+// ── Validation schema (server-side mirror of the frontend) ────────────
+const PROJECT_TYPES = ['institutional', 'landing', 'ecommerce', 'system', 'app', 'other'] as const;
+const SCOPE_OPTIONS = [
+  'auth', 'admin', 'payments', 'dashboard', 'blog', 'cms',
+  'multilang', 'integrations', 'chat', 'seo', 'responsive', 'animations',
+] as const;
+const DESIGN_OPTIONS = ['has_figma', 'has_brand', 'from_scratch'] as const;
+const TIMELINE_OPTIONS = ['urgent', '1to3', '3to6', 'flexible'] as const;
+const BUDGET_OPTIONS = ['undecided', 'lt5', '5to15', '15to30', 'gt30'] as const;
+
+const schema = z.object({
+  projectType: z.enum(PROJECT_TYPES),
+  scope: z.array(z.enum(SCOPE_OPTIONS)).default([]),
+  design: z.enum(DESIGN_OPTIONS),
+  references: z.string().trim().max(2000).optional().or(z.literal('')),
+  timeline: z.enum(TIMELINE_OPTIONS),
+  budget: z.enum(BUDGET_OPTIONS).optional(),
+  name: z.string().trim().min(2).max(120),
+  email: z.string().trim().min(1).email().max(200),
+  whatsapp: z.string().trim().min(8).max(40),
+  company: z.string().trim().max(160).optional().or(z.literal('')),
+  message: z.string().trim().max(2000).optional().or(z.literal('')),
+  locale: z.enum(['pt', 'en']).default('pt'),
+  _honeypot: z.string().max(0).optional().or(z.literal('')),
+});
+
+type QuoteFormData = z.infer<typeof schema>;
+
+// ── Human-readable labels (mirror of translations.ts options) ─────────
+const LABELS = {
+  pt: {
+    projectType: {
+      institutional: 'Site institucional', landing: 'Landing page', ecommerce: 'E-commerce',
+      system: 'Sistema web / SaaS', app: 'Aplicativo', other: 'Outro',
+    },
+    scope: {
+      auth: 'Login / cadastro de usuários', admin: 'Painel administrativo', payments: 'Pagamentos / checkout',
+      dashboard: 'Dashboard / relatórios', blog: 'Blog / conteúdo', cms: 'Gerenciador de conteúdo (CMS)',
+      multilang: 'Multi-idioma', integrations: 'Integrações / APIs externas', chat: 'Chat / atendimento',
+      seo: 'SEO / performance', responsive: 'Responsivo (mobile)', animations: 'Animações / interações',
+    },
+    design: {
+      has_figma: 'Já tenho o design pronto (Figma)', has_brand: 'Tenho identidade visual, mas não o design',
+      from_scratch: 'Preciso criar tudo do zero',
+    },
+    timeline: { urgent: 'Urgente (menos de 1 mês)', '1to3': '1 a 3 meses', '3to6': '3 a 6 meses', flexible: 'Flexível / sem pressa' },
+    budget: { undecided: 'Ainda não sei / prefiro conversar', lt5: 'Até R$ 5 mil', '5to15': 'R$ 5 mil – 15 mil', '15to30': 'R$ 15 mil – 30 mil', gt30: 'Acima de R$ 30 mil' },
+    localeName: 'Português',
+  },
+  en: {
+    projectType: {
+      institutional: 'Institutional website', landing: 'Landing page', ecommerce: 'E-commerce',
+      system: 'Web system / SaaS', app: 'Application', other: 'Other',
+    },
+    scope: {
+      auth: 'User login / signup', admin: 'Admin panel', payments: 'Payments / checkout',
+      dashboard: 'Dashboard / reports', blog: 'Blog / content', cms: 'Content manager (CMS)',
+      multilang: 'Multi-language', integrations: 'Integrations / external APIs', chat: 'Chat / support',
+      seo: 'SEO / performance', responsive: 'Responsive (mobile)', animations: 'Animations / interactions',
+    },
+    design: {
+      has_figma: 'I already have the design (Figma)', has_brand: 'I have branding, but not the design',
+      from_scratch: 'I need everything from scratch',
+    },
+    timeline: { urgent: 'Urgent (less than 1 month)', '1to3': '1 to 3 months', '3to6': '3 to 6 months', flexible: 'Flexible / no rush' },
+    budget: { undecided: "Not sure yet / let's talk", lt5: 'Up to $1k', '5to15': '$1k – $3k', '15to30': '$3k – $6k', gt30: 'Above $6k' },
+    localeName: 'English',
+  },
+} as const;
+
+// ── Best-effort in-memory rate limit (resets on cold start) ───────────
 const hits = new Map<string, { count: number; ts: number }>();
 const WINDOW_MS = 60_000;
 const MAX_PER_WINDOW = 5;
@@ -25,8 +100,6 @@ function isRateLimited(ip: string): boolean {
   rec.count += 1;
   return rec.count > MAX_PER_WINDOW;
 }
-
-const schema = createQuoteSchema();
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
@@ -58,7 +131,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(502).json({ ok: false, error: 'email_failed' });
   }
   if (sheet.status === 'rejected') {
-    // Non-fatal: the email already went out.
     console.error('Sheets webhook failed (non-fatal):', sheet.reason);
   }
 
@@ -75,13 +147,13 @@ async function sendEmail(data: QuoteFormData) {
   }
 
   const resend = new Resend(apiKey);
-  const o = translations[data.locale].quote.options;
+  const L = LABELS[data.locale];
 
-  const projectType = o.projectType[data.projectType] ?? data.projectType;
-  const scope = data.scope.length ? data.scope.map((s) => o.scope[s]).join(', ') : '—';
-  const design = o.design[data.design] ?? data.design;
-  const timeline = o.timeline[data.timeline] ?? data.timeline;
-  const budget = data.budget ? o.budget[data.budget] : '—';
+  const projectType = L.projectType[data.projectType] ?? data.projectType;
+  const scope = data.scope.length ? data.scope.map((s) => L.scope[s] ?? s).join(', ') : '—';
+  const design = L.design[data.design] ?? data.design;
+  const timeline = L.timeline[data.timeline] ?? data.timeline;
+  const budget = data.budget ? L.budget[data.budget] : '—';
 
   // Build a clickable WhatsApp link (assume BR if no country code present).
   const waDigits = data.whatsapp.replace(/\D/g, '');
@@ -90,7 +162,6 @@ async function sendEmail(data: QuoteFormData) {
     ? `<span style="color:#6b7177;font-weight:500;"> · ${escapeHtml(data.company)}</span>`
     : '';
 
-  // Only the project details go in the table; the contact lives in the hero.
   const details: [string, string][] = [
     ['Tipo de projeto', projectType],
     ['Funcionalidades', scope],
@@ -194,21 +265,21 @@ async function sendToSheet(data: QuoteFormData) {
   if (!url) return; // disabled when no webhook configured
 
   // Send human-readable labels (same as the email) instead of raw codes.
-  const o = translations[data.locale].quote.options;
+  const L = LABELS[data.locale];
   const payload = {
     submittedAt: new Date().toISOString(),
-    projectType: o.projectType[data.projectType] ?? data.projectType,
-    scope: data.scope.map((s) => o.scope[s] ?? s),
-    design: o.design[data.design] ?? data.design,
-    timeline: o.timeline[data.timeline] ?? data.timeline,
-    budget: data.budget ? o.budget[data.budget] : '',
+    projectType: L.projectType[data.projectType] ?? data.projectType,
+    scope: data.scope.map((s) => L.scope[s] ?? s),
+    design: L.design[data.design] ?? data.design,
+    timeline: L.timeline[data.timeline] ?? data.timeline,
+    budget: data.budget ? L.budget[data.budget] : '',
     references: data.references || '',
     name: data.name,
     email: data.email,
     whatsapp: data.whatsapp,
     company: data.company || '',
     message: data.message || '',
-    locale: data.locale === 'pt' ? 'Português' : 'English',
+    locale: L.localeName,
   };
 
   const resp = await fetch(url, {
