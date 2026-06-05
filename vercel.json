@@ -1,6 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
+    { "source": "/orcamento", "destination": "/orcamento.html" },
+    { "source": "/links", "destination": "/links.html" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }
