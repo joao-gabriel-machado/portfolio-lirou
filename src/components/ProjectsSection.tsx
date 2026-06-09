@@ -55,7 +55,7 @@ const ProjectsSection = () => {
     {
       key: 'samara',
       image: samaraImg,
-      technologies: ['React', 'Next.js', 'TypeScript', 'TailwindCSS'],
+      technologies: ['React', 'Vite', 'TypeScript', 'TailwindCSS'],
       live: 'https://drasamaragoncalves.vercel.app/',
     },
     {
