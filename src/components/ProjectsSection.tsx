@@ -1,15 +1,17 @@
-import { ExternalLink, Github } from 'lucide-react';
+import { ExternalLink, Github, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
 import metrificaImg from '@/assets/metrifica.webp';
+import prontivaImg from '@/assets/prontiva.webp';
 import redesDoValeImg from '@/assets/redes-do-vale.webp';
 import twinitiImg from '@/assets/twiniti.webp';
 import delpupoImg from '@/assets/delpupo-homes.webp';
+import samaraImg from '@/assets/dra-samara.webp';
 import coffeeImg from '@/assets/coffee.webp';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { translations } from '@/utils/translations';
 import { revealVariants, staggerContainer, staggerChild, viewportConfig } from '@/lib/motion';
 
-type ProjectKey = 'metrifica' | 'redes' | 'twiniti' | 'delpupo' | 'coffee';
+type ProjectKey = 'metrifica' | 'prontiva' | 'redes' | 'twiniti' | 'delpupo' | 'samara' | 'coffee';
 
 const ProjectsSection = () => {
   const { language } = useLanguage();
@@ -19,13 +21,18 @@ const ProjectsSection = () => {
     key: ProjectKey;
     image: string;
     technologies: string[];
-    live: string;
+    live?: string;
   }[] = [
     {
       key: 'metrifica',
       image: metrificaImg,
       technologies: ['React', 'TypeScript', 'Supabase', 'TailwindCSS', 'PWA', 'jsPDF'],
       live: 'https://metrifica.vercel.app/',
+    },
+    {
+      key: 'prontiva',
+      image: prontivaImg,
+      technologies: ['React', 'TypeScript', 'Supabase', 'TailwindCSS'],
     },
     {
       key: 'redes',
@@ -44,6 +51,12 @@ const ProjectsSection = () => {
       image: delpupoImg,
       technologies: ['React', 'Next.js', 'TypeScript', 'TailwindCSS'],
       live: 'https://www.delpupohomes.com/',
+    },
+    {
+      key: 'samara',
+      image: samaraImg,
+      technologies: ['React', 'Next.js', 'TypeScript', 'TailwindCSS'],
+      live: 'https://drasamaragoncalves.vercel.app/',
     },
     {
       key: 'coffee',
@@ -93,8 +106,8 @@ const ProjectsSection = () => {
               <motion.div key={project.key} variants={staggerChild}>
                 <motion.a
                   href={project.live}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  target={project.live ? '_blank' : undefined}
+                  rel={project.live ? 'noopener noreferrer' : undefined}
                   whileHover={{ y: -6 }}
                   transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
                   className="block h-full card-outer group glow-primary-hover transition-shadow duration-300"
@@ -109,13 +122,20 @@ const ProjectsSection = () => {
                             alt={project.title}
                             className="w-full h-full object-cover object-left-top group-hover:scale-[1.05] transition-transform duration-700 ease-out-expo"
                           />
-                          {/* Hover overlay */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-card via-card/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end justify-center pb-5">
-                            <span className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium">
-                              <ExternalLink className="w-3.5 h-3.5" />
-                              {t.viewProject}
+                          {/* Hover overlay (live) or "coming soon" badge */}
+                          {project.live ? (
+                            <div className="absolute inset-0 bg-gradient-to-t from-card via-card/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end justify-center pb-5">
+                              <span className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium">
+                                <ExternalLink className="w-3.5 h-3.5" />
+                                {t.viewProject}
+                              </span>
+                            </div>
+                          ) : (
+                            <span className="absolute top-3 right-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-background/70 backdrop-blur-sm border border-primary/20 text-primary text-xs font-semibold">
+                              <Clock className="w-3 h-3" />
+                              {t.comingSoon}
                             </span>
-                          </div>
+                          )}
                         </>
                       ) : (
                         /* Placeholder for projects without image */
@@ -151,7 +171,11 @@ const ProjectsSection = () => {
                             {project.title}
                           </h3>
                         </div>
-                        <ExternalLink className="w-4 h-4 text-muted-foreground/50 group-hover:text-primary flex-shrink-0 mt-1 transition-colors duration-200" />
+                        {project.live ? (
+                          <ExternalLink className="w-4 h-4 text-muted-foreground/50 group-hover:text-primary flex-shrink-0 mt-1 transition-colors duration-200" />
+                        ) : (
+                          <Clock className="w-4 h-4 text-muted-foreground/40 flex-shrink-0 mt-1" />
+                        )}
                       </div>
 
                       <p className="text-muted-foreground text-sm leading-relaxed mb-5 flex-1">

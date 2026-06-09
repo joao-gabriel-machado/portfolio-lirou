@@ -81,10 +81,15 @@ export const translations = {
             subtitle: 'Trabalhos desenvolvidos com tecnologias modernas',
             viewProject: 'Ver projeto',
             viewGithub: 'Ver mais no GitHub',
+            comingSoon: 'Em breve',
             items: {
                 metrifica: {
                     title: 'Metrifica',
                     description: 'Produto próprio — sistema de gestão e orçamentos inteligentes para quem trabalha com medidas. Cadastro de empreendimentos, plantas com medições automáticas em m², geração de orçamentos e recibos em PDF, com condições de pagamento flexíveis. PWA instalável.'
+                },
+                prontiva: {
+                    title: 'Prontiva',
+                    description: 'Produto próprio — prontuário eletrônico para clínicas. Anamneses, contratos e fotos organizados, com assinatura digital, evolução fotográfica (antes e depois) e segurança de nível clínico em conformidade com a LGPD.'
                 },
                 redes: {
                     title: 'Redes do Vale',
@@ -97,6 +102,10 @@ export const translations = {
                 delpupo: {
                     title: 'Delpupo Homes',
                     description: 'Site institucional para construtora de luxo, com design premium, apresentação de empreendimentos e foco na experiência visual sofisticada.'
+                },
+                samara: {
+                    title: 'Dra. Samara Gonçalves',
+                    description: 'Site institucional para biomédica especialista em harmonização facial. Visual elegante e sofisticado, com apresentação dos procedimentos, agendamento de consultas e foco em sutileza e confiança.'
                 },
                 coffee: {
                     title: 'Coffee Delivery',
@@ -380,10 +389,15 @@ export const translations = {
             subtitle: 'Works developed with modern technologies',
             viewProject: 'View project',
             viewGithub: 'View on GitHub',
+            comingSoon: 'Coming soon',
             items: {
                 metrifica: {
                     title: 'Metrifica',
                     description: 'Own product — smart management and budgeting system for professionals who work with measurements. Property registration, floor plans with automatic m² calculations, PDF budget and receipt generation with flexible payment terms. Installable PWA.'
+                },
+                prontiva: {
+                    title: 'Prontiva',
+                    description: 'Own product — electronic health records for clinics. Anamneses, contracts and photos organized, with digital signature, photographic evolution (before & after) and clinic-grade security, LGPD-compliant.'
                 },
                 redes: {
                     title: 'Redes do Vale',
@@ -396,6 +410,10 @@ export const translations = {
                 delpupo: {
                     title: 'Delpupo Homes',
                     description: 'Institutional website for a luxury construction company, with premium design, property showcase and focus on a sophisticated visual experience.'
+                },
+                samara: {
+                    title: 'Dra. Samara Gonçalves',
+                    description: 'Institutional website for a biomedical specialist in facial harmonization. Elegant, sophisticated visual with presentation of procedures, appointment scheduling and a focus on subtlety and trust.'
                 },
                 coffee: {
                     title: 'Coffee Delivery',
