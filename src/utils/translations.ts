@@ -157,7 +157,9 @@ export const translations = {
                 },
                 scope: {
                     title: 'O que ele precisa ter?',
-                    subtitle: 'Selecione as funcionalidades (pode marcar várias ou nenhuma).'
+                    subtitle: 'Selecione as funcionalidades (pode marcar várias ou nenhuma).',
+                    noteLabel: 'Quer detalhar algo? (opcional)',
+                    notePlaceholder: 'Descreva funcionalidades específicas ou algo que não está na lista...'
                 },
                 design: {
                     title: 'Como está o design?',
@@ -454,7 +456,9 @@ export const translations = {
                 },
                 scope: {
                     title: 'What should it have?',
-                    subtitle: 'Select the features (pick several or none).'
+                    subtitle: 'Select the features (pick several or none).',
+                    noteLabel: 'Want to add details? (optional)',
+                    notePlaceholder: 'Describe specific features or anything not in the list...'
                 },
                 design: {
                     title: 'How about the design?',

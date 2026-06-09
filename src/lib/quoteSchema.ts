@@ -87,6 +87,7 @@ export function createQuoteSchema(m: QuoteMessages = DEFAULT_MESSAGES) {
       errorMap: () => ({ message: m.selectOne }),
     }),
     scope: z.array(z.enum(SCOPE_OPTIONS)).default([]),
+    scopeNote: optionalText(1000),
     design: z.enum(DESIGN_OPTIONS, {
       errorMap: () => ({ message: m.selectOne }),
     }),
@@ -125,6 +126,7 @@ export const TOTAL_STEPS = STEP_FIELDS.length;
 export const emptyQuote: QuoteFormData = {
   projectType: undefined as unknown as ProjectType,
   scope: [],
+  scopeNote: '',
   design: undefined as unknown as DesignOption,
   references: '',
   timeline: undefined as unknown as TimelineOption,

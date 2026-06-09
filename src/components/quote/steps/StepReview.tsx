@@ -33,7 +33,10 @@ const StepReview = ({ onEdit }: StepReviewProps) => {
     </div>
   );
 
-  const scopeText = (data.scope ?? []).map((s) => t.options.scope[s]).join(', ');
+  const scopeBase = (data.scope ?? []).map((s) => t.options.scope[s]).join(', ');
+  const scopeText = data.scopeNote
+    ? [scopeBase, `“${data.scopeNote}”`].filter(Boolean).join(' · ')
+    : scopeBase;
   const budgetText = data.budget ? t.options.budget[data.budget] : '';
   const timelineText = [
     data.timeline ? t.options.timeline[data.timeline] : '',

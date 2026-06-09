@@ -3,12 +3,12 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { translations } from '@/utils/translations';
 import { QuoteFormData, SCOPE_BY_TYPE, SCOPE_OPTIONS } from '@/lib/quoteSchema';
 import StepShell from '../StepShell';
-import { SelectCard } from '../QuoteControls';
+import { SelectCard, QuoteField, inputClass } from '../QuoteControls';
 
 const StepScope = () => {
   const { language } = useLanguage();
   const t = translations[language].quote;
-  const { watch, setValue } = useFormContext<QuoteFormData>();
+  const { watch, setValue, register } = useFormContext<QuoteFormData>();
 
   const projectType = watch('projectType');
   const scope = watch('scope') ?? [];
@@ -32,6 +32,17 @@ const StepScope = () => {
             multi
           />
         ))}
+      </div>
+
+      <div className="mt-6">
+        <QuoteField label={t.steps.scope.noteLabel}>
+          <textarea
+            {...register('scopeNote')}
+            rows={3}
+            placeholder={t.steps.scope.notePlaceholder}
+            className={inputClass + ' resize-none'}
+          />
+        </QuoteField>
       </div>
     </StepShell>
   );

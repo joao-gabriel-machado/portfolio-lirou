@@ -28,6 +28,7 @@ const BUDGET_OPTIONS = ['undecided', 'lt5', '5to15', '15to30', 'gt30'] as const;
 const schema = z.object({
   projectType: z.enum(PROJECT_TYPES),
   scope: z.array(z.enum(SCOPE_OPTIONS)).default([]),
+  scopeNote: z.string().trim().max(1000).optional().or(z.literal('')),
   design: z.enum(DESIGN_OPTIONS),
   references: z.string().trim().max(2000).optional().or(z.literal('')),
   timeline: z.enum(TIMELINE_OPTIONS),
@@ -150,7 +151,9 @@ async function sendEmail(data: QuoteFormData) {
   const L = LABELS[data.locale];
 
   const projectType = L.projectType[data.projectType] ?? data.projectType;
-  const scope = data.scope.length ? data.scope.map((s) => L.scope[s] ?? s).join(', ') : '—';
+  const scopeLabels: string[] = data.scope.map((s) => L.scope[s] ?? s);
+  if (data.scopeNote) scopeLabels.push(`Obs: ${data.scopeNote}`);
+  const scope = scopeLabels.length ? scopeLabels.join(', ') : '—';
   const design = L.design[data.design] ?? data.design;
   const timeline = L.timeline[data.timeline] ?? data.timeline;
   const budget = data.budget ? L.budget[data.budget] : '—';
@@ -269,7 +272,10 @@ async function sendToSheet(data: QuoteFormData) {
   const payload = {
     submittedAt: new Date().toISOString(),
     projectType: L.projectType[data.projectType] ?? data.projectType,
-    scope: data.scope.map((s) => L.scope[s] ?? s),
+    scope: [
+      ...data.scope.map((s): string => L.scope[s] ?? s),
+      ...(data.scopeNote ? [`Obs: ${data.scopeNote}`] : []),
+    ],
     design: L.design[data.design] ?? data.design,
     timeline: L.timeline[data.timeline] ?? data.timeline,
     budget: data.budget ? L.budget[data.budget] : '',
