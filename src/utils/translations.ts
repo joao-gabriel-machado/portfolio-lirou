@@ -216,23 +216,42 @@ export const translations = {
                     other: 'Me conte o que tem em mente'
                 },
                 scope: {
-                    auth: 'Login / cadastro de usuários',
-                    admin: 'Painel administrativo',
-                    payments: 'Pagamentos / checkout',
-                    dashboard: 'Dashboard / relatórios',
-                    blog: 'Blog / conteúdo',
-                    cms: 'Gerenciador de conteúdo (CMS)',
-                    multilang: 'Multi-idioma',
-                    integrations: 'Integrações / APIs externas',
-                    chat: 'Chat / atendimento',
-                    seo: 'SEO / performance',
-                    responsive: 'Responsivo (mobile)',
-                    animations: 'Animações / interações'
+                    auth: 'Área de login / conta',
+                    admin: 'Painel de gestão',
+                    payments: 'Pagamentos online',
+                    dashboard: 'Relatórios e gráficos',
+                    blog: 'Blog / notícias',
+                    cms: 'Editar o site sozinho',
+                    multilang: 'Vários idiomas',
+                    integrations: 'Integração com outros sistemas',
+                    chat: 'Chat de atendimento',
+                    seo: 'Aparecer no Google',
+                    responsive: 'Funcionar bem no celular',
+                    animations: 'Animações e efeitos'
+                },
+                scopeDesc: {
+                    auth: 'Cliente cria conta e entra com senha',
+                    admin: 'Você gerencia tudo por dentro (pedidos, usuários…)',
+                    payments: 'Receber por cartão, Pix ou boleto no site',
+                    dashboard: 'Acompanhar números e resultados',
+                    blog: 'Publicar artigos e novidades',
+                    cms: 'Trocar textos e imagens sem programador',
+                    multilang: 'Site em mais de uma língua',
+                    integrations: 'Ex: WhatsApp, ERP, meios de pagamento',
+                    chat: 'Falar com o cliente em tempo real',
+                    seo: 'Otimização para buscas e velocidade',
+                    responsive: 'Layout adaptado a celular e tablet',
+                    animations: 'Transições e efeitos visuais modernos'
                 },
                 design: {
-                    has_figma: 'Já tenho o design pronto (Figma)',
-                    has_brand: 'Tenho identidade visual, mas não o design',
-                    from_scratch: 'Preciso criar tudo do zero'
+                    has_figma: 'Já tenho o design pronto',
+                    has_brand: 'Tenho a identidade visual',
+                    from_scratch: 'Não tenho nada ainda'
+                },
+                designDesc: {
+                    has_figma: 'O layout das telas já desenhado',
+                    has_brand: 'Logo, paleta de cores, fotos — mas não o layout',
+                    from_scratch: 'Crio o design e a identidade do zero'
                 },
                 timeline: {
                     urgent: 'Urgente (menos de 1 mês)',
@@ -494,23 +513,42 @@ export const translations = {
                     other: 'Tell me what you have in mind'
                 },
                 scope: {
-                    auth: 'User login / signup',
-                    admin: 'Admin panel',
-                    payments: 'Payments / checkout',
-                    dashboard: 'Dashboard / reports',
-                    blog: 'Blog / content',
-                    cms: 'Content manager (CMS)',
-                    multilang: 'Multi-language',
-                    integrations: 'Integrations / external APIs',
-                    chat: 'Chat / support',
-                    seo: 'SEO / performance',
-                    responsive: 'Responsive (mobile)',
-                    animations: 'Animations / interactions'
+                    auth: 'Login / account area',
+                    admin: 'Management panel',
+                    payments: 'Online payments',
+                    dashboard: 'Reports and charts',
+                    blog: 'Blog / news',
+                    cms: 'Edit the site yourself',
+                    multilang: 'Multiple languages',
+                    integrations: 'Integration with other systems',
+                    chat: 'Support chat',
+                    seo: 'Show up on Google',
+                    responsive: 'Works well on mobile',
+                    animations: 'Animations and effects'
+                },
+                scopeDesc: {
+                    auth: 'Customers create an account and log in',
+                    admin: 'You manage everything inside (orders, users…)',
+                    payments: 'Accept card, Pix or bank slip on the site',
+                    dashboard: 'Track numbers and results',
+                    blog: 'Publish articles and news',
+                    cms: 'Change text and images without a developer',
+                    multilang: 'Site in more than one language',
+                    integrations: 'E.g. WhatsApp, ERP, payment providers',
+                    chat: 'Talk to the customer in real time',
+                    seo: 'Search optimization and speed',
+                    responsive: 'Layout adapted to phone and tablet',
+                    animations: 'Modern transitions and visual effects'
                 },
                 design: {
-                    has_figma: 'I already have the design (Figma)',
-                    has_brand: 'I have branding, but not the design',
-                    from_scratch: 'I need everything from scratch'
+                    has_figma: 'I already have the design',
+                    has_brand: 'I have the brand identity',
+                    from_scratch: "I don't have anything yet"
+                },
+                designDesc: {
+                    has_figma: 'The screen layout is already designed',
+                    has_brand: 'Logo, colors, photos — but not the layout',
+                    from_scratch: 'I create the design and identity from scratch'
                 },
                 timeline: {
                     urgent: 'Urgent (less than 1 month)',

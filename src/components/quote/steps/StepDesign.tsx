@@ -20,6 +20,7 @@ const StepDesign = () => {
             selected={value === key}
             onClick={() => setValue('design', key, { shouldValidate: true, shouldDirty: true })}
             title={t.options.design[key]}
+            description={t.options.designDesc[key]}
           />
         ))}
       </div>

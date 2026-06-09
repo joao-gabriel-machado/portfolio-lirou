@@ -3,7 +3,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { translations } from '@/utils/translations';
 import { QuoteFormData, SCOPE_BY_TYPE, SCOPE_OPTIONS } from '@/lib/quoteSchema';
 import StepShell from '../StepShell';
-import { TogglePill } from '../QuoteControls';
+import { SelectCard } from '../QuoteControls';
 
 const StepScope = () => {
   const { language } = useLanguage();
@@ -21,13 +21,15 @@ const StepScope = () => {
 
   return (
     <StepShell title={t.steps.scope.title} subtitle={t.steps.scope.subtitle}>
-      <div className="flex flex-wrap gap-2.5">
+      <div className="grid sm:grid-cols-2 gap-3">
         {options.map((key) => (
-          <TogglePill
+          <SelectCard
             key={key}
             selected={scope.includes(key)}
             onClick={() => toggle(key)}
-            label={t.options.scope[key]}
+            title={t.options.scope[key]}
+            description={t.options.scopeDesc[key]}
+            multi
           />
         ))}
       </div>
