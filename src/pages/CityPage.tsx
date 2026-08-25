@@ -106,6 +106,14 @@ const CityPage = () => {
     }
   }, [activePlace, t, tc]);
 
+  const labels: Record<string, string> = useMemo(() => ({
+    ...Object.fromEntries(
+      Object.entries(t.projects.items).map(([k, v]) => [k, v.title.toUpperCase()])),
+    ...Object.fromEntries(
+      Object.entries(tc.placeNames).map(([k, v]) => [k, (v as string).toUpperCase()])),
+    'prontiva-soon': tc.comingSoon.toUpperCase(),
+  }), [t, tc]);
+
   const hoveredName = hovered
     ? (t.projects.items as Record<string, { title: string }>)[hovered]?.title
       ?? (tc.placeNames as Record<string, string>)[hovered]
@@ -129,6 +137,8 @@ const CityPage = () => {
           activePlace={activePlace}
           onSelect={(id) => { setActivePlace(id); setInteracted(true); }}
           onHover={setHovered}
+          hoveredId={hovered}
+          labels={labels}
           reducedMotion={reducedMotion}
           isMobile={isMobile}
         />

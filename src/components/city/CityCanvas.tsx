@@ -1,17 +1,20 @@
 // src/components/city/CityCanvas.tsx
 import { Canvas } from '@react-three/fiber';
 import CameraRig from './CameraRig';
+import CityBuildings from './CityBuildings';
 import { CITY_COLORS, HOME_FRAME, type PlaceId } from './places';
 
 export interface CityCanvasProps {
   activePlace: PlaceId | null;
   onSelect: (id: PlaceId | null) => void;
   onHover: (id: PlaceId | null) => void;
+  hoveredId: PlaceId | null;
+  labels: Record<string, string>;
   reducedMotion: boolean;
   isMobile: boolean;
 }
 
-const CityCanvas = ({ activePlace, onSelect, onHover, reducedMotion, isMobile }: CityCanvasProps) => (
+const CityCanvas = ({ activePlace, onSelect, onHover, hoveredId, labels, reducedMotion, isMobile }: CityCanvasProps) => (
   <Canvas
     camera={{ position: HOME_FRAME.position, fov: 45 }}
     dpr={[1, isMobile ? 1.5 : 2]}
@@ -24,11 +27,14 @@ const CityCanvas = ({ activePlace, onSelect, onHover, reducedMotion, isMobile }:
     <directionalLight position={[20, 30, 10]} intensity={0.9} color="#9fd8d4" />
     <pointLight position={[0, 12, 0]} intensity={60} color={CITY_COLORS.primary} />
 
-    {/* Chão provisório (Task 4 substitui por CityBuildings) */}
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
-      <circleGeometry args={[44, 48]} />
-      <meshStandardMaterial color={CITY_COLORS.ground} roughness={0.35} metalness={0.5} />
-    </mesh>
+    <CityBuildings
+      onSelect={onSelect}
+      onHover={onHover}
+      hoveredId={hoveredId}
+      labels={labels}
+      reducedMotion={reducedMotion}
+      isMobile={isMobile}
+    />
 
     <CameraRig activePlace={activePlace} reducedMotion={reducedMotion} />
   </Canvas>
