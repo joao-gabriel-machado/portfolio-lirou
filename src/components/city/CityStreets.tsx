@@ -116,12 +116,20 @@ function buildRadialTileSpecs(tileStep: number, crossroadHalf: number, intersect
  * uniformemente distribuídos, cada um esticado pra `comprimentoDoLado /
  * count` (fecha o lado inteiro — antes só 1 tile por vértice, ~72% do anel
  * ficava sem malha). Fix round Task 5 — finding 1.
+ *
+ * Fix round 2 (regressão do finding 1): os 4 vértices alinhados com as
+ * radiais (0/90/180/270°) hospedam o `IntersectionTile` (footprint
+ * `intersectionHalf`, mesmo plano y) — sem tratamento, os tiles terminais
+ * dos lados adjacentes a esses vértices avançavam ~1.5 unidade em cima do
+ * singleton (z-fighting coplanar). Por lado: se um dos vértices extremos é
+ * um desses 4, encurta o vão coberto (`span`) pra parar `intersectionHalf`
+ * antes dele ao longo da própria corda, e redistribui/estica os tiles só
+ * sobre o `span` encurtado (mesma lógica de `count`/stretch, agora sobre o
+ * vão menor) — cobertura estanque até a borda da interseção, sem invadi-la.
  */
-function buildRingTileSpecs(tileStep: number): RingTileSpec[] {
+function buildRingTileSpecs(tileStep: number, intersectionHalf: number): RingTileSpec[] {
   const angleStep = (Math.PI * 2) / RING_SEGMENTS;
-  const chordLen = 2 * RING_RADIUS * Math.sin(angleStep / 2);
-  const count = Math.max(Math.ceil(chordLen / tileStep), 1);
-  const halfLength = chordLen / count / 2;
+  const crossingEvery = RING_SEGMENTS / RADIAL_ANGLES.length; // vértices 0,4,8,12 = interseções
 
   const out: RingTileSpec[] = [];
   for (let i = 0; i < RING_SEGMENTS; i++) {
@@ -129,10 +137,23 @@ function buildRingTileSpecs(tileStep: number): RingTileSpec[] {
       .applyQuaternion(new THREE.Quaternion().setFromAxisAngle(Y_UP, i * angleStep));
     const b = new THREE.Vector3(0, 0, RING_RADIUS)
       .applyQuaternion(new THREE.Quaternion().setFromAxisAngle(Y_UP, (i + 1) * angleStep));
-    const dir = b.clone().sub(a);
+    const dir = b.clone().sub(a).normalize();
     const rotY = Math.atan2(dir.x, dir.z);
+
+    // Um lado nunca tem os DOIS vértices como interseção (eles ficam 4
+    // índices — bem mais que 1 lado — de distância um do outro).
+    const startIsCrossing = i % crossingEvery === 0;
+    const endIsCrossing = (i + 1) % crossingEvery === 0;
+    const effStart = startIsCrossing ? a.clone().addScaledVector(dir, intersectionHalf) : a;
+    const effEnd = endIsCrossing ? b.clone().addScaledVector(dir, -intersectionHalf) : b;
+
+    const span = effStart.distanceTo(effEnd);
+    if (span <= 0.001) continue; // vão totalmente consumido pelas interseções (guard defensivo)
+
+    const count = Math.max(Math.ceil(span / tileStep), 1);
+    const halfLength = span / count / 2;
     for (let k = 0; k < count; k++) {
-      const pos = new THREE.Vector3().lerpVectors(a, b, (k + 0.5) / count);
+      const pos = new THREE.Vector3().lerpVectors(effStart, effEnd, (k + 0.5) / count);
       out.push({ pos, rotY, halfLength });
     }
   }
@@ -205,7 +226,7 @@ const RoadTiles = () => {
       });
     });
 
-    const ringSpecs = buildRingTileSpecs(tileStep);
+    const ringSpecs = buildRingTileSpecs(tileStep, intersectionHalf);
     ringSpecs.forEach((spec) => {
       const scaleZ = (spec.halfLength * 2) / roadNativeDepth;
       out.push({ pos: [spec.pos.x, 0, spec.pos.z], rotY: spec.rotY, scale: [roadScale, roadScale, scaleZ] });
