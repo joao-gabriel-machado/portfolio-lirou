@@ -305,6 +305,30 @@ export const translations = {
             quote: 'Fazer um orçamento',
             quoteDesc: 'Conte seu projeto e receba uma proposta',
             seo: 'João Gabriel | Links'
+        },
+        city: {
+            seo: 'Cidade 3D — João Gabriel',
+            backToSite: 'Voltar ao site',
+            hint: 'Arraste para explorar · clique nos prédios',
+            close: 'Fechar',
+            viewLive: 'Ver ao vivo',
+            comingSoon: 'Em breve',
+            noWebgl: 'Seu navegador não suporta 3D. Conheça o portfólio tradicional:',
+            districts: {
+                projects: 'Projetos',
+                experience: 'Experiência',
+                education: 'Formação',
+                skills: 'Skills',
+                contact: 'Contato',
+            },
+            placeNames: {
+                'exp-twiniti': 'Twiniti', 'exp-titaniumfix': 'Titaniumfix',
+                'edu-unip': 'UNIP', 'edu-rocketseat': 'Rocketseat',
+                'skills-frontend': 'Frontend', 'skills-backend': 'Backend',
+                'skills-tools': 'Ferramentas', 'skills-ai': 'IA',
+                contact: 'Contato',
+            },
+            entryButton: 'Explorar a cidade',
         }
     },
     en: {
@@ -613,6 +637,30 @@ export const translations = {
             quote: 'Request a quote',
             quoteDesc: 'Tell me about your project and get a proposal',
             seo: 'João Gabriel | Links'
+        },
+        city: {
+            seo: '3D City — João Gabriel',
+            backToSite: 'Back to site',
+            hint: 'Drag to explore · click the buildings',
+            close: 'Close',
+            viewLive: 'View live',
+            comingSoon: 'Coming soon',
+            noWebgl: "Your browser doesn't support 3D. Visit the classic portfolio:",
+            districts: {
+                projects: 'Projects',
+                experience: 'Experience',
+                education: 'Education',
+                skills: 'Skills',
+                contact: 'Contact',
+            },
+            placeNames: {
+                'exp-twiniti': 'Twiniti', 'exp-titaniumfix': 'Titaniumfix',
+                'edu-unip': 'UNIP', 'edu-rocketseat': 'Rocketseat',
+                'skills-frontend': 'Frontend', 'skills-backend': 'Backend',
+                'skills-tools': 'Tools', 'skills-ai': 'AI',
+                contact: 'Contact',
+            },
+            entryButton: 'Explore the city',
         }
     }
 };
