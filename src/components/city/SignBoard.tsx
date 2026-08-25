@@ -36,7 +36,12 @@ const STRUT_HEIGHT = 0.5;
 const COLUMN_W = 0.18;
 const COLUMN_H = 1.9;
 const COLUMN_D = 0.18;
-const TUBE_BACK_OFFSET = 0.06;
+// Ambas as camadas do texto-tubo ficam NA FRENTE da face do painel (z do
+// painel vai de -PANEL_DEPTH/2 a +PANEL_DEPTH/2) — senão a cópia de trás
+// fica ocluída dentro do box opaco e nunca renderiza. O gap de 0.06 entre
+// as duas dá a ilusão de profundidade do tubo.
+const TUBE_FRONT_Z = PANEL_DEPTH / 2 + 0.10;
+const TUBE_BACK_Z = PANEL_DEPTH / 2 + 0.04;
 const BACK_TUBE_COLOR = '#0a4a45';
 const FRAME_COLOR = '#1a2230';
 const PANEL_COLOR = '#0d1117';
@@ -45,9 +50,9 @@ const IGNITION_DURATION = 0.5;
 const LETTER_STAGGER = 0.08;
 const LETTER_RAMP = 0.15;
 const MARQUEE_COUNT = 24;
-const MARQUEE_LOOP_SECONDS = 2;
+const MARQUEE_LOOP_SECONDS = 1;
 const MARQUEE_DIM = new THREE.Color('#123a37');
-const MARQUEE_LIT = new THREE.Color('#7ff5ec');
+const MARQUEE_LIT = new THREE.Color('#5fe6da');
 
 /** drei `Text` (troika) tipa a ref como `any` — este alias evita propagar `any` explícito no resto do arquivo. */
 type TextInstance = THREE.Mesh & { fillOpacity: number };
@@ -251,7 +256,7 @@ const SignBoard = ({ label, comingSoon, hero, hovered, active, reducedMotion, se
                 <group key={i}>
                   <Text
                     ref={(r) => { letterFrontRefs.current[i] = r; }}
-                    position={[x, 0, PANEL_DEPTH / 2 + 0.02]}
+                    position={[x, 0, TUBE_FRONT_Z]}
                     fontSize={fontSize}
                     color={primaryColor}
                     anchorX="center" anchorY="middle"
@@ -263,7 +268,7 @@ const SignBoard = ({ label, comingSoon, hero, hovered, active, reducedMotion, se
                   </Text>
                   <Text
                     ref={(r) => { letterBackRefs.current[i] = r; }}
-                    position={[x, 0, PANEL_DEPTH / 2 + 0.02 - TUBE_BACK_OFFSET]}
+                    position={[x, 0, TUBE_BACK_Z]}
                     fontSize={fontSize}
                     color={BACK_TUBE_COLOR}
                     anchorX="center" anchorY="middle"
@@ -281,7 +286,7 @@ const SignBoard = ({ label, comingSoon, hero, hovered, active, reducedMotion, se
           <group ref={textGroupRef}>
             <Text
               ref={frontRef}
-              position={[0, 0, PANEL_DEPTH / 2 + 0.02]}
+              position={[0, 0, TUBE_FRONT_Z]}
               fontSize={fontSize}
               color={primaryColor}
               anchorX="center" anchorY="middle"
@@ -293,7 +298,7 @@ const SignBoard = ({ label, comingSoon, hero, hovered, active, reducedMotion, se
             </Text>
             <Text
               ref={backRef}
-              position={[0, 0, PANEL_DEPTH / 2 + 0.02 - TUBE_BACK_OFFSET]}
+              position={[0, 0, TUBE_BACK_Z]}
               fontSize={fontSize}
               color={BACK_TUBE_COLOR}
               anchorX="center" anchorY="middle"
