@@ -39,6 +39,16 @@ ambiente. Exploração livre — sem XP, missões ou conquistas.
 - Vida ambiente: neons pulsando, um "trem de luz" circulando a cidade,
   mini-formas geométricas do hero flutuando sobre os telhados, e o
   personagem correndo pelas ruas.
+- **Noite de cidade grande**: janelas dos prédios cintilam (acendem e
+  apagam lentamente, dessincronizadas), e 1–2 letreiros por vez "falham"
+  como neon defeituoso (queda breve e irregular de intensidade).
+  Segurança fotossensível: falhas lentas/irregulares, nunca strobe
+  (>3 flashes/s proibido). Tudo estático em `prefers-reduced-motion`.
+- **Som ambiente (opcional ao visitante)**: ambiente procedural via Web
+  Audio API (hum grave urbano + ruído filtrado tipo vento + pad sutil) —
+  sem arquivos de áudio, sem licenças. Desligado por padrão (autoplay é
+  bloqueado pelos browsers); botão de som no HUD liga/desliga, preferência
+  persistida em localStorage. Suspenso quando a aba fica oculta.
 - Polimento condicional: bloom (pós-processamento) apenas em desktop.
 
 ## Layout da cidade (distritos)
