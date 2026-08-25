@@ -91,47 +91,6 @@ const DecodeText = ({
   );
 };
 
-/**
- * Horizontal beam that shoots across the screen
- */
-const Beam = ({
-  top,
-  delay,
-  duration,
-  direction = 'left',
-}: {
-  top: string;
-  delay: number;
-  duration: number;
-  direction?: 'left' | 'right';
-}) => (
-  <motion.div
-    className="absolute h-px pointer-events-none"
-    style={{ top, [direction === 'left' ? 'right' : 'left']: '100%' }}
-    initial={{ width: 0, opacity: 0 }}
-    animate={{
-      width: ['0%', '40%', '0%'],
-      opacity: [0, 1, 0],
-      [direction === 'left' ? 'right' : 'left']: ['100%', '30%', '-10%'],
-    }}
-    transition={{
-      duration,
-      delay,
-      repeat: Infinity,
-      repeatDelay: duration * 1.5,
-      ease: 'linear',
-    }}
-  >
-    <div
-      className={`w-full h-full ${
-        direction === 'left'
-          ? 'bg-gradient-to-l from-primary/60 via-primary/20 to-transparent'
-          : 'bg-gradient-to-r from-primary/60 via-primary/20 to-transparent'
-      }`}
-    />
-  </motion.div>
-);
-
 const HeroSection = () => {
   const { language } = useLanguage();
   const t = translations[language].hero;
@@ -147,15 +106,7 @@ const HeroSection = () => {
       {/* Layer 2: Interactive spotlight + dot grid */}
       <Spotlight />
 
-      {/* Layer 3: Animated beams */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden>
-        <Beam top="20%" delay={1} duration={3} direction="left" />
-        <Beam top="45%" delay={3.5} duration={2.5} direction="right" />
-        <Beam top="70%" delay={6} duration={3.5} direction="left" />
-        <Beam top="85%" delay={8} duration={2} direction="right" />
-      </div>
-
-      {/* Layer 4: Corner accents */}
+      {/* Layer 3: Corner accents */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden>
         {/* Top-left bracket */}
         <motion.div

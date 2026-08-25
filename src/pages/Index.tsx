@@ -1,4 +1,5 @@
 import Navbar from '@/components/Navbar';
+import FloatingShapesLayer from '@/components/three/FloatingShapesLayer';
 import HeroSection from '@/components/HeroSection';
 import AboutSection from '@/components/AboutSection';
 import TechStackSection from '@/components/TechStackSection';
@@ -11,6 +12,7 @@ import Footer from '@/components/Footer';
 const Index = () => {
   return (
     <div className="min-h-[100dvh]">
+      <FloatingShapesLayer />
       <Navbar />
       <main>
         <HeroSection />
