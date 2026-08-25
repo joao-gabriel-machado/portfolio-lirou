@@ -1,6 +1,7 @@
 // src/components/city/CityCanvas.tsx
 import { useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
+import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import CameraRig from './CameraRig';
 import CityBuildings from './CityBuildings';
 import CityLife from './CityLife';
@@ -53,6 +54,12 @@ const CityCanvas = ({ activePlace, onSelect, onHover, hoveredId, labels, reduced
     <CityLife reducedMotion={reducedMotion} isMobile={isMobile} />
 
     <CameraRig activePlace={activePlace} reducedMotion={reducedMotion} />
+
+    {!isMobile && !reducedMotion && (
+      <EffectComposer>
+        <Bloom intensity={0.6} luminanceThreshold={0.35} luminanceSmoothing={0.7} mipmapBlur />
+      </EffectComposer>
+    )}
 
     <ReadySignal onReady={onReady} />
   </Canvas>
