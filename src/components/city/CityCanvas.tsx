@@ -1,12 +1,18 @@
 // src/components/city/CityCanvas.tsx
 import { useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { EffectComposer, Bloom } from '@react-three/postprocessing';
+import { EffectComposer, Bloom, N8AO } from '@react-three/postprocessing';
 import CameraRig from './CameraRig';
+import CityAtmosphere from './CityAtmosphere';
 import CityBuildings from './CityBuildings';
 import CityStreets from './CityStreets';
 import CityLife from './CityLife';
-import { CITY_COLORS, HOME_FRAME, type PlaceId } from './places';
+import { HOME_FRAME, type PlaceId } from './places';
+import { preloadCityModels } from './assets';
+
+// Dispara o fetch dos GLBs da cidade assim que este chunk carrega, para que
+// os modelos já estejam no cache do useGLTF quando os componentes montarem.
+preloadCityModels();
 
 export interface CityCanvasProps {
   activePlace: PlaceId | null;
@@ -35,13 +41,10 @@ const CityCanvas = ({ activePlace, onSelect, onHover, hoveredId, labels, reduced
     camera={{ position: HOME_FRAME.position, fov: 45 }}
     dpr={[1, isMobile ? 1.5 : 2]}
     gl={{ antialias: true, alpha: false, powerPreference: 'high-performance' }}
+    shadows={!isMobile && !reducedMotion}
     onPointerMissed={() => onSelect(null)}
   >
-    <color attach="background" args={[CITY_COLORS.background]} />
-    <fog attach="fog" args={[CITY_COLORS.background, 45, 90]} />
-    <hemisphereLight args={[CITY_COLORS.primary, '#000000', 0.35]} />
-    <directionalLight position={[20, 30, 10]} intensity={0.9} color="#9fd8d4" />
-    <pointLight position={[0, 12, 0]} intensity={60} color={CITY_COLORS.primary} />
+    <CityAtmosphere reducedMotion={reducedMotion} isMobile={isMobile} />
 
     <CityBuildings
       onSelect={onSelect}
@@ -60,7 +63,8 @@ const CityCanvas = ({ activePlace, onSelect, onHover, hoveredId, labels, reduced
 
     {!isMobile && !reducedMotion && (
       <EffectComposer>
-        <Bloom intensity={0.6} luminanceThreshold={0.35} luminanceSmoothing={0.7} mipmapBlur />
+        <N8AO halfRes aoRadius={2} intensity={2.5} />
+        <Bloom intensity={0.35} luminanceThreshold={0.35} luminanceSmoothing={0.7} mipmapBlur />
       </EffectComposer>
     )}
 
