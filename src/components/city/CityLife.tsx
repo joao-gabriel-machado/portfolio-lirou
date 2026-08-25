@@ -1,5 +1,5 @@
 // src/components/city/CityLife.tsx
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
 import { Text } from '@react-three/drei';
@@ -14,6 +14,13 @@ const Avatar = ({ reducedMotion }: { reducedMotion: boolean }) => {
   const limbs = useRef<{ la?: THREE.Mesh; ra?: THREE.Mesh; ll?: THREE.Mesh; rl?: THREE.Mesh }>({});
   const state = useRef({ wp: 0, waitUntil: 0 });
   const [waving, setWaving] = useState(false);
+  const waveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (waveTimeoutRef.current) clearTimeout(waveTimeoutRef.current);
+    };
+  }, []);
 
   useFrame(({ clock }, delta) => {
     const g = group.current;
@@ -55,7 +62,12 @@ const Avatar = ({ reducedMotion }: { reducedMotion: boolean }) => {
 
   return (
     <group ref={group} position={AVATAR_WAYPOINTS[0].position} scale={0.55}
-      onClick={(e) => { e.stopPropagation(); setWaving(true); setTimeout(() => setWaving(false), 1600); }}
+      onClick={(e) => {
+        e.stopPropagation();
+        if (waveTimeoutRef.current) clearTimeout(waveTimeoutRef.current);
+        setWaving(true);
+        waveTimeoutRef.current = setTimeout(() => setWaving(false), 1600);
+      }}
       onPointerOver={(e) => { e.stopPropagation(); document.body.style.cursor = 'pointer'; }}
       onPointerOut={() => { document.body.style.cursor = 'default'; }}>
       {/* pernas */}
@@ -177,24 +189,24 @@ const EasterEggs = ({ reducedMotion }: { reducedMotion: boolean }) => {
     <group raycast={() => null}>
       {/* Gato no telhado da Samara (-8, 5, -7) */}
       <group ref={cat} position={[-8, 5.1, -7]} scale={0.3} raycast={() => null}>
-        <mesh position={[0, 0.2, 0]}><boxGeometry args={[0.6, 0.4, 1]} /><meshStandardMaterial color="#0a0a0c" /></mesh>
-        <mesh position={[0, 0.55, 0.45]}><boxGeometry args={[0.4, 0.35, 0.35]} /><meshStandardMaterial color="#0a0a0c" /></mesh>
-        <mesh position={[-0.12, 0.8, 0.45]}><coneGeometry args={[0.08, 0.15, 4]} /><meshStandardMaterial color="#0a0a0c" /></mesh>
-        <mesh position={[0.12, 0.8, 0.45]}><coneGeometry args={[0.08, 0.15, 4]} /><meshStandardMaterial color="#0a0a0c" /></mesh>
+        <mesh position={[0, 0.2, 0]} raycast={() => null}><boxGeometry args={[0.6, 0.4, 1]} /><meshStandardMaterial color="#0a0a0c" /></mesh>
+        <mesh position={[0, 0.55, 0.45]} raycast={() => null}><boxGeometry args={[0.4, 0.35, 0.35]} /><meshStandardMaterial color="#0a0a0c" /></mesh>
+        <mesh position={[-0.12, 0.8, 0.45]} raycast={() => null}><coneGeometry args={[0.08, 0.15, 4]} /><meshStandardMaterial color="#0a0a0c" /></mesh>
+        <mesh position={[0.12, 0.8, 0.45]} raycast={() => null}><coneGeometry args={[0.08, 0.15, 4]} /><meshStandardMaterial color="#0a0a0c" /></mesh>
       </group>
       {/* Outdoor com piada dev em (-14, 0, 14) */}
       <group position={[-14, 0, 14]} rotation={[0, Math.PI / 3, 0]}>
-        <mesh position={[0, 2, 0]}><boxGeometry args={[4.4, 2.2, 0.15]} /><meshStandardMaterial color="#0c1114" /></mesh>
-        <Text position={[0, 2, 0.12]} fontSize={0.34} color={CITY_COLORS.accent} anchorX="center" anchorY="middle" maxWidth={4}>
+        <mesh position={[0, 2, 0]} raycast={() => null}><boxGeometry args={[4.4, 2.2, 0.15]} /><meshStandardMaterial color="#0c1114" /></mesh>
+        <Text position={[0, 2, 0.12]} fontSize={0.34} color={CITY_COLORS.accent} anchorX="center" anchorY="middle" maxWidth={4} raycast={() => null}>
           {'// TODO: dormir\n// FIXME: café acabou'}
         </Text>
-        <mesh position={[0, 0.5, 0]}><cylinderGeometry args={[0.08, 0.08, 1]} /><meshStandardMaterial color="#1a2226" /></mesh>
+        <mesh position={[0, 0.5, 0]} raycast={() => null}><cylinderGeometry args={[0.08, 0.08, 1]} /><meshStandardMaterial color="#1a2226" /></mesh>
       </group>
       {/* Placa 404 num beco em (16, 0, 14) */}
       <group position={[16, 0, 14]} rotation={[0, -Math.PI / 5, 0]}>
-        <mesh position={[0, 1.1, 0]}><cylinderGeometry args={[0.05, 0.05, 2.2]} /><meshStandardMaterial color="#1a2226" /></mesh>
-        <mesh position={[0, 2, 0]}><boxGeometry args={[1.6, 0.7, 0.08]} /><meshStandardMaterial color="#0c1114" /></mesh>
-        <Text position={[0, 2, 0.06]} fontSize={0.3} color="#e05d5d" anchorX="center" anchorY="middle">
+        <mesh position={[0, 1.1, 0]} raycast={() => null}><cylinderGeometry args={[0.05, 0.05, 2.2]} /><meshStandardMaterial color="#1a2226" /></mesh>
+        <mesh position={[0, 2, 0]} raycast={() => null}><boxGeometry args={[1.6, 0.7, 0.08]} /><meshStandardMaterial color="#0c1114" /></mesh>
+        <Text position={[0, 2, 0.06]} fontSize={0.3} color="#e05d5d" anchorX="center" anchorY="middle" raycast={() => null}>
           404 · RUA NÃO ENCONTRADA
         </Text>
       </group>
