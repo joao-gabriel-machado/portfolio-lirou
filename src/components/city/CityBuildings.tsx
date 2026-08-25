@@ -100,6 +100,7 @@ const PoiBuilding = ({ place, label, hovered, onSelect, onHover, windows, reduce
           anchorX="center" anchorY="middle"
           outlineWidth={0.02} outlineColor="#03302d"
           rotation={[0, Math.PI / 4, 0]}
+          raycast={() => null}
         >
           {label}
         </Text>
