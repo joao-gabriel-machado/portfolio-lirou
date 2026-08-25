@@ -62,7 +62,8 @@ pequeno (animação/tooltip), não abre card.
 ## Personagem ambiente
 
 - Mini-avatar **low-poly do João** (decidido): modelado proceduralmente ou
-  GLTF simples, paleta do site (roupa escura, detalhe cyan).
+  GLTF simples, paleta do site (roupa escura, detalhe cyan), **touca preta
+  e óculos** como traços de identidade.
 - Corre sozinho num circuito de **waypoints** definido nos dados da
   cidade; para em alguns lugares por alguns segundos ("olha vitrine"),
   depois segue. Rotação suave nas curvas; ciclo de corrida simples
