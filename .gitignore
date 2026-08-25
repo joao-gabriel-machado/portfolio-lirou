@@ -23,6 +23,13 @@ dist-ssr
 # Claude Code
 .claude
 
+# Skills de agentes (npx skills add)
+.agents
+skills-lock.json
+
+# Build info do TypeScript
+*.tsbuildinfo
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
