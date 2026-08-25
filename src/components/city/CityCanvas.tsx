@@ -53,6 +53,7 @@ const CityCanvas = ({ activePlace, onSelect, onHover, hoveredId, labels, reduced
       labels={labels}
       reducedMotion={reducedMotion}
       isMobile={isMobile}
+      activeId={activePlace}
     />
 
     <CityStreets reducedMotion={reducedMotion} isMobile={isMobile} />

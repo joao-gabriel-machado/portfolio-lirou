@@ -7,6 +7,10 @@ import { Text, useGLTF, Instances, Instance } from '@react-three/drei';
 import { CITY_COLORS, PLACES, type Place, type PlaceId } from './places';
 import { applyNightMaterials, NIGHT } from './nightPalette';
 import { CITY_MODELS } from './assets';
+import SignBoard, { SIGNBOARD_COLUMN_H, SIGNBOARD_PANEL_HEIGHT } from './SignBoard';
+
+/** POIs "hero" — ganham o pórtico de telhado (2 colunas) em vez de hastes. */
+const HERO_IDS: ReadonlySet<PlaceId> = new Set(['metrifica', 'prontiva']);
 
 type BuildingModelKey = keyof typeof CITY_MODELS.buildings;
 
@@ -45,6 +49,8 @@ interface Props {
   labels: Record<string, string>;
   reducedMotion: boolean;
   isMobile: boolean;
+  /** POI atualmente selecionado (usado pelo SignBoard hero para disparar a ignição letra-a-letra). */
+  activeId?: PlaceId | null;
 }
 
 /** PRNG determinístico (LCG) — mesmo gerador usado em todo o pacote city/. */
@@ -52,44 +58,6 @@ function createSeededRandom(seed: number): () => number {
   let s = seed;
   return () => { s = (s * 16807) % 2147483647; return s / 2147483647; };
 }
-
-/**
- * Agenda de falha de neon: mostly-on com quedas breves e irregulares.
- * Seguro para fotossensibilidade: no máx ~2 quedas/s durante um "engasgo"
- * curto, e engasgos raros (a cada 6–14s por letreiro).
- */
-function neonFlickerOn(t: number, seed: number): boolean {
-  const cycle = 6 + (seed % 8);              // período do engasgo (6–14s)
-  const local = (t + seed * 1.7) % cycle;
-  if (local > 0.9) return true;              // 90% do tempo: aceso estável
-  // Janela de engasgo (0.9s): 2 quedas lentas e irregulares
-  return Math.sin(local * 14 + seed) > -0.35;
-}
-
-/** Letreiro neon no topo de um prédio — fixo, legível da vista padrão, com falha ocasional. */
-const Letreiro = ({ label, height, width, comingSoon, hovered, reducedMotion, seed }: {
-  label: string; height: number; width: number; comingSoon?: boolean; hovered: boolean; reducedMotion: boolean; seed: number;
-}) => {
-  const sign = useRef<THREE.Group>(null);
-  useFrame(({ clock }) => {
-    if (reducedMotion || !sign.current) return;
-    sign.current.visible = hovered || neonFlickerOn(clock.elapsedTime, seed);
-  });
-  return (
-    <group ref={sign}>
-      <Text
-        position={[0, height + 0.9, 0]}
-        fontSize={Math.min(1.1, Math.max(0.6, width * 0.28))}
-        color={comingSoon ? CITY_COLORS.accent : CITY_COLORS.primary}
-        anchorX="center" anchorY="middle"
-        outlineWidth={0.02} outlineColor="#03302d"
-        rotation={[0, Math.PI / 4, 0]}
-      >
-        {label}
-      </Text>
-    </group>
-  );
-};
 
 const WINDOW_COUNT = 6;
 const WINDOW_W = 0.28;
@@ -131,8 +99,8 @@ function makeWindowPlanes(seed: number, width: number, height: number, depth: nu
  * `place.size[1]`. Handlers de click/hover replicam o contrato v1
  * (stopPropagation, guard de e.delta, cursor) no group externo.
  */
-const GltfBuilding = ({ place, modelKey, label, hovered, onSelect, onHover, reducedMotion, seed }: {
-  place: Place; modelKey: BuildingModelKey; label: string; hovered: boolean;
+const GltfBuilding = ({ place, modelKey, label, hovered, active, onSelect, onHover, reducedMotion, seed }: {
+  place: Place; modelKey: BuildingModelKey; label: string; hovered: boolean; active: boolean;
   onSelect: (id: PlaceId) => void; onHover: (id: PlaceId | null) => void;
   reducedMotion: boolean; seed: number;
 }) => {
@@ -207,8 +175,10 @@ const GltfBuilding = ({ place, modelKey, label, hovered, onSelect, onHover, redu
         </mesh>
       ))}
 
-      <Letreiro label={label} height={place.size[1]} width={width} comingSoon={place.comingSoon}
-        hovered={hovered} reducedMotion={reducedMotion} seed={seed} />
+      <group position={[0, place.size[1], 0]}>
+        <SignBoard label={label} width={width} comingSoon={place.comingSoon} hero={HERO_IDS.has(place.id)}
+          hovered={hovered} active={active} reducedMotion={reducedMotion} seed={seed} />
+      </group>
     </group>
   );
 };
@@ -221,8 +191,8 @@ const TOTEM_CAP_HEIGHT = 0.12;
  * neon fina no topo em vez da textura de janelas (removida nesta task).
  * Abstrato por design.
  */
-const SkillsTotem = ({ place, label, hovered, onSelect, onHover, reducedMotion, seed }: {
-  place: Place; label: string; hovered: boolean;
+const SkillsTotem = ({ place, label, hovered, active, onSelect, onHover, reducedMotion, seed }: {
+  place: Place; label: string; hovered: boolean; active: boolean;
   onSelect: (id: PlaceId) => void; onHover: (id: PlaceId | null) => void;
   reducedMotion: boolean; seed: number;
 }) => {
@@ -256,7 +226,9 @@ const SkillsTotem = ({ place, label, hovered, onSelect, onHover, reducedMotion, 
           emissiveIntensity={1.3}
         />
       </mesh>
-      <Letreiro label={label} height={h} width={w} hovered={hovered} reducedMotion={reducedMotion} seed={seed} />
+      <group position={[0, h, 0]}>
+        <SignBoard label={label} width={w} hovered={hovered} active={active} reducedMotion={reducedMotion} seed={seed} />
+      </group>
     </group>
   );
 };
@@ -372,7 +344,7 @@ const ContactAntenna = ({ reducedMotion }: { reducedMotion: boolean }) => {
   );
 };
 
-const CityBuildings = ({ onSelect, onHover, hoveredId, labels, reducedMotion, isMobile }: Props) => {
+const CityBuildings = ({ onSelect, onHover, hoveredId, labels, reducedMotion, isMobile, activeId }: Props) => {
   const prontivaSign = useRef<THREE.Group>(null);
 
   useFrame(({ clock }) => {
@@ -403,21 +375,23 @@ const CityBuildings = ({ onSelect, onHover, hoveredId, labels, reducedMotion, is
       {PLACES.map((place, i) => {
         const label = labels[place.id] ?? place.id;
         const hovered = hoveredId === place.id;
+        const active = activeId === place.id;
         const seed = i * 3 + 1;
         const modelKey = POI_MODEL[place.id];
         return modelKey ? (
           <GltfBuilding key={place.id} place={place} modelKey={modelKey} label={label}
-            hovered={hovered} reducedMotion={reducedMotion} seed={seed}
+            hovered={hovered} active={active} reducedMotion={reducedMotion} seed={seed}
             onSelect={onSelect} onHover={onHover} />
         ) : (
           <SkillsTotem key={place.id} place={place} label={label}
-            hovered={hovered} reducedMotion={reducedMotion} seed={seed}
+            hovered={hovered} active={active} reducedMotion={reducedMotion} seed={seed}
             onSelect={onSelect} onHover={onHover} />
         );
       })}
 
-      {/* Selo "em breve" piscante da Prontiva */}
-      <group ref={prontivaSign} position={[prontiva.position[0], prontiva.size[1] + 2, prontiva.position[2]]}>
+      {/* Selo "em breve" piscante da Prontiva — acima do pórtico hero do SignBoard */}
+      <group ref={prontivaSign}
+        position={[prontiva.position[0], prontiva.size[1] + SIGNBOARD_COLUMN_H + SIGNBOARD_PANEL_HEIGHT + 0.8, prontiva.position[2]]}>
         <Text fontSize={0.55} color={CITY_COLORS.accent} anchorX="center" anchorY="middle"
           rotation={[0, Math.PI / 4, 0]} raycast={() => null}>
           {labels['prontiva-soon'] ?? 'EM BREVE'}
