@@ -3,6 +3,7 @@ import { useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import CameraRig from './CameraRig';
 import CityBuildings from './CityBuildings';
+import CityLife from './CityLife';
 import { CITY_COLORS, HOME_FRAME, type PlaceId } from './places';
 
 export interface CityCanvasProps {
@@ -48,6 +49,8 @@ const CityCanvas = ({ activePlace, onSelect, onHover, hoveredId, labels, reduced
       reducedMotion={reducedMotion}
       isMobile={isMobile}
     />
+
+    <CityLife reducedMotion={reducedMotion} isMobile={isMobile} />
 
     <CameraRig activePlace={activePlace} reducedMotion={reducedMotion} />
 
