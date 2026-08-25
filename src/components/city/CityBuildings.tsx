@@ -1,34 +1,33 @@
 // src/components/city/CityBuildings.tsx
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
+import { SkeletonUtils, mergeBufferGeometries } from 'three-stdlib';
 import { useFrame } from '@react-three/fiber';
-import { Text } from '@react-three/drei';
+import { Text, useGLTF, Instances, Instance, Edges } from '@react-three/drei';
 import { CITY_COLORS, PLACES, type Place, type PlaceId } from './places';
+import { applyNightMaterials, NIGHT } from './nightPalette';
+import { CITY_MODELS } from './assets';
 
-/** Textura de janelas acesas gerada em canvas (compartilhada). */
-function makeWindowTexture(): THREE.CanvasTexture {
-  const c = document.createElement('canvas');
-  c.width = 128; c.height = 256;
-  const ctx = c.getContext('2d')!;
-  ctx.fillStyle = '#0c1114';
-  ctx.fillRect(0, 0, 128, 256);
-  for (let y = 4; y < 252; y += 10) {
-    for (let x = 4; x < 124; x += 10) {
-      if (Math.random() < 0.55) {
-        const roll = Math.random();
-        ctx.fillStyle = roll < 0.7 ? '#ffd9a0' : roll < 0.9 ? '#1fb2aa' : '#e8f6f5';
-        ctx.globalAlpha = 0.5 + Math.random() * 0.5;
-        ctx.fillRect(x, y, 6, 5);
-      }
-    }
-  }
-  ctx.globalAlpha = 1;
-  const tex = new THREE.CanvasTexture(c);
-  tex.colorSpace = THREE.SRGBColorSpace;
-  tex.wrapS = THREE.RepeatWrapping;
-  tex.wrapT = THREE.RepeatWrapping;
-  return tex;
-}
+type BuildingModelKey = keyof typeof CITY_MODELS.buildings;
+
+/** Mapeamento POI → modelo GLB (alturas via place.size[1], normalizadas no load). */
+const POI_MODEL: Partial<Record<PlaceId, BuildingModelKey>> = {
+  metrifica: 'tallA',
+  prontiva: 'tallB',
+  contact: 'thinA',
+  'exp-twiniti': 'largeA',
+  'exp-titaniumfix': 'largeB',
+  delpupo: 'mediumA',
+  twiniti: 'mediumB',
+  redes: 'smallA',
+  samara: 'smallB',
+  'edu-unip': 'wideA',
+  coffee: 'smallB',
+  'edu-rocketseat': 'thinA',
+};
+
+const DESKTOP_VARIATIONS: BuildingModelKey[] = ['smallA', 'mediumA', 'largeA', 'tallA', 'wideA'];
+const MOBILE_VARIATIONS: BuildingModelKey[] = ['smallA', 'mediumA', 'tallA'];
 
 interface Props {
   onSelect: (id: PlaceId) => void;
@@ -37,6 +36,12 @@ interface Props {
   labels: Record<string, string>;
   reducedMotion: boolean;
   isMobile: boolean;
+}
+
+/** PRNG determinístico (LCG) — mesmo gerador usado em todo o pacote city/. */
+function createSeededRandom(seed: number): () => number {
+  let s = seed;
+  return () => { s = (s * 16807) % 2147483647; return s / 2147483647; };
 }
 
 /**
@@ -52,25 +57,160 @@ function neonFlickerOn(t: number, seed: number): boolean {
   return Math.sin(local * 14 + seed) > -0.35;
 }
 
-/** Um prédio-POI com letreiro neon (que ocasionalmente falha). */
-const PoiBuilding = ({ place, label, hovered, onSelect, onHover, windows, reducedMotion, seed }: {
+/** Letreiro neon no topo de um prédio — fixo, legível da vista padrão, com falha ocasional. */
+const Letreiro = ({ label, height, width, comingSoon, hovered, reducedMotion, seed }: {
+  label: string; height: number; width: number; comingSoon?: boolean; hovered: boolean; reducedMotion: boolean; seed: number;
+}) => {
+  const sign = useRef<THREE.Group>(null);
+  useFrame(({ clock }) => {
+    if (reducedMotion || !sign.current) return;
+    sign.current.visible = hovered || neonFlickerOn(clock.elapsedTime, seed);
+  });
+  return (
+    <group ref={sign}>
+      <Text
+        position={[0, height + 0.9, 0]}
+        fontSize={Math.min(1.1, Math.max(0.6, width * 0.28))}
+        color={comingSoon ? CITY_COLORS.accent : CITY_COLORS.primary}
+        anchorX="center" anchorY="middle"
+        outlineWidth={0.02} outlineColor="#03302d"
+        rotation={[0, Math.PI / 4, 0]}
+      >
+        {label}
+      </Text>
+    </group>
+  );
+};
+
+const WINDOW_COUNT = 6;
+const WINDOW_W = 0.28;
+const WINDOW_H = 0.4;
+const WINDOW_BASE_INTENSITY = 1.2;
+const WINDOW_HOVER_INTENSITY = WINDOW_BASE_INTENSITY * 2;
+
+interface WindowPlaneCfg { position: [number, number, number]; rotationY: number; tone: string; }
+
+/**
+ * Janelas quentes/frias sintéticas, deterministicamente posicionadas na
+ * fachada frontal/lateral do bounding box já escalado do prédio. O kit
+ * Kenney (commercial) é single-mesh por prédio — sem malha de vidro
+ * separável — então isso substitui a detecção por nome do
+ * `applyNightMaterials` para dar às fachadas o brilho de janelas acesas.
+ */
+function makeWindowPlanes(seed: number, width: number, height: number, depth: number): WindowPlaneCfg[] {
+  const rand = createSeededRandom(seed * 97 + 13);
+  const planes: WindowPlaneCfg[] = [];
+  for (let k = 0; k < WINDOW_COUNT; k++) {
+    const y = height * (0.18 + rand() * 0.62);
+    const tone = rand() < 0.55 ? NIGHT.windowWarm : NIGHT.windowCool;
+    if (k % 2 === 0) {
+      // Fachada frontal (+Z)
+      const x = (rand() - 0.5) * width * 0.7;
+      planes.push({ position: [x, y, depth / 2 + 0.02], rotationY: 0, tone });
+    } else {
+      // Fachada lateral (+X)
+      const z = (rand() - 0.5) * depth * 0.7;
+      planes.push({ position: [width / 2 + 0.02, y, z], rotationY: Math.PI / 2, tone });
+    }
+  }
+  return planes;
+}
+
+/**
+ * Prédio-POI renderizado a partir de um GLB do City Kit (Kenney), retintado
+ * para a paleta noturna e normalizado para que a altura final bata com
+ * `place.size[1]`. Handlers de click/hover replicam o contrato v1
+ * (stopPropagation, guard de e.delta, cursor) no group externo.
+ */
+const GltfBuilding = ({ place, modelKey, label, hovered, onSelect, onHover, reducedMotion, seed }: {
+  place: Place; modelKey: BuildingModelKey; label: string; hovered: boolean;
+  onSelect: (id: PlaceId) => void; onHover: (id: PlaceId | null) => void;
+  reducedMotion: boolean; seed: number;
+}) => {
+  const { scene } = useGLTF(CITY_MODELS.buildings[modelKey]);
+  const clone = useMemo(() => SkeletonUtils.clone(scene) as THREE.Group, [scene]);
+
+  // Retintagem noturna aplicada uma única vez por clone (antes do primeiro
+  // paint — useMemo em vez de useEffect evita um frame com o colormap cru).
+  useMemo(() => { applyNightMaterials(clone, seed); }, [clone, seed]);
+
+  // Bounding box medida UMA VEZ: normaliza escala pela altura e centraliza
+  // a base do modelo em (0,0,0) local (compensado pelo offset abaixo).
+  const { scale, offset, width, depth } = useMemo(() => {
+    const box = new THREE.Box3().setFromObject(clone);
+    const rawHeight = Math.max(box.max.y - box.min.y, 0.001);
+    const rawWidth = Math.max(box.max.x - box.min.x, 0.001);
+    const rawDepth = Math.max(box.max.z - box.min.z, 0.001);
+    const centerX = (box.min.x + box.max.x) / 2;
+    const centerZ = (box.min.z + box.max.z) / 2;
+    const s = place.size[1] / rawHeight;
+    return {
+      scale: s,
+      offset: [-centerX, -box.min.y, -centerZ] as [number, number, number],
+      width: rawWidth * s,
+      depth: rawDepth * s,
+    };
+  }, [clone, place.size]);
+
+  const windowPlanes = useMemo(
+    () => makeWindowPlanes(seed, width, place.size[1], depth),
+    [seed, width, place.size, depth],
+  );
+  const windowMatRefs = useRef<(THREE.MeshStandardMaterial | null)[]>([]);
+
+  useEffect(() => {
+    const target = hovered ? WINDOW_HOVER_INTENSITY : WINDOW_BASE_INTENSITY;
+    windowMatRefs.current.forEach((m) => { if (m) m.emissiveIntensity = target; });
+  }, [hovered]);
+
+  return (
+    <group
+      position={[place.position[0], 0, place.position[2]]}
+      onClick={(e) => { if (e.delta > 4) return; e.stopPropagation(); onSelect(place.id); }}
+      onPointerOver={(e) => { e.stopPropagation(); onHover(place.id); document.body.style.cursor = 'pointer'; }}
+      onPointerOut={() => { onHover(null); document.body.style.cursor = 'default'; }}
+    >
+      <group scale={scale}>
+        <primitive object={clone} position={offset} />
+      </group>
+
+      {windowPlanes.map((wp, wi) => (
+        <mesh key={wi} position={wp.position} rotation={[0, wp.rotationY, 0]} raycast={() => null}>
+          <planeGeometry args={[WINDOW_W, WINDOW_H]} />
+          <meshStandardMaterial
+            ref={(el) => { windowMatRefs.current[wi] = el; }}
+            color="#0d1117"
+            emissive={wp.tone}
+            emissiveIntensity={WINDOW_BASE_INTENSITY}
+            toneMapped={false}
+            side={THREE.DoubleSide}
+          />
+        </mesh>
+      ))}
+
+      <Letreiro label={label} height={place.size[1]} width={width} comingSoon={place.comingSoon}
+        hovered={hovered} reducedMotion={reducedMotion} seed={seed} />
+    </group>
+  );
+};
+
+/**
+ * Totem dos distritos de skills (4 itens): sem modelo GLB dedicado no kit —
+ * mantém o volume box v1, mas retintado (NIGHT.trim) com aresta neon em vez
+ * da textura de janelas (removida nesta task). Abstrato por design.
+ */
+const SkillsTotem = ({ place, label, hovered, onSelect, onHover, reducedMotion, seed }: {
   place: Place; label: string; hovered: boolean;
   onSelect: (id: PlaceId) => void; onHover: (id: PlaceId | null) => void;
-  windows: THREE.Texture; reducedMotion: boolean; seed: number;
+  reducedMotion: boolean; seed: number;
 }) => {
   const [w, h, d] = place.size;
-  const sign = useRef<THREE.Group>(null);
   const body = useRef<THREE.MeshStandardMaterial>(null);
 
   useFrame(({ clock }) => {
-    if (reducedMotion) return;
+    if (reducedMotion || !body.current || hovered) return;
     const t = clock.elapsedTime;
-    // Neon falhando (nunca no prédio em hover, para não atrapalhar a leitura)
-    if (sign.current) sign.current.visible = hovered || neonFlickerOn(t, seed);
-    // Janelas "respiram" dessincronizadas (cintilar lento)
-    if (body.current && !hovered) {
-      body.current.emissiveIntensity = 1.0 + Math.sin(t * 0.6 + seed) * 0.15;
-    }
+    body.current.emissiveIntensity = 0.6 + Math.sin(t * 0.6 + seed) * 0.15;
   });
 
   return (
@@ -84,134 +224,104 @@ const PoiBuilding = ({ place, label, hovered, onSelect, onHover, windows, reduce
         <boxGeometry args={[w, h, d]} />
         <meshStandardMaterial
           ref={body}
-          color={CITY_COLORS.building}
-          roughness={0.4}
-          metalness={0.6}
-          map={windows}
-          emissiveMap={windows}
-          emissive="#ffffff"
-          emissiveIntensity={hovered ? 2.2 : 1.0}
+          color={NIGHT.trim}
+          roughness={0.55}
+          metalness={0.5}
+          emissive={CITY_COLORS.primary}
+          emissiveIntensity={hovered ? 1.6 : 0.6}
         />
+        <Edges color={CITY_COLORS.primary} />
       </mesh>
-      {/* Letreiro neon no topo — fixo, legível da vista padrão */}
-      <group ref={sign}>
-        <Text
-          position={[0, h + 0.9, 0]}
-          fontSize={Math.min(1.1, Math.max(0.6, w * 0.28))}
-          color={place.comingSoon ? CITY_COLORS.accent : CITY_COLORS.primary}
-          anchorX="center" anchorY="middle"
-          outlineWidth={0.02} outlineColor="#03302d"
-          rotation={[0, Math.PI / 4, 0]}
-          raycast={() => null}
-        >
-          {label}
-        </Text>
-      </group>
+      <Letreiro label={label} height={h} width={w} hovered={hovered} reducedMotion={reducedMotion} seed={seed} />
     </group>
   );
 };
 
-/** Prédios de fundo instanciados no anel externo (não clicáveis). */
-const BackgroundBuildings = ({ count, windows }: { count: number; windows: THREE.Texture }) => {
-  const ref = useRef<THREE.InstancedMesh>(null);
-  const transforms = useMemo(() => {
-    const m: { pos: THREE.Vector3; scale: THREE.Vector3 }[] = [];
-    let seed = 42;
-    const rand = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
-    for (let i = 0; i < count; i++) {
-      let angle = (i / count) * Math.PI * 2 + rand() * 0.2;
-      // Afasta o prédio dos 4 eixos das avenidas (N/S/E/O) para não nascer em cima da via.
-      const a = angle % (Math.PI / 2);
-      const dOff = Math.min(a, Math.PI / 2 - a);
-      if (dOff < 0.09) angle += 0.15;
-      const radius = 30 + rand() * 11;
-      const hgt = 3 + rand() * 7;
-      m.push({
-        pos: new THREE.Vector3(Math.cos(angle) * radius, hgt / 2, Math.sin(angle) * radius),
-        scale: new THREE.Vector3(2 + rand() * 2, hgt, 2 + rand() * 2),
-      });
-    }
-    return m;
-  }, [count]);
+/** Gera o mesmo anel de transforms do v1 (posição/altura), a partir do seed 42. */
+function generateBackgroundTransforms(count: number): { pos: THREE.Vector3; hgt: number }[] {
+  const out: { pos: THREE.Vector3; hgt: number }[] = [];
+  const rand = createSeededRandom(42);
+  for (let i = 0; i < count; i++) {
+    let angle = (i / count) * Math.PI * 2 + rand() * 0.2;
+    // Afasta o prédio dos 4 eixos das avenidas (N/S/E/O) para não nascer em cima da via.
+    const a = angle % (Math.PI / 2);
+    const dOff = Math.min(a, Math.PI / 2 - a);
+    if (dOff < 0.09) angle += 0.15;
+    const radius = 30 + rand() * 11;
+    const hgt = 3 + rand() * 7;
+    rand(); rand(); // consome os mesmos rolls de largura/profundidade do v1 (preserva a sequência ⇒ mesmas posições)
+    out.push({ pos: new THREE.Vector3(Math.cos(angle) * radius, 0, Math.sin(angle) * radius), hgt });
+  }
+  return out;
+}
 
-  useFrame(() => {
-    const mesh = ref.current;
-    if (!mesh || mesh.userData.done) return;
-    const mat = new THREE.Matrix4();
-    transforms.forEach((tr, i) => {
-      mat.compose(tr.pos, new THREE.Quaternion(), tr.scale);
-      mesh.setMatrixAt(i, mat);
-    });
-    mesh.instanceMatrix.needsUpdate = true;
-    mesh.userData.done = true;
-  });
+/** Uma variação de prédio de fundo: geometria+material únicos, instanciados via drei <Instances>. */
+const BackgroundVariation = ({ modelKey, seed, transforms }: {
+  modelKey: BuildingModelKey; seed: number; transforms: { pos: THREE.Vector3; hgt: number }[];
+}) => {
+  const { scene } = useGLTF(CITY_MODELS.buildings[modelKey]);
+
+  const { geometry, material, height } = useMemo(() => {
+    const clone = SkeletonUtils.clone(scene) as THREE.Group;
+    applyNightMaterials(clone, seed);
+    const meshes: THREE.Mesh[] = [];
+    clone.traverse((o) => { if ((o as THREE.Mesh).isMesh) meshes.push(o as THREE.Mesh); });
+
+    // Os prédios do City Kit (commercial) são single-mesh (confirmado nos 10
+    // GLBs usados). Mantemos o fallback de merge/maior-malha por segurança
+    // caso um kit futuro venha multi-mesh — ver report da task 3.
+    let mesh: THREE.Mesh;
+    if (meshes.length <= 1) {
+      mesh = meshes[0];
+    } else {
+      const sameMaterial = meshes.every((m) => m.material === meshes[0].material);
+      const merged = sameMaterial ? mergeBufferGeometries(meshes.map((m) => m.geometry)) : null;
+      if (merged) {
+        mesh = new THREE.Mesh(merged, meshes[0].material);
+      } else {
+        mesh = meshes.reduce((a, b) =>
+          (a.geometry.attributes.position?.count ?? 0) >= (b.geometry.attributes.position?.count ?? 0) ? a : b);
+      }
+    }
+
+    const box = new THREE.Box3().setFromObject(mesh);
+    return {
+      geometry: mesh.geometry,
+      material: mesh.material as THREE.Material,
+      height: Math.max(box.max.y - box.min.y, 0.001),
+    };
+  }, [scene, seed]);
 
   return (
-    <instancedMesh ref={ref} args={[undefined, undefined, count]} raycast={() => null}>
-      <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial color={CITY_COLORS.building} roughness={0.55} metalness={0.45}
-        map={windows} emissiveMap={windows} emissive="#ffffff" emissiveIntensity={0.7} />
-    </instancedMesh>
+    <Instances geometry={geometry} material={material} limit={transforms.length || 1} raycast={() => null}>
+      {transforms.map((t, i) => (
+        <Instance key={i} position={t.pos} scale={t.hgt / height} />
+      ))}
+    </Instances>
   );
 };
 
-const CityBuildings = ({ onSelect, onHover, hoveredId, labels, reducedMotion, isMobile }: Props) => {
-  const windows = useMemo(makeWindowTexture, []);
-  const prontivaSign = useRef<THREE.Group>(null);
-  const nextShuffle = useRef(4);
+/** Prédios de fundo no anel externo (não clicáveis), ~5 variações desktop / 3 mobile. */
+const BackgroundBuildings = ({ count, isMobile }: { count: number; isMobile: boolean }) => {
+  const variations = isMobile ? MOBILE_VARIATIONS : DESKTOP_VARIATIONS;
 
-  useFrame(({ clock }) => {
-    if (reducedMotion) return;
-    const t = clock.elapsedTime;
-    // Letreiro "em breve" da Prontiva pisca devagar.
-    if (prontivaSign.current) prontivaSign.current.visible = Math.sin(t * 3) > -0.3;
-    // Janelas da cidade "mudam" (offset da textura compartilhada) a cada 4–8s
-    // → ilusão de luzes acendendo/apagando pela cidade inteira.
-    if (t > nextShuffle.current) {
-      windows.offset.set(Math.random(), Math.random());
-      nextShuffle.current = t + 4 + Math.random() * 4;
-    }
-  });
-
-  const prontiva = PLACES.find((p) => p.id === 'prontiva')!;
+  const grouped = useMemo(() => {
+    const raw = generateBackgroundTransforms(count);
+    const byVariation = new Map<BuildingModelKey, { pos: THREE.Vector3; hgt: number }[]>();
+    variations.forEach((v) => byVariation.set(v, []));
+    raw.forEach((tr, i) => {
+      const key = variations[i % variations.length];
+      byVariation.get(key)!.push(tr);
+    });
+    return byVariation;
+  }, [count, variations]);
 
   return (
-    <group>
-      {/* Chão com grid */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} raycast={() => null}>
-        <circleGeometry args={[44, 48]} />
-        <meshStandardMaterial color={CITY_COLORS.ground} roughness={0.35} metalness={0.5} />
-      </mesh>
-      <gridHelper args={[88, 44, '#123a37', '#0b1f1d']} position={[0, 0.02, 0]} raycast={() => null} />
-
-      {/* Praça central: nome em neon */}
-      <Text position={[0, 0.6, 0]} rotation={[-Math.PI / 2, 0, Math.PI / 4]}
-        fontSize={1.6} color={CITY_COLORS.primary} anchorX="center" anchorY="middle"
-        outlineWidth={0.03} outlineColor="#03302d" raycast={() => null}>
-        JOÃO GABRIEL — LIROUDEV
-      </Text>
-
-      {/* POIs */}
-      {PLACES.map((place, i) => (
-        <PoiBuilding key={place.id} place={place} windows={windows}
-          label={labels[place.id] ?? place.id}
-          hovered={hoveredId === place.id}
-          reducedMotion={reducedMotion} seed={i * 3 + 1}
-          onSelect={onSelect} onHover={onHover} />
+    <group raycast={() => null}>
+      {variations.map((modelKey, vi) => (
+        <BackgroundVariation key={modelKey} modelKey={modelKey} seed={vi * 11 + 5}
+          transforms={grouped.get(modelKey) ?? []} />
       ))}
-
-      {/* Selo "em breve" piscante da Prontiva */}
-      <group ref={prontivaSign} position={[prontiva.position[0], prontiva.size[1] + 2, prontiva.position[2]]}>
-        <Text fontSize={0.55} color={CITY_COLORS.accent} anchorX="center" anchorY="middle"
-          rotation={[0, Math.PI / 4, 0]} raycast={() => null}>
-          {labels['prontiva-soon'] ?? 'EM BREVE'}
-        </Text>
-      </group>
-
-      {/* Antena pulsante do Contato */}
-      <ContactAntenna reducedMotion={reducedMotion} />
-
-      <BackgroundBuildings count={isMobile ? 28 : 60} windows={windows} />
     </group>
   );
 };
@@ -234,6 +344,66 @@ const ContactAntenna = ({ reducedMotion }: { reducedMotion: boolean }) => {
         <sphereGeometry args={[0.22, 12, 12]} />
         <meshStandardMaterial color={CITY_COLORS.primary} emissive={CITY_COLORS.primary} emissiveIntensity={2} />
       </mesh>
+    </group>
+  );
+};
+
+const CityBuildings = ({ onSelect, onHover, hoveredId, labels, reducedMotion, isMobile }: Props) => {
+  const prontivaSign = useRef<THREE.Group>(null);
+
+  useFrame(({ clock }) => {
+    if (reducedMotion || !prontivaSign.current) return;
+    // Letreiro "em breve" da Prontiva pisca devagar.
+    prontivaSign.current.visible = Math.sin(clock.elapsedTime * 3) > -0.3;
+  });
+
+  const prontiva = PLACES.find((p) => p.id === 'prontiva')!;
+
+  return (
+    <group>
+      {/* Chão com grid */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} raycast={() => null}>
+        <circleGeometry args={[44, 48]} />
+        <meshStandardMaterial color={CITY_COLORS.ground} roughness={0.35} metalness={0.5} />
+      </mesh>
+      <gridHelper args={[88, 44, '#123a37', '#0b1f1d']} position={[0, 0.02, 0]} raycast={() => null} />
+
+      {/* Praça central: nome em neon */}
+      <Text position={[0, 0.6, 0]} rotation={[-Math.PI / 2, 0, Math.PI / 4]}
+        fontSize={1.6} color={CITY_COLORS.primary} anchorX="center" anchorY="middle"
+        outlineWidth={0.03} outlineColor="#03302d" raycast={() => null}>
+        JOÃO GABRIEL — LIROUDEV
+      </Text>
+
+      {/* POIs */}
+      {PLACES.map((place, i) => {
+        const label = labels[place.id] ?? place.id;
+        const hovered = hoveredId === place.id;
+        const seed = i * 3 + 1;
+        const modelKey = POI_MODEL[place.id];
+        return modelKey ? (
+          <GltfBuilding key={place.id} place={place} modelKey={modelKey} label={label}
+            hovered={hovered} reducedMotion={reducedMotion} seed={seed}
+            onSelect={onSelect} onHover={onHover} />
+        ) : (
+          <SkillsTotem key={place.id} place={place} label={label}
+            hovered={hovered} reducedMotion={reducedMotion} seed={seed}
+            onSelect={onSelect} onHover={onHover} />
+        );
+      })}
+
+      {/* Selo "em breve" piscante da Prontiva */}
+      <group ref={prontivaSign} position={[prontiva.position[0], prontiva.size[1] + 2, prontiva.position[2]]}>
+        <Text fontSize={0.55} color={CITY_COLORS.accent} anchorX="center" anchorY="middle"
+          rotation={[0, Math.PI / 4, 0]} raycast={() => null}>
+          {labels['prontiva-soon'] ?? 'EM BREVE'}
+        </Text>
+      </group>
+
+      {/* Antena pulsante do Contato */}
+      <ContactAntenna reducedMotion={reducedMotion} />
+
+      <BackgroundBuildings count={isMobile ? 28 : 60} isMobile={isMobile} />
     </group>
   );
 };
