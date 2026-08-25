@@ -1,8 +1,12 @@
 import { motion } from 'framer-motion';
 import { revealVariants, viewportConfig } from '@/lib/motion';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { translations } from '@/utils/translations';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const { language } = useLanguage();
+  const role = translations[language].hero.role;
 
   return (
     <motion.footer
@@ -28,7 +32,7 @@ const Footer = () => {
               <span>&copy; {currentYear}</span>
               <span className="text-foreground">João Gabriel</span>
               <span>&middot;</span>
-              <span>Full-Stack Developer</span>
+              <span>{role}</span>
             </div>
 
             <div className="text-xs text-muted-foreground">

@@ -19,7 +19,7 @@ const ROUTES = [
     file: 'links.html',
     path: '/links',
     title: 'Links | João Gabriel',
-    description: 'Portfólio e orçamento de João Gabriel, Desenvolvedor Full-Stack.',
+    description: 'Portfólio e orçamento de João Gabriel, Engenheiro de Software.',
   },
 ];
 

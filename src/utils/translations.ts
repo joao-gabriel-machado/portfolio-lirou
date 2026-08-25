@@ -12,7 +12,7 @@ export const translations = {
             toggleLang: 'English'
         },
         hero: {
-            role: 'Full-Stack Developer',
+            role: 'Engenheiro de Software',
             greeting: 'Olá, meu nome é João Gabriel',
             tagline: 'Transformando ideias em interfaces modernas e funcionais',
             quoteBtn: 'Peça um orçamento',
@@ -22,7 +22,7 @@ export const translations = {
         },
         about: {
             label: 'Sobre',
-            title: 'Full-Stack Developer',
+            title: 'Engenheiro de Software',
             titleSuffix: ' com foco em UX',
             stats: {
                 experience: 'Anos de Experiência',
@@ -53,14 +53,14 @@ export const translations = {
             technologies: 'Tecnologias:',
             list: [
                 {
-                    title: 'Desenvolvedor Full-Stack',
+                    title: 'Engenheiro de Software',
                     company: 'Twiniti',
                     period: 'Mai/2024 - Presente',
                     location: 'Remoto',
                     description: 'Desenvolvimento back-end e full-stack em arquitetura de microserviços com Java, Quarkus e Spring Boot, além da manutenção e evolução de sistemas legados em Delphi. Atuação em diversos projetos com containerização via Docker e uso de IA (Claude Code) como ferramenta de produtividade no dia a dia de desenvolvimento.'
                 },
                 {
-                    title: 'Desenvolvedor de Software',
+                    title: 'Engenheiro de Software',
                     company: 'Titaniumfix',
                     period: 'Jan/2024 - Presente',
                     location: 'São José dos Campos, SP',
@@ -298,7 +298,7 @@ export const translations = {
             }
         },
         links: {
-            role: 'Desenvolvedor Full-Stack',
+            role: 'Engenheiro de Software',
             tagline: 'Transformo ideias em sites e sistemas modernos.',
             portfolio: 'Ver portfólio',
             portfolioDesc: 'Conheça meus projetos e trajetória',
@@ -320,7 +320,7 @@ export const translations = {
             toggleLang: 'Português'
         },
         hero: {
-            role: 'Full-Stack Developer',
+            role: 'Software Engineer',
             greeting: 'Hello, I am João Gabriel',
             tagline: 'Transforming ideas into modern and functional interfaces',
             quoteBtn: 'Request a quote',
@@ -330,7 +330,7 @@ export const translations = {
         },
         about: {
             label: 'About',
-            title: 'Full-Stack Developer',
+            title: 'Software Engineer',
             titleSuffix: ' focused on UX',
             stats: {
                 experience: 'Years of Experience',
@@ -361,14 +361,14 @@ export const translations = {
             technologies: 'Technologies:',
             list: [
                 {
-                    title: 'Full-Stack Developer',
+                    title: 'Software Engineer',
                     company: 'Twiniti',
                     period: 'May/2024 - Present',
                     location: 'Remote',
                     description: 'Back-end and full-stack development in a microservices architecture with Java, Quarkus and Spring Boot, plus maintenance and evolution of legacy systems in Delphi. Working across multiple projects with Docker containerization and AI (Claude Code) as a daily development productivity tool.'
                 },
                 {
-                    title: 'Software Developer',
+                    title: 'Software Engineer',
                     company: 'Titaniumfix',
                     period: 'Jan/2024 - Present',
                     location: 'São José dos Campos, SP',
@@ -606,7 +606,7 @@ export const translations = {
             }
         },
         links: {
-            role: 'Full-Stack Developer',
+            role: 'Software Engineer',
             tagline: 'I turn ideas into modern websites and systems.',
             portfolio: 'View portfolio',
             portfolioDesc: 'See my projects and background',
