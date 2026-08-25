@@ -3,6 +3,7 @@
   "rewrites": [
     { "source": "/orcamento", "destination": "/orcamento.html" },
     { "source": "/links", "destination": "/links.html" },
+    { "source": "/cidade", "destination": "/cidade.html" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }

@@ -21,6 +21,12 @@ const ROUTES = [
     title: 'Links | João Gabriel',
     description: 'Portfólio e orçamento de João Gabriel, Engenheiro de Software.',
   },
+  {
+    file: 'cidade.html',
+    path: '/cidade',
+    title: 'Cidade 3D | João Gabriel',
+    description: 'Explore o portfólio de João Gabriel numa cidade 3D interativa — projetos, experiência e skills como prédios de um centro urbano neon.',
+  },
 ];
 
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;');

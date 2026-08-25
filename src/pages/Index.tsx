@@ -1,5 +1,6 @@
 import Navbar from '@/components/Navbar';
 import FloatingShapesLayer from '@/components/three/FloatingShapesLayer';
+import CityEntryButton from '@/components/CityEntryButton';
 import HeroSection from '@/components/HeroSection';
 import AboutSection from '@/components/AboutSection';
 import TechStackSection from '@/components/TechStackSection';
@@ -13,6 +14,7 @@ const Index = () => {
   return (
     <div className="min-h-[100dvh]">
       <FloatingShapesLayer />
+      <CityEntryButton />
       <Navbar />
       <main>
         <HeroSection />
