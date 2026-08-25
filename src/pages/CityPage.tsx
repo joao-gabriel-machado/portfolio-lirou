@@ -1,10 +1,11 @@
 // src/pages/CityPage.tsx
 import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, ExternalLink, X, Clock, Loader2 } from 'lucide-react';
+import { ArrowLeft, ExternalLink, X, Clock, Loader2, Volume2, VolumeX } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { translations } from '@/utils/translations';
 import { PLACES, type PlaceId } from '@/components/city/places';
+import { startCityAmbience, stopCityAmbience } from '@/components/city/cityAudio';
 
 const CityCanvas = lazy(() => import('@/components/city/CityCanvas'));
 
@@ -56,12 +57,27 @@ const CityPage = () => {
     window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   const [isMobile] = useState(() =>
     window.matchMedia('(max-width: 767px), (pointer: coarse)').matches);
+  // estado (junto dos outros): desligado por padrão; preferência lembrada,
+  // mas o som NUNCA inicia sem clique (autoplay é bloqueado pelos browsers)
+  const [soundOn, setSoundOn] = useState(false);
+
+  const toggleSound = () => {
+    setSoundOn((on) => {
+      const next = !on;
+      if (next) startCityAmbience(); else stopCityAmbience();
+      try { localStorage.setItem('city-sound', String(next)); } catch { /* ok */ }
+      return next;
+    });
+  };
 
   useEffect(() => {
     const prev = document.title;
     document.title = tc.seo;
     return () => { document.title = prev; };
   }, [tc.seo]);
+
+  // desligar ao sair da página:
+  useEffect(() => () => stopCityAmbience(), []);
 
   // Conteúdo do card por lugar, reusando traduções existentes.
   const card: CardContent | null = useMemo(() => {
@@ -158,6 +174,10 @@ const CityPage = () => {
         </Link>
         <div className="pointer-events-auto flex items-center gap-2">
           <CityClock locale={locale} />
+          <button onClick={toggleSound} aria-label="Som"
+            className="p-2.5 rounded-full glass border border-white/10 text-muted-foreground hover:text-foreground transition-colors duration-200">
+            {soundOn ? <Volume2 className="w-4 h-4 text-primary" /> : <VolumeX className="w-4 h-4" />}
+          </button>
           <button onClick={toggleLanguage}
             className="px-3.5 py-2 text-xs font-bold text-muted-foreground hover:text-foreground rounded-full glass border border-white/10 uppercase tracking-widest transition-colors duration-200">
             {language === 'pt' ? 'BR' : 'EN'}
