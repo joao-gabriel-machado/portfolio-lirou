@@ -141,6 +141,36 @@ const LightTrain = ({ reducedMotion }: { reducedMotion: boolean }) => {
   );
 };
 
+const TRAIN_RAIL_Y = 11.7;
+const TRAIN_RAIL_COLUMNS = 8;
+
+/** Trilho elevado do trem: anel fino (torus deitado) + colunas de sustentação. Estático — sem useFrame. */
+const TrainRail = () => {
+  const columnPositions = useMemo(() => {
+    const out: [number, number][] = [];
+    for (let i = 0; i < TRAIN_RAIL_COLUMNS; i++) {
+      const a = (i / TRAIN_RAIL_COLUMNS) * Math.PI * 2;
+      out.push([Math.cos(a) * TRAIN_RADIUS, Math.sin(a) * TRAIN_RADIUS]);
+    }
+    return out;
+  }, []);
+
+  return (
+    <group raycast={() => null}>
+      <mesh position={[0, TRAIN_RAIL_Y, 0]} rotation={[Math.PI / 2, 0, 0]} raycast={() => null}>
+        <torusGeometry args={[TRAIN_RADIUS, 0.06, 8, 48]} />
+        <meshStandardMaterial color="#1a2226" roughness={0.6} metalness={0.4} />
+      </mesh>
+      {columnPositions.map(([x, z], i) => (
+        <mesh key={i} position={[x, TRAIN_RAIL_Y / 2, z]} raycast={() => null}>
+          <cylinderGeometry args={[0.08, 0.08, TRAIN_RAIL_Y]} />
+          <meshStandardMaterial color="#1a2226" roughness={0.6} metalness={0.4} />
+        </mesh>
+      ))}
+    </group>
+  );
+};
+
 /** Mini-formas do hero flutuando sobre a cidade. */
 const SkyShapes = ({ reducedMotion, isMobile }: { reducedMotion: boolean; isMobile: boolean }) => {
   const group = useRef<THREE.Group>(null);
@@ -227,6 +257,7 @@ const CityLife = ({ reducedMotion, isMobile }: { reducedMotion: boolean; isMobil
   <group>
     <Avatar reducedMotion={reducedMotion} />
     <LightTrain reducedMotion={reducedMotion} />
+    <TrainRail />
     <SkyShapes reducedMotion={reducedMotion} isMobile={isMobile} />
     <EasterEggs reducedMotion={reducedMotion} />
   </group>

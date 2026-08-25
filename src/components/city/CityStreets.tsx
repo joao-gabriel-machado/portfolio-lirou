@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import { SkeletonUtils, mergeBufferGeometries } from 'three-stdlib';
 import { useFrame } from '@react-three/fiber';
 import { useGLTF, Instances, Instance } from '@react-three/drei';
-import { CITY_COLORS, PLACES, type PlaceId } from './places';
+import { PLACES, type PlaceId } from './places';
 import { applyNightMaterials } from './nightPalette';
 import { CITY_MODELS } from './assets';
 
@@ -485,85 +485,155 @@ const ParkedCars = ({ isMobile }: { isMobile: boolean }) => {
   );
 };
 
-/** Carro de luz circulando o anel viário. */
-const RingCar = ({ speed, startAngle, reducedMotion }: { speed: number; startAngle: number; reducedMotion: boolean }) => {
-  const ref = useRef<THREE.Mesh>(null);
+/**
+ * Offset fixo de orientação: os modelos do Car Kit têm o nariz no eixo local
+ * +Z (rodas dianteiras em z>0, ver `wheel-front-*` no GLB — traseiras em
+ * z<0), mas a fórmula de rotação abaixo (herdada do v1, quando o "carro" era
+ * uma caixa emissiva com o comprimento em X, não em Z) calcula `rotation.y`
+ * assumindo que o "nariz" é o eixo local +X. Rotacionar o corpo +90° em Y
+ * realinha o nariz (+Z do modelo) com o +X que a fórmula espera — sem tocar
+ * a fórmula (mesma lógica de rota/velocidade do v1) nem o cálculo do
+ * ângulo/posição.
+ */
+const CAR_FRONT_OFFSET = Math.PI / 2;
+
+/** Altura do topo da via (tiles têm 0.02 nativo × roadScale ~3 → topo em y≈0.06 — mesma referência usada pelas poças de luz dos postes). */
+const ROAD_TOP_Y = 0.06;
+
+/**
+ * Corpo de um carro de tráfego: modelo do Car Kit retintado (night materials)
+ * + faróis brancos na frente + lanternas vermelhas atrás. Compartilhado por
+ * RingCar/RadialCar — só a posição/rotação do grupo pai (ref) muda a cada
+ * frame; a orientação nariz/traseira aqui é fixa em relação ao corpo.
+ */
+const TrafficCarBody = ({ modelKey, seed }: { modelKey: keyof typeof CITY_MODELS.cars; seed: number }) => {
+  const { scene } = useGLTF(CITY_MODELS.cars[modelKey]);
+  const clone = useMemo(() => {
+    const c = SkeletonUtils.clone(scene) as THREE.Group;
+    applyNightMaterials(c, seed);
+    return c;
+  }, [scene, seed]);
+
+  const { scale, offset, halfLength, halfWidth, lightY } = useMemo(() => {
+    const box = new THREE.Box3().setFromObject(clone);
+    const rawLength = Math.max(box.max.z - box.min.z, 0.001);
+    const rawWidth = Math.max(box.max.x - box.min.x, 0.001);
+    const rawHeight = Math.max(box.max.y - box.min.y, 0.001);
+    const centerX = (box.min.x + box.max.x) / 2;
+    const centerZ = (box.min.z + box.max.z) / 2;
+    const s = CAR_TARGET_LENGTH / rawLength;
+    return {
+      scale: s,
+      offset: [-centerX, -box.min.y, -centerZ] as [number, number, number],
+      halfLength: CAR_TARGET_LENGTH / 2,
+      halfWidth: (rawWidth / 2) * s,
+      lightY: rawHeight * s * 0.35,
+    };
+  }, [clone]);
+
+  return (
+    <group rotation={[0, CAR_FRONT_OFFSET, 0]} raycast={() => null}>
+      <group scale={scale} raycast={() => null}>
+        <primitive object={clone} position={offset} raycast={() => null} />
+      </group>
+      {/* Faróis brancos — frente (nariz local +Z) */}
+      {[-1, 1].map((side) => (
+        <mesh key={`headlight-${side}`} position={[side * halfWidth * 0.6, lightY, halfLength - 0.06]} raycast={() => null}>
+          <sphereGeometry args={[0.05, 8, 8]} />
+          <meshStandardMaterial color="#fff4d6" emissive="#fff4d6" emissiveIntensity={1.5} toneMapped={false} />
+        </mesh>
+      ))}
+      {/* Lanternas vermelhas — traseira (local -Z) */}
+      {[-1, 1].map((side) => (
+        <mesh key={`taillight-${side}`} position={[side * halfWidth * 0.6, lightY, -halfLength + 0.06]} raycast={() => null}>
+          <sphereGeometry args={[0.045, 8, 8]} />
+          <meshStandardMaterial color="#ff5a5a" emissive="#ff5a5a" emissiveIntensity={1.3} />
+        </mesh>
+      ))}
+    </group>
+  );
+};
+
+/** Carro de tráfego circulando o anel viário. */
+const RingCar = ({ speed, startAngle, reducedMotion, modelKey, seed }: {
+  speed: number; startAngle: number; reducedMotion: boolean; modelKey: keyof typeof CITY_MODELS.cars; seed: number;
+}) => {
+  const ref = useRef<THREE.Group>(null);
   const angle = useRef(startAngle);
   const prevPos = useRef(new THREE.Vector3());
 
-  const initial = useMemo(() => new THREE.Vector3(0, 0.2, RING_RADIUS)
+  const initial = useMemo(() => new THREE.Vector3(0, ROAD_TOP_Y, RING_RADIUS)
     .applyQuaternion(new THREE.Quaternion().setFromAxisAngle(Y_UP, startAngle)), [startAngle]);
   prevPos.current.copy(initial);
 
   useFrame((_, delta) => {
-    const mesh = ref.current;
-    if (!mesh || reducedMotion) return;
+    const group = ref.current;
+    if (!group || reducedMotion) return;
     angle.current += delta * speed;
     const q = new THREE.Quaternion().setFromAxisAngle(Y_UP, angle.current);
-    const pos = new THREE.Vector3(0, 0.2, RING_RADIUS).applyQuaternion(q);
+    const pos = new THREE.Vector3(0, ROAD_TOP_Y, RING_RADIUS).applyQuaternion(q);
     const dx = pos.x - prevPos.current.x;
     const dz = pos.z - prevPos.current.z;
     if (Math.abs(dx) > 1e-6 || Math.abs(dz) > 1e-6) {
-      mesh.rotation.y = Math.atan2(-dz, dx);
+      group.rotation.y = Math.atan2(-dz, dx);
     }
-    mesh.position.copy(pos);
+    group.position.copy(pos);
     prevPos.current.copy(pos);
   });
 
   return (
-    <mesh ref={ref} position={initial.toArray()} raycast={() => null}>
-      <boxGeometry args={[0.5, 0.15, 0.28]} />
-      <meshStandardMaterial color={CITY_COLORS.primary} emissive={CITY_COLORS.primary} emissiveIntensity={1.4} />
-    </mesh>
+    <group ref={ref} position={initial.toArray()} raycast={() => null}>
+      <TrafficCarBody modelKey={modelKey} seed={seed} />
+    </group>
   );
 };
 
-/** Carro de luz fazendo vai-e-vem numa avenida radial. */
-const RadialCar = ({ radialAngle, laneOffset, phaseSpeed, phaseOffset, reducedMotion }: {
+/** Carro de tráfego fazendo vai-e-vem numa avenida radial. */
+const RadialCar = ({ radialAngle, laneOffset, phaseSpeed, phaseOffset, reducedMotion, modelKey, seed }: {
   radialAngle: number; laneOffset: number; phaseSpeed: number; phaseOffset: number; reducedMotion: boolean;
+  modelKey: keyof typeof CITY_MODELS.cars; seed: number;
 }) => {
-  const ref = useRef<THREE.Mesh>(null);
+  const ref = useRef<THREE.Group>(null);
   const prevPos = useRef(new THREE.Vector3());
   const qYaw = useMemo(() => new THREE.Quaternion().setFromAxisAngle(Y_UP, radialAngle), [radialAngle]);
 
   const computePos = (t: number) => {
     const ease = (Math.sin(t) + 1) / 2;
     const r = 6 + ease * (40 - 6);
-    return new THREE.Vector3(laneOffset, 0.2, r).applyQuaternion(qYaw);
+    return new THREE.Vector3(laneOffset, ROAD_TOP_Y, r).applyQuaternion(qYaw);
   };
 
   const initial = useMemo(() => computePos(phaseOffset), []); // eslint-disable-line react-hooks/exhaustive-deps
   prevPos.current.copy(initial);
 
   useFrame(({ clock }) => {
-    const mesh = ref.current;
-    if (!mesh || reducedMotion) return;
+    const group = ref.current;
+    if (!group || reducedMotion) return;
     const pos = computePos(clock.elapsedTime * phaseSpeed + phaseOffset);
     const dx = pos.x - prevPos.current.x;
     const dz = pos.z - prevPos.current.z;
     if (Math.abs(dx) > 1e-6 || Math.abs(dz) > 1e-6) {
-      mesh.rotation.y = Math.atan2(-dz, dx);
+      group.rotation.y = Math.atan2(-dz, dx);
     }
-    mesh.position.copy(pos);
+    group.position.copy(pos);
     prevPos.current.copy(pos);
   });
 
   return (
-    <mesh ref={ref} position={initial.toArray()} raycast={() => null}>
-      <boxGeometry args={[0.5, 0.15, 0.28]} />
-      <meshStandardMaterial color={CITY_COLORS.primary} emissive={CITY_COLORS.primary} emissiveIntensity={1.4} />
-    </mesh>
+    <group ref={ref} position={initial.toArray()} raycast={() => null}>
+      <TrafficCarBody modelKey={modelKey} seed={seed} />
+    </group>
   );
 };
 
 const Cars = ({ reducedMotion, isMobile }: { reducedMotion: boolean; isMobile: boolean }) => (
   <group raycast={() => null}>
-    <RingCar speed={0.22} startAngle={0} reducedMotion={reducedMotion} />
-    <RingCar speed={-0.3} startAngle={Math.PI} reducedMotion={reducedMotion} />
+    <RingCar speed={0.22} startAngle={0} reducedMotion={reducedMotion} modelKey="sedan" seed={821} />
+    <RingCar speed={-0.3} startAngle={Math.PI} reducedMotion={reducedMotion} modelKey="hatchback" seed={822} />
     {!isMobile && (
       <>
-        <RadialCar radialAngle={Math.PI} laneOffset={0.8} phaseSpeed={0.3} phaseOffset={0} reducedMotion={reducedMotion} />
-        <RadialCar radialAngle={Math.PI / 2} laneOffset={-0.8} phaseSpeed={0.22} phaseOffset={1.4} reducedMotion={reducedMotion} />
+        <RadialCar radialAngle={Math.PI} laneOffset={0.8} phaseSpeed={0.3} phaseOffset={0} reducedMotion={reducedMotion} modelKey="hatchback" seed={823} />
+        <RadialCar radialAngle={Math.PI / 2} laneOffset={-0.8} phaseSpeed={0.22} phaseOffset={1.4} reducedMotion={reducedMotion} modelKey="sedan" seed={824} />
       </>
     )}
   </group>
