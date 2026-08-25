@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import { SkeletonUtils, mergeBufferGeometries } from 'three-stdlib';
 import { useFrame } from '@react-three/fiber';
-import { Text, useGLTF, Instances, Instance, Edges } from '@react-three/drei';
+import { Text, useGLTF, Instances, Instance } from '@react-three/drei';
 import { CITY_COLORS, PLACES, type Place, type PlaceId } from './places';
 import { applyNightMaterials, NIGHT } from './nightPalette';
 import { CITY_MODELS } from './assets';
@@ -28,6 +28,15 @@ const POI_MODEL: Partial<Record<PlaceId, BuildingModelKey>> = {
 
 const DESKTOP_VARIATIONS: BuildingModelKey[] = ['smallA', 'mediumA', 'largeA', 'tallA', 'wideA'];
 const MOBILE_VARIATIONS: BuildingModelKey[] = ['smallA', 'mediumA', 'tallA'];
+
+/**
+ * POIs cujo GLB tem um aspect ratio muito diferente de `place.size` (bbox
+ * quase cúbico normalizado por uma altura grande) — escala uniforme por
+ * altura produz um monolito largo demais. Para esses, escala por eixo
+ * (leve esticamento do modelo, aceitável no low-poly) mantendo o footprint
+ * fiel a `place.size[0]/[2]` (importa para waypoints/ruas).
+ */
+const FOOTPRINT_CLAMPED_IDS: ReadonlySet<PlaceId> = new Set(['contact', 'edu-rocketseat']);
 
 interface Props {
   onSelect: (id: PlaceId) => void;
@@ -128,14 +137,22 @@ const GltfBuilding = ({ place, modelKey, label, hovered, onSelect, onHover, redu
   reducedMotion: boolean; seed: number;
 }) => {
   const { scene } = useGLTF(CITY_MODELS.buildings[modelKey]);
-  const clone = useMemo(() => SkeletonUtils.clone(scene) as THREE.Group, [scene]);
+  const clampFootprint = FOOTPRINT_CLAMPED_IDS.has(place.id);
 
-  // Retintagem noturna aplicada uma única vez por clone (antes do primeiro
-  // paint — useMemo em vez de useEffect evita um frame com o colormap cru).
-  useMemo(() => { applyNightMaterials(clone, seed); }, [clone, seed]);
+  // Clone + retintagem noturna, feitos juntos dentro do mesmo useMemo (uma
+  // única vez por clone, antes do primeiro paint — evita um frame com o
+  // colormap cru e evita separar side-effect de criação).
+  const clone = useMemo(() => {
+    const c = SkeletonUtils.clone(scene) as THREE.Group;
+    applyNightMaterials(c, seed);
+    return c;
+  }, [scene, seed]);
 
-  // Bounding box medida UMA VEZ: normaliza escala pela altura e centraliza
-  // a base do modelo em (0,0,0) local (compensado pelo offset abaixo).
+  // Bounding box medida UMA VEZ: normaliza escala pela altura (e, para os
+  // POIs em FOOTPRINT_CLAMPED_IDS, também por largura/profundidade —
+  // escala por eixo em vez de uniforme, pra não gerar um monolito largo
+  // demais em modelos com aspect ratio muito diferente de place.size) e
+  // centraliza a base do modelo em (0,0,0) local (compensado pelo offset).
   const { scale, offset, width, depth } = useMemo(() => {
     const box = new THREE.Box3().setFromObject(clone);
     const rawHeight = Math.max(box.max.y - box.min.y, 0.001);
@@ -143,14 +160,16 @@ const GltfBuilding = ({ place, modelKey, label, hovered, onSelect, onHover, redu
     const rawDepth = Math.max(box.max.z - box.min.z, 0.001);
     const centerX = (box.min.x + box.max.x) / 2;
     const centerZ = (box.min.z + box.max.z) / 2;
-    const s = place.size[1] / rawHeight;
+    const scaleY = place.size[1] / rawHeight;
+    const scaleX = clampFootprint ? place.size[0] / rawWidth : scaleY;
+    const scaleZ = clampFootprint ? place.size[2] / rawDepth : scaleY;
     return {
-      scale: s,
+      scale: [scaleX, scaleY, scaleZ] as [number, number, number],
       offset: [-centerX, -box.min.y, -centerZ] as [number, number, number],
-      width: rawWidth * s,
-      depth: rawDepth * s,
+      width: rawWidth * scaleX,
+      depth: rawDepth * scaleZ,
     };
-  }, [clone, place.size]);
+  }, [clone, place.size, clampFootprint]);
 
   const windowPlanes = useMemo(
     () => makeWindowPlanes(seed, width, place.size[1], depth),
@@ -194,10 +213,13 @@ const GltfBuilding = ({ place, modelKey, label, hovered, onSelect, onHover, redu
   );
 };
 
+const TOTEM_CAP_HEIGHT = 0.12;
+
 /**
  * Totem dos distritos de skills (4 itens): sem modelo GLB dedicado no kit —
- * mantém o volume box v1, mas retintado (NIGHT.trim) com aresta neon em vez
- * da textura de janelas (removida nesta task). Abstrato por design.
+ * mantém o volume box v1, mas retintado (NIGHT.trim, fosco) com uma "coroa"
+ * neon fina no topo em vez da textura de janelas (removida nesta task).
+ * Abstrato por design.
  */
 const SkillsTotem = ({ place, label, hovered, onSelect, onHover, reducedMotion, seed }: {
   place: Place; label: string; hovered: boolean;
@@ -205,13 +227,6 @@ const SkillsTotem = ({ place, label, hovered, onSelect, onHover, reducedMotion, 
   reducedMotion: boolean; seed: number;
 }) => {
   const [w, h, d] = place.size;
-  const body = useRef<THREE.MeshStandardMaterial>(null);
-
-  useFrame(({ clock }) => {
-    if (reducedMotion || !body.current || hovered) return;
-    const t = clock.elapsedTime;
-    body.current.emissiveIntensity = 0.6 + Math.sin(t * 0.6 + seed) * 0.15;
-  });
 
   return (
     <group position={[place.position[0], 0, place.position[2]]}>
@@ -223,14 +238,23 @@ const SkillsTotem = ({ place, label, hovered, onSelect, onHover, reducedMotion, 
       >
         <boxGeometry args={[w, h, d]} />
         <meshStandardMaterial
-          ref={body}
           color={NIGHT.trim}
-          roughness={0.55}
-          metalness={0.5}
+          roughness={0.85}
+          metalness={0}
           emissive={CITY_COLORS.primary}
-          emissiveIntensity={hovered ? 1.6 : 0.6}
+          emissiveIntensity={hovered ? 0.25 : 0}
         />
-        <Edges color={CITY_COLORS.primary} />
+      </mesh>
+      {/* Coroa neon: tampa fina no topo do totem */}
+      <mesh position={[0, h + TOTEM_CAP_HEIGHT / 2, 0]} raycast={() => null}>
+        <boxGeometry args={[w, TOTEM_CAP_HEIGHT, d]} />
+        <meshStandardMaterial
+          color={NIGHT.trim}
+          roughness={0.85}
+          metalness={0}
+          emissive={CITY_COLORS.primary}
+          emissiveIntensity={1.3}
+        />
       </mesh>
       <Letreiro label={label} height={h} width={w} hovered={hovered} reducedMotion={reducedMotion} seed={seed} />
     </group>
@@ -293,7 +317,7 @@ const BackgroundVariation = ({ modelKey, seed, transforms }: {
   }, [scene, seed]);
 
   return (
-    <Instances geometry={geometry} material={material} limit={transforms.length || 1} raycast={() => null}>
+    <Instances geometry={geometry} material={material} limit={transforms.length || 1}>
       {transforms.map((t, i) => (
         <Instance key={i} position={t.pos} scale={t.hgt / height} />
       ))}
