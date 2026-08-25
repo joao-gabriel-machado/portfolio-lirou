@@ -8,16 +8,17 @@ import { CITY_COLORS, PLACES, type Place, type PlaceId } from './places';
 /** Textura de janelas acesas gerada em canvas (compartilhada). */
 function makeWindowTexture(): THREE.CanvasTexture {
   const c = document.createElement('canvas');
-  c.width = 64; c.height = 128;
+  c.width = 128; c.height = 256;
   const ctx = c.getContext('2d')!;
   ctx.fillStyle = '#0c1114';
-  ctx.fillRect(0, 0, 64, 128);
-  for (let y = 4; y < 124; y += 8) {
-    for (let x = 4; x < 60; x += 8) {
-      if (Math.random() < 0.35) {
-        ctx.fillStyle = Math.random() < 0.8 ? '#1fb2aa' : '#e8f6f5';
-        ctx.globalAlpha = 0.25 + Math.random() * 0.6;
-        ctx.fillRect(x, y, 4, 4);
+  ctx.fillRect(0, 0, 128, 256);
+  for (let y = 4; y < 252; y += 10) {
+    for (let x = 4; x < 124; x += 10) {
+      if (Math.random() < 0.55) {
+        const roll = Math.random();
+        ctx.fillStyle = roll < 0.7 ? '#ffd9a0' : roll < 0.9 ? '#1fb2aa' : '#e8f6f5';
+        ctx.globalAlpha = 0.5 + Math.random() * 0.5;
+        ctx.fillRect(x, y, 6, 5);
       }
     }
   }
@@ -68,7 +69,7 @@ const PoiBuilding = ({ place, label, hovered, onSelect, onHover, windows, reduce
     if (sign.current) sign.current.visible = hovered || neonFlickerOn(t, seed);
     // Janelas "respiram" dessincronizadas (cintilar lento)
     if (body.current && !hovered) {
-      body.current.emissiveIntensity = 0.05 + Math.max(0, Math.sin(t * 0.6 + seed)) * 0.05;
+      body.current.emissiveIntensity = 0.17 + Math.sin(t * 0.6 + seed) * 0.05;
     }
   });
 
@@ -88,7 +89,7 @@ const PoiBuilding = ({ place, label, hovered, onSelect, onHover, windows, reduce
           metalness={0.6}
           map={windows}
           emissive={CITY_COLORS.primary}
-          emissiveIntensity={hovered ? 0.35 : 0.06}
+          emissiveIntensity={hovered ? 0.35 : 0.16}
         />
       </mesh>
       {/* Letreiro neon no topo — fixo, legível da vista padrão */}
@@ -144,7 +145,7 @@ const BackgroundBuildings = ({ count, windows }: { count: number; windows: THREE
     <instancedMesh ref={ref} args={[undefined, undefined, count]} raycast={() => null}>
       <boxGeometry args={[1, 1, 1]} />
       <meshStandardMaterial color={CITY_COLORS.building} roughness={0.55} metalness={0.45}
-        map={windows} emissive={CITY_COLORS.primary} emissiveIntensity={0.03} />
+        map={windows} emissive={CITY_COLORS.primary} emissiveIntensity={0.1} />
     </instancedMesh>
   );
 };

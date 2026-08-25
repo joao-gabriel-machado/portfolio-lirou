@@ -4,6 +4,7 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import CameraRig from './CameraRig';
 import CityBuildings from './CityBuildings';
+import CityStreets from './CityStreets';
 import CityLife from './CityLife';
 import { CITY_COLORS, HOME_FRAME, type PlaceId } from './places';
 
@@ -50,6 +51,8 @@ const CityCanvas = ({ activePlace, onSelect, onHover, hoveredId, labels, reduced
       reducedMotion={reducedMotion}
       isMobile={isMobile}
     />
+
+    <CityStreets reducedMotion={reducedMotion} isMobile={isMobile} />
 
     <CityLife reducedMotion={reducedMotion} isMobile={isMobile} />
 
