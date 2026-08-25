@@ -61,8 +61,8 @@ pequeno (animação/tooltip), não abre card.
 
 ## Personagem ambiente
 
-- Mini-avatar (low-poly do João ou robô na estética do site — decidir na
-  implementação pelo que ficar melhor com menor custo).
+- Mini-avatar **low-poly do João** (decidido): modelado proceduralmente ou
+  GLTF simples, paleta do site (roupa escura, detalhe cyan).
 - Corre sozinho num circuito de **waypoints** definido nos dados da
   cidade; para em alguns lugares por alguns segundos ("olha vitrine"),
   depois segue. Rotação suave nas curvas; ciclo de corrida simples
@@ -84,7 +84,9 @@ pequeno (animação/tooltip), não abre card.
   / `card-inner`), com título, descrição, stack e link ao vivo quando
   houver; botão fechar → câmera volta ao enquadramento geral.
 - **HUD mínimo**: dica "arraste para explorar" (some após primeiro
-  input), botão voltar ao site, toggle BR/EN (padrão das outras rotas).
+  input), botão voltar ao site, toggle BR/EN (padrão das outras rotas) e
+  **relógio no canto superior** mostrando a hora local do visitante
+  (estilo neon/glass; atualiza por minuto; existe só na cidade).
 
 ## Contratos de extensão (preparação para v2 "Modo passeio")
 
@@ -130,8 +132,9 @@ src/components/city/
   `openPlace(id)` vindo da cena via callback.
 - Materiais e geometrias compartilhados; prédios genéricos de fundo em
   `InstancedMesh`.
-- Entrada: botão "Explorar a cidade" na landing (posição definida na
-  implementação) + acesso direto pela URL.
+- Entrada: botão "Explorar a cidade" **fixo no canto superior da landing**
+  (pill glass com ícone, fora da navbar central, não compete com ela;
+  some quando o menu mobile abre) + acesso direto pela URL.
 
 ## Performance e fallbacks
 
