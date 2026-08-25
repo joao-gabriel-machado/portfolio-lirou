@@ -1,7 +1,7 @@
 // src/pages/CityPage.tsx
 import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, ExternalLink, X, Clock } from 'lucide-react';
+import { ArrowLeft, ExternalLink, X, Clock, Loader2 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { translations } from '@/utils/translations';
 import { PLACES, type PlaceId } from '@/components/city/places';
@@ -132,7 +132,11 @@ const CityPage = () => {
 
   return (
     <div className="relative h-[100dvh] overflow-hidden bg-background">
-      <Suspense fallback={null}>
+      <Suspense fallback={
+        <div className="absolute inset-0 flex items-center justify-center">
+          <Loader2 className="w-8 h-8 text-primary animate-spin" />
+        </div>
+      }>
         <CityCanvas
           activePlace={activePlace}
           onSelect={(id) => { setActivePlace(id); setInteracted(true); }}

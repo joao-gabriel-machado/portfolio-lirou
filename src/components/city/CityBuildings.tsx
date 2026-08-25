@@ -76,7 +76,7 @@ const PoiBuilding = ({ place, label, hovered, onSelect, onHover, windows, reduce
     <group position={[place.position[0], 0, place.position[2]]}>
       <mesh
         position={[0, h / 2, 0]}
-        onClick={(e) => { e.stopPropagation(); onSelect(place.id); }}
+        onClick={(e) => { if (e.delta > 4) return; e.stopPropagation(); onSelect(place.id); }}
         onPointerOver={(e) => { e.stopPropagation(); onHover(place.id); document.body.style.cursor = 'pointer'; }}
         onPointerOut={() => { onHover(null); document.body.style.cursor = 'default'; }}
       >

@@ -1,4 +1,5 @@
 // src/components/city/CityCanvas.tsx
+import { useRef } from 'react';
 import { Canvas } from '@react-three/fiber';
 import CameraRig from './CameraRig';
 import CityBuildings from './CityBuildings';
@@ -14,12 +15,21 @@ export interface CityCanvasProps {
   isMobile: boolean;
 }
 
-const CityCanvas = ({ activePlace, onSelect, onHover, hoveredId, labels, reducedMotion, isMobile }: CityCanvasProps) => (
+const CityCanvas = ({ activePlace, onSelect, onHover, hoveredId, labels, reducedMotion, isMobile }: CityCanvasProps) => {
+  // Rastreia a posição do pointerdown para não desselecionar quando o
+  // "miss" é, na verdade, o fim de um drag de órbita (não um clique real).
+  const downPos = useRef<[number, number]>([0, 0]);
+
+  return (
   <Canvas
     camera={{ position: HOME_FRAME.position, fov: 45 }}
     dpr={[1, isMobile ? 1.5 : 2]}
     gl={{ antialias: true, alpha: false, powerPreference: 'high-performance' }}
-    onPointerMissed={() => onSelect(null)}
+    onPointerDown={(e) => { downPos.current = [e.clientX, e.clientY]; }}
+    onPointerMissed={(e) => {
+      const [x, y] = downPos.current;
+      if (Math.hypot(e.clientX - x, e.clientY - y) <= 4) onSelect(null);
+    }}
   >
     <color attach="background" args={[CITY_COLORS.background]} />
     <fog attach="fog" args={[CITY_COLORS.background, 45, 90]} />
@@ -38,6 +48,7 @@ const CityCanvas = ({ activePlace, onSelect, onHover, hoveredId, labels, reduced
 
     <CameraRig activePlace={activePlace} reducedMotion={reducedMotion} />
   </Canvas>
-);
+  );
+};
 
 export default CityCanvas;
