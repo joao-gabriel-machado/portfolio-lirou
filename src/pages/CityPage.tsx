@@ -51,6 +51,7 @@ const CityPage = () => {
   const [activePlace, setActivePlace] = useState<PlaceId | null>(null);
   const [hovered, setHovered] = useState<PlaceId | null>(null);
   const [interacted, setInteracted] = useState(false);
+  const [sceneReady, setSceneReady] = useState(false);
   const [reducedMotion] = useState(() =>
     window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   const [isMobile] = useState(() =>
@@ -132,11 +133,12 @@ const CityPage = () => {
 
   return (
     <div className="relative h-[100dvh] overflow-hidden bg-background">
-      <Suspense fallback={
-        <div className="absolute inset-0 flex items-center justify-center">
-          <Loader2 className="w-8 h-8 text-primary animate-spin" />
-        </div>
-      }>
+      <div aria-hidden={sceneReady} role="status"
+        className={`absolute inset-0 z-30 flex items-center justify-center bg-background transition-opacity duration-700 ${sceneReady ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+        <Loader2 className="w-8 h-8 text-primary animate-spin" />
+      </div>
+
+      <Suspense fallback={null}>
         <CityCanvas
           activePlace={activePlace}
           onSelect={(id) => { setActivePlace(id); setInteracted(true); }}
@@ -145,6 +147,7 @@ const CityPage = () => {
           labels={labels}
           reducedMotion={reducedMotion}
           isMobile={isMobile}
+          onReady={() => setSceneReady(true)}
         />
       </Suspense>
 
