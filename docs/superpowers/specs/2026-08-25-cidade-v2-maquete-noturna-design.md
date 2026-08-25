@@ -51,6 +51,31 @@ visual (geometria decorativa + materiais + luz), não os sistemas.
   do contato (identidade do site). Bloom mantido no desktop com
   intensidade reduzida (~0.35) para os neons e janelas.
 
+## Letreiros físicos animados (pedido do usuário)
+
+Substituir o texto flutuante por **letreiros de verdade**, por POI:
+
+- **Estrutura:** painel escuro (box fino `#0d1117`) com moldura, montado
+  na fachada superior do prédio por 2 hastes curtas — ou em pórtico no
+  telhado nas 2 torres hero (Metrifica, Prontiva). Dimensionado ao texto.
+- **Tubo neon:** o texto (drei Text) sobre o painel com outline forte e
+  cor neon; leve profundidade (texto duplicado com offset) para ler como
+  tubo, não como fonte flutuante.
+- **Animações (todas procedurais, gated por reducedMotion):**
+  1. **Acendimento sequencial** — na primeira vez que o POI entra em
+     destaque (fly-to/hover) ou nos primeiros segundos da cena, as letras
+     acendem uma a uma (~80ms/letra, com um "pisca" curto na penúltima),
+     via `fillOpacity`/emissive por letra (um Text por letra nos heroes;
+     nos demais, fade único com flicker de ignição).
+  2. **Marquee** — nas 2 torres hero, fileira de lâmpadas (esferas
+     pequenas instanciadas) na moldura do painel com "corrida" clássica
+     (grupos de 3 acendendo em sequência, ~2 voltas/s — abaixo do limiar
+     de strobe por serem pontos pequenos em movimento contínuo, não flash
+     de tela; manter luminância baixa).
+  3. **Falha ocasional** — mantém o `neonFlickerOn` da v1 (lento,
+     seguro, nunca no hover).
+- reducedMotion: letreiros acesos fixos, sem sequência nem marquee.
+
 ## Substituições (arquivo a arquivo)
 
 | v1 | v2 |
