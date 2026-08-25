@@ -60,7 +60,84 @@ function extractSingleMesh(scene: THREE.Object3D, seed: number): { geometry: THR
   return { geometry: mesh.geometry, material: mesh.material as THREE.Material };
 }
 
-interface TileTransform { pos: [number, number, number]; rotY: number; }
+interface TileTransform { pos: [number, number, number]; rotY: number; scale: [number, number, number]; }
+interface RadialTileSpec { z: number; halfLength: number; }
+interface RingTileSpec { pos: THREE.Vector3; rotY: number; halfLength: number; }
+
+/**
+ * Gera os centros (+semi-comprimento, pra permitir stretch) dos tiles retos
+ * ao longo de UMA radial: começa rente à borda do cruzamento central
+ * (`crossroadHalf + tileStep/2`, sem os 0.5 de vão do v1), pula a faixa
+ * ocupada pelo tile de interseção do anel (`|z-RING_RADIUS| < intersectionHalf
+ * + tileStep/2`) e estica os dois tiles vizinhos ao vão pra fechar sem gap
+ * (borda encosta exatamente na borda da interseção; overlap é aceitável,
+ * gap não). Fix round Task 5 — findings 4 e 5.
+ */
+function buildRadialTileSpecs(tileStep: number, crossroadHalf: number, intersectionHalf: number): RadialTileSpec[] {
+  const exclusionRadius = intersectionHalf + tileStep / 2;
+  const start = crossroadHalf + tileStep / 2;
+
+  const nominalZs: number[] = [];
+  for (let z = start; z < RADIAL_OUTER; z += tileStep) nominalZs.push(z);
+
+  const kept: RadialTileSpec[] = nominalZs
+    .filter((z) => Math.abs(z - RING_RADIUS) >= exclusionRadius)
+    .map((z) => ({ z, halfLength: tileStep / 2 }));
+
+  // Tile logo antes/depois do vão da interseção — esticados pra fechar sem gap.
+  let beforeIdx = -1;
+  let afterIdx = -1;
+  kept.forEach((t, i) => {
+    if (t.z < RING_RADIUS) beforeIdx = i;
+    else if (afterIdx === -1) afterIdx = i;
+  });
+
+  if (beforeIdx >= 0) {
+    const t = kept[beforeIdx];
+    const innerEdge = t.z - t.halfLength; // borda que já encosta no tile anterior — não mexe
+    const targetOuterEdge = RING_RADIUS - intersectionHalf; // borda da interseção
+    const newHalf = (targetOuterEdge - innerEdge) / 2;
+    kept[beforeIdx] = { z: innerEdge + newHalf, halfLength: newHalf };
+  }
+  if (afterIdx >= 0) {
+    const t = kept[afterIdx];
+    const outerEdge = t.z + t.halfLength; // borda que já encosta no próximo tile — não mexe
+    const targetInnerEdge = RING_RADIUS + intersectionHalf; // borda da interseção
+    const newHalf = (outerEdge - targetInnerEdge) / 2;
+    kept[afterIdx] = { z: targetInnerEdge + newHalf, halfLength: newHalf };
+  }
+
+  return kept;
+}
+
+/**
+ * Gera os tiles retos ao longo dos 16 lados do polígono que aproxima o anel
+ * (r=27): por lado, `count = ceil(comprimentoDoLado / tileStep)` tiles
+ * uniformemente distribuídos, cada um esticado pra `comprimentoDoLado /
+ * count` (fecha o lado inteiro — antes só 1 tile por vértice, ~72% do anel
+ * ficava sem malha). Fix round Task 5 — finding 1.
+ */
+function buildRingTileSpecs(tileStep: number): RingTileSpec[] {
+  const angleStep = (Math.PI * 2) / RING_SEGMENTS;
+  const chordLen = 2 * RING_RADIUS * Math.sin(angleStep / 2);
+  const count = Math.max(Math.ceil(chordLen / tileStep), 1);
+  const halfLength = chordLen / count / 2;
+
+  const out: RingTileSpec[] = [];
+  for (let i = 0; i < RING_SEGMENTS; i++) {
+    const a = new THREE.Vector3(0, 0, RING_RADIUS)
+      .applyQuaternion(new THREE.Quaternion().setFromAxisAngle(Y_UP, i * angleStep));
+    const b = new THREE.Vector3(0, 0, RING_RADIUS)
+      .applyQuaternion(new THREE.Quaternion().setFromAxisAngle(Y_UP, (i + 1) * angleStep));
+    const dir = b.clone().sub(a);
+    const rotY = Math.atan2(dir.x, dir.z);
+    for (let k = 0; k < count; k++) {
+      const pos = new THREE.Vector3().lerpVectors(a, b, (k + 0.5) / count);
+      out.push({ pos, rotY, halfLength });
+    }
+  }
+  return out;
+}
 
 /**
  * Malha viária a partir dos tiles do Roads Kit: retas instanciadas nas 4
@@ -71,74 +148,102 @@ interface TileTransform { pos: [number, number, number]; rotY: number; }
 const RoadTiles = () => {
   const { scene: straightScene } = useGLTF(CITY_MODELS.roads.straight);
   const { scene: sidewalkScene } = useGLTF(CITY_MODELS.roads.sidewalkStraight);
+  const { scene: crossroadScene } = useGLTF(CITY_MODELS.roads.crossroad);
+  const { scene: intersectionScene } = useGLTF(CITY_MODELS.roads.intersection);
 
-  const { geometry: roadGeo, material: roadMat, scale: roadScale, tileStep } = useMemo(() => {
+  const { geometry: roadGeo, material: roadMat, scale: roadScale, tileStep, nativeDepth: roadNativeDepth } = useMemo(() => {
     const { geometry, material } = extractSingleMesh(straightScene, 501);
     geometry.computeBoundingBox();
     const box = geometry.boundingBox!;
     const nativeWidth = Math.max(box.max.x - box.min.x, 0.001);
     const nativeDepth = Math.max(box.max.z - box.min.z, 0.001);
     const scale = ROAD_TILE_WIDTH / nativeWidth;
-    return { geometry, material, scale, tileStep: nativeDepth * scale };
+    return { geometry, material, scale, tileStep: nativeDepth * scale, nativeDepth };
   }, [straightScene]);
 
-  const { geometry: sidewalkGeo, material: sidewalkMat, halfWidth: sidewalkHalfWidth } = useMemo(() => {
+  // Footprint (metade da largura, já em unidades de mundo) dos singletons —
+  // medido no scene cru (retintagem não afeta bbox), reaproveitado pra achar
+  // onde as retas devem parar/esticar (findings 4 e 5).
+  const crossroadHalf = useMemo(() => {
+    const box = new THREE.Box3().setFromObject(crossroadScene);
+    return ((box.max.x - box.min.x) / 2) * roadScale;
+  }, [crossroadScene, roadScale]);
+
+  const intersectionHalf = useMemo(() => {
+    const box = new THREE.Box3().setFromObject(intersectionScene);
+    return ((box.max.x - box.min.x) / 2) * roadScale;
+  }, [intersectionScene, roadScale]);
+
+  // Calçada: passo e pivot medidos NELA MESMA (não reaproveita o tileStep da
+  // via — sidewalk-straight tem profundidade nativa 1.31, diferente do 1.0
+  // da via, e pivot fora do centro em Z). Fix round Task 5 — finding 6.
+  const { geometry: sidewalkGeo, material: sidewalkMat, halfWidth: sidewalkHalfWidth, tileStep: sidewalkStep, pivotOffsetZ: sidewalkPivotZ } = useMemo(() => {
     const { geometry, material } = extractSingleMesh(sidewalkScene, 502);
     geometry.computeBoundingBox();
     const box = geometry.boundingBox!;
     const nativeWidth = Math.max(box.max.x - box.min.x, 0.001);
-    return { geometry, material, halfWidth: (nativeWidth * roadScale) / 2 };
+    const nativeDepth = Math.max(box.max.z - box.min.z, 0.001);
+    return {
+      geometry,
+      material,
+      halfWidth: (nativeWidth * roadScale) / 2,
+      tileStep: nativeDepth * roadScale,
+      pivotOffsetZ: (box.min.z + box.max.z) / 2,
+    };
   }, [sidewalkScene, roadScale]);
 
   const roadTransforms = useMemo(() => {
     const out: TileTransform[] = [];
-    // Retas ao longo das 4 radiais (deixa vão perto do anel pro tile de interseção).
+
+    const radialSpecs = buildRadialTileSpecs(tileStep, crossroadHalf, intersectionHalf);
     RADIAL_ANGLES.forEach((angle) => {
       const qYaw = new THREE.Quaternion().setFromAxisAngle(Y_UP, angle);
-      for (let z = RADIAL_INNER + tileStep / 2; z < RADIAL_OUTER; z += tileStep) {
-        if (Math.abs(z - RING_RADIUS) < tileStep * 0.6) continue;
-        const p = new THREE.Vector3(0, 0, z).applyQuaternion(qYaw);
-        out.push({ pos: [p.x, 0, p.z], rotY: angle });
-      }
+      radialSpecs.forEach((spec) => {
+        const p = new THREE.Vector3(0, 0, spec.z).applyQuaternion(qYaw);
+        const scaleZ = (spec.halfLength * 2) / roadNativeDepth;
+        out.push({ pos: [p.x, 0, p.z], rotY: angle, scale: [roadScale, roadScale, scaleZ] });
+      });
     });
-    // Anel aproximado por polígono regular de 16 lados (pula os 4 pontos que
-    // coincidem com as radiais — esses levam o tile de interseção).
-    const skipEvery = RING_SEGMENTS / RADIAL_ANGLES.length;
-    for (let i = 0; i < RING_SEGMENTS; i++) {
-      if (i % skipEvery === 0) continue;
-      const segAngle = (i / RING_SEGMENTS) * Math.PI * 2;
-      const p = new THREE.Vector3(0, 0, RING_RADIUS)
-        .applyQuaternion(new THREE.Quaternion().setFromAxisAngle(Y_UP, segAngle));
-      out.push({ pos: [p.x, 0, p.z], rotY: segAngle + Math.PI / 2 });
-    }
+
+    const ringSpecs = buildRingTileSpecs(tileStep);
+    ringSpecs.forEach((spec) => {
+      const scaleZ = (spec.halfLength * 2) / roadNativeDepth;
+      out.push({ pos: [spec.pos.x, 0, spec.pos.z], rotY: spec.rotY, scale: [roadScale, roadScale, scaleZ] });
+    });
+
     return out;
-  }, [tileStep]);
+  }, [tileStep, roadScale, roadNativeDepth, crossroadHalf, intersectionHalf]);
 
   const sidewalkTransforms = useMemo(() => {
     const out: TileTransform[] = [];
     const axisOffset = ROAD_TILE_WIDTH / 2 + sidewalkHalfWidth;
+    const start = crossroadHalf + sidewalkStep / 2;
     RADIAL_ANGLES.forEach((angle) => {
       const qYaw = new THREE.Quaternion().setFromAxisAngle(Y_UP, angle);
-      for (let z = RADIAL_INNER + tileStep / 2; z < RADIAL_OUTER; z += tileStep) {
+      for (let z = start; z < RADIAL_OUTER; z += sidewalkStep) {
         [-1, 1].forEach((side) => {
-          const p = new THREE.Vector3(side * axisOffset, 0, z).applyQuaternion(qYaw);
-          out.push({ pos: [p.x, 0, p.z], rotY: angle });
+          // Compensa o pivot fora do centro (em Z local) ANTES de rotacionar,
+          // pra que o CENTRO VISUAL do tile — não o pivot cru do GLB — caia
+          // em (side*axisOffset, z) no mundo.
+          const local = new THREE.Vector3(side * axisOffset, 0, z - sidewalkPivotZ * roadScale);
+          const p = local.applyQuaternion(qYaw);
+          out.push({ pos: [p.x, 0, p.z], rotY: angle, scale: [roadScale, roadScale, roadScale] });
         });
       }
     });
     return out;
-  }, [tileStep, sidewalkHalfWidth]);
+  }, [sidewalkStep, sidewalkHalfWidth, sidewalkPivotZ, roadScale, crossroadHalf]);
 
   return (
     <group raycast={() => null}>
       <Instances geometry={roadGeo} material={roadMat} limit={Math.max(roadTransforms.length, 1)} raycast={() => null}>
         {roadTransforms.map((t, i) => (
-          <Instance key={i} position={t.pos} rotation={[0, t.rotY, 0]} scale={roadScale} />
+          <Instance key={i} position={t.pos} rotation={[0, t.rotY, 0]} scale={t.scale} />
         ))}
       </Instances>
       <Instances geometry={sidewalkGeo} material={sidewalkMat} limit={Math.max(sidewalkTransforms.length, 1)} raycast={() => null}>
         {sidewalkTransforms.map((t, i) => (
-          <Instance key={i} position={t.pos} rotation={[0, t.rotY, 0]} scale={roadScale} />
+          <Instance key={i} position={t.pos} rotation={[0, t.rotY, 0]} scale={t.scale} />
         ))}
       </Instances>
 
@@ -225,7 +330,10 @@ const StreetLamps = ({ isMobile }: { isMobile: boolean }) => {
       poles.setMatrixAt(i, m);
       m.compose(new THREE.Vector3(p.x, 2.2, p.z), q, UNIT_SCALE);
       bulbs.setMatrixAt(i, m);
-      m.compose(new THREE.Vector3(p.x, 0.02, p.z), FLAT_QUAT, UNIT_SCALE);
+      // y=0.07: tiles de via/calçada têm 0.02 de espessura nativa × roadScale
+      // (~3) = topo em y≈0.06 — a poça precisa ficar acima disso (fix round
+      // Task 5, finding 2).
+      m.compose(new THREE.Vector3(p.x, 0.07, p.z), FLAT_QUAT, UNIT_SCALE);
       pools.setMatrixAt(i, m);
     });
     poles.instanceMatrix.needsUpdate = true;
@@ -263,9 +371,19 @@ interface ParkedCarSpec {
 }
 
 /**
+ * Offset (mundo) do eixo da radial até o centro do carro estacionado no
+ * meio-fio. A via tem meia-largura 1.5 — 1.05 deixa o carro DENTRO da faixa
+ * de rodagem, encostado no meio-fio (estacionamento em fileira), em vez de
+ * em cima da calçada (era 2.2, dentro da faixa [1.5,4.5] da calçada — fix
+ * round Task 5, finding 3).
+ */
+const PARKED_CAR_CURB_OFFSET = 1.05;
+
+/**
  * Posições determinísticas de carros estacionados: a maioria nos meios-fios
- * das radiais (entre os postes, offset ±2.2 do eixo), e 2 (1 no mobile)
- * "estacionados em paralelo" no anel (rotação tangencial à curva).
+ * das radiais (entre os postes, offset ±1.05 do eixo — dentro da via, meia-
+ * largura 1.5), e 2 (1 no mobile) "estacionados em paralelo" no anel
+ * (rotação tangencial à curva).
  */
 function generateParkedCarSpecs(isMobile: boolean): ParkedCarSpec[] {
   const total = isMobile ? 4 : 8;
@@ -281,7 +399,7 @@ function generateParkedCarSpecs(isMobile: boolean): ParkedCarSpec[] {
     for (let k = 0; k < perRadial && placed < radialCount; k++, placed++) {
       const z = Math.min(RADIAL_INNER + 6 + k * 9 + rand() * 2, RADIAL_OUTER - 3);
       const side = (a + k) % 2 === 0 ? 1 : -1;
-      const p = new THREE.Vector3(side * 2.2, 0, z).applyQuaternion(qYaw);
+      const p = new THREE.Vector3(side * PARKED_CAR_CURB_OFFSET, 0, z).applyQuaternion(qYaw);
       const jitter = (rand() - 0.5) * 0.25;
       specs.push({
         pos: [p.x, 0, p.z],

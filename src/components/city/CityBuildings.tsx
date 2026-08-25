@@ -357,12 +357,11 @@ const CityBuildings = ({ onSelect, onHover, hoveredId, labels, reducedMotion, is
 
   return (
     <group>
-      {/* Chão com grid */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} raycast={() => null}>
+      {/* Chão */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow raycast={() => null}>
         <circleGeometry args={[44, 48]} />
-        <meshStandardMaterial color={CITY_COLORS.ground} roughness={0.35} metalness={0.5} />
+        <meshStandardMaterial color={NIGHT.ground} roughness={0.9} />
       </mesh>
-      <gridHelper args={[88, 44, '#123a37', '#0b1f1d']} position={[0, 0.02, 0]} raycast={() => null} />
 
       {/* Praça central: nome em neon */}
       <Text position={[0, 0.6, 0]} rotation={[-Math.PI / 2, 0, Math.PI / 4]}
