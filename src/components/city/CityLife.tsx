@@ -130,7 +130,7 @@ const LightTrain = ({ reducedMotion }: { reducedMotion: boolean }) => {
   useFrame(({ clock }) => {
     if (!ref.current) return;
     const t = reducedMotion ? 0 : clock.elapsedTime * 0.15;
-    ref.current.position.set(Math.cos(t) * TRAIN_RADIUS, 0.35, Math.sin(t) * TRAIN_RADIUS);
+    ref.current.position.set(Math.cos(t) * TRAIN_RADIUS, 12, Math.sin(t) * TRAIN_RADIUS);
     ref.current.rotation.y = -t + Math.PI / 2;
   });
   return (

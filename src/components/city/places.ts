@@ -103,7 +103,8 @@ export const PLACES: Place[] = [
 // (nunca dentro de um volume de prédio).
 export const AVATAR_WAYPOINTS: Waypoint[] = [
   { position: [0, 0, 5], pause: 0 },
-  { position: [8, 0, 7], pause: 2 },      // vitrine Redes do Vale
+  { position: [8, 0, 5.5], pause: 2 },    // vitrine Redes do Vale
+  { position: [15, 0, 5.5], pause: 0 },
   { position: [15, 0, 0], pause: 0 },
   { position: [19, 0, -6], pause: 2 },    // olha os totens de skills
   { position: [10, 0, -12], pause: 0 },
@@ -111,5 +112,6 @@ export const AVATAR_WAYPOINTS: Waypoint[] = [
   { position: [-6, 0, -12], pause: 0 },
   { position: [-16, 0, -5], pause: 2 },   // distrito corporativo
   { position: [-14, 0, 5], pause: 0 },
+  { position: [-9, 0, 12], pause: 0 },
   { position: [-4, 0, 11], pause: 1 },
 ];

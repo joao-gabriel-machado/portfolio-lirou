@@ -10,9 +10,9 @@ import { LanguageProvider } from "./contexts/LanguageContext";
 
 const App = () => (
   <LanguageProvider>
-    <ScrollProgress />
-    <WhatsAppButton />
     <BrowserRouter>
+      <ScrollProgress />
+      <WhatsAppButton />
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/orcamento" element={<QuotePage />} />

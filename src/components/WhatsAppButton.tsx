@@ -1,11 +1,14 @@
 import { Phone } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useLocation } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { translations } from '@/utils/translations';
 
 const WhatsAppButton = () => {
   const { language } = useLanguage();
   const t = translations[language].whatsapp;
+  const { pathname } = useLocation();
+  if (pathname === '/cidade') return null;
 
   const phoneNumber = '5512987083178';
   const message = language === 'pt'

@@ -13,14 +13,14 @@ const CityEntryButton = () => {
       initial={{ opacity: 0, y: -12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 1.2, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-      className="fixed top-5 right-4 z-40 hidden md:block"
+      className="fixed top-5 right-4 z-30"
     >
       <Link
         to="/cidade"
         className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full glass border border-primary/20 text-sm font-semibold text-primary hover:border-primary/50 glow-primary-hover transition-all duration-200"
       >
         <Building2 className="w-4 h-4" />
-        {label}
+        <span className="hidden sm:inline">{label}</span>
       </Link>
     </motion.div>
   );
