@@ -76,9 +76,10 @@ function onVisibility(): void {
 export function stopCityAmbience(): void {
   if (!ctx || !master) return;
   const c = ctx;
+  const stoppingNodes = nodes;
   master.gain.linearRampToValueAtTime(0, c.currentTime + 0.6);
   window.setTimeout(() => {
-    nodes.forEach((n) => { try { (n as OscillatorNode).stop?.(); } catch { /* já parado */ } });
+    stoppingNodes.forEach((n) => { try { (n as OscillatorNode).stop?.(); } catch { /* já parado */ } });
     void c.close();
   }, 700);
   document.removeEventListener('visibilitychange', onVisibility);
