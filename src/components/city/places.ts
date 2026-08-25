@@ -75,28 +75,28 @@ export const PLACES: Place[] = [
   // ── Distrito Experiência (oeste) ──
   { id: 'exp-twiniti', kind: 'experience', position: [-20, 0, -8], size: [4, 10, 4],
     cameraFrame: frame([-20, 0, -8], 10) },
-  { id: 'exp-titaniumfix', kind: 'experience', position: [-24, 0, 0], size: [4, 8, 4],
-    cameraFrame: frame([-24, 0, 0], 8) },
+  { id: 'exp-titaniumfix', kind: 'experience', position: [-24, 0, 4], size: [4, 8, 4],
+    cameraFrame: frame([-24, 0, 4], 8) },
 
   // ── Distrito Formação (norte, z negativo) ──
-  { id: 'edu-unip', kind: 'education', position: [2, 0, -20], size: [8, 5, 4],
-    cameraFrame: frame([2, 0, -20], 5) },
+  { id: 'edu-unip', kind: 'education', position: [-6.5, 0, -20], size: [8, 5, 4],
+    cameraFrame: frame([-6.5, 0, -20], 5) },
   { id: 'edu-rocketseat', kind: 'education', position: [9, 0, -18], size: [0.4, 4, 5],
     cameraFrame: frame([9, 0, -18], 4) },
 
   // ── Distrito Skills (leste): 4 totens ──
   { id: 'skills-frontend', kind: 'skills', position: [20, 0, 6], size: [1.4, 4, 1.4],
     cameraFrame: frame([20, 0, 6], 4) },
-  { id: 'skills-backend', kind: 'skills', position: [23, 0, 1], size: [1.4, 4, 1.4],
-    cameraFrame: frame([23, 0, 1], 4) },
+  { id: 'skills-backend', kind: 'skills', position: [23, 0, 3], size: [1.4, 4, 1.4],
+    cameraFrame: frame([23, 0, 3], 4) },
   { id: 'skills-tools', kind: 'skills', position: [20, 0, -4], size: [1.4, 4, 1.4],
     cameraFrame: frame([20, 0, -4], 4) },
-  { id: 'skills-ai', kind: 'skills', position: [24, 0, -9], size: [1.4, 4, 1.4],
-    cameraFrame: frame([24, 0, -9], 4) },
+  { id: 'skills-ai', kind: 'skills', position: [23, 0, -8], size: [1.4, 4, 1.4],
+    cameraFrame: frame([23, 0, -8], 4) },
 
   // ── Contato (borda sul) ──
-  { id: 'contact', kind: 'contact', position: [0, 0, 24], size: [2.4, 16, 2.4],
-    cameraFrame: frame([0, 0, 24], 16) },
+  { id: 'contact', kind: 'contact', position: [4, 0, 23], size: [2.4, 16, 2.4],
+    cameraFrame: frame([4, 0, 23], 16) },
 ];
 
 // Circuito do avatar: passa pela praça e pelos distritos, sempre em ruas

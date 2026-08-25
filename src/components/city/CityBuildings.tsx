@@ -69,7 +69,7 @@ const PoiBuilding = ({ place, label, hovered, onSelect, onHover, windows, reduce
     if (sign.current) sign.current.visible = hovered || neonFlickerOn(t, seed);
     // Janelas "respiram" dessincronizadas (cintilar lento)
     if (body.current && !hovered) {
-      body.current.emissiveIntensity = 0.17 + Math.sin(t * 0.6 + seed) * 0.05;
+      body.current.emissiveIntensity = 1.0 + Math.sin(t * 0.6 + seed) * 0.15;
     }
   });
 
@@ -88,8 +88,9 @@ const PoiBuilding = ({ place, label, hovered, onSelect, onHover, windows, reduce
           roughness={0.4}
           metalness={0.6}
           map={windows}
-          emissive={CITY_COLORS.primary}
-          emissiveIntensity={hovered ? 0.35 : 0.16}
+          emissiveMap={windows}
+          emissive="#ffffff"
+          emissiveIntensity={hovered ? 2.2 : 1.0}
         />
       </mesh>
       {/* Letreiro neon no topo — fixo, legível da vista padrão */}
@@ -118,7 +119,11 @@ const BackgroundBuildings = ({ count, windows }: { count: number; windows: THREE
     let seed = 42;
     const rand = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
     for (let i = 0; i < count; i++) {
-      const angle = (i / count) * Math.PI * 2 + rand() * 0.2;
+      let angle = (i / count) * Math.PI * 2 + rand() * 0.2;
+      // Afasta o prédio dos 4 eixos das avenidas (N/S/E/O) para não nascer em cima da via.
+      const a = angle % (Math.PI / 2);
+      const dOff = Math.min(a, Math.PI / 2 - a);
+      if (dOff < 0.09) angle += 0.15;
       const radius = 30 + rand() * 11;
       const hgt = 3 + rand() * 7;
       m.push({
@@ -145,7 +150,7 @@ const BackgroundBuildings = ({ count, windows }: { count: number; windows: THREE
     <instancedMesh ref={ref} args={[undefined, undefined, count]} raycast={() => null}>
       <boxGeometry args={[1, 1, 1]} />
       <meshStandardMaterial color={CITY_COLORS.building} roughness={0.55} metalness={0.45}
-        map={windows} emissive={CITY_COLORS.primary} emissiveIntensity={0.1} />
+        map={windows} emissiveMap={windows} emissive="#ffffff" emissiveIntensity={0.7} />
     </instancedMesh>
   );
 };

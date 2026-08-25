@@ -178,7 +178,7 @@ const RadialCar = ({ radialAngle, laneOffset, phaseSpeed, phaseOffset, reducedMo
 
   const computePos = (t: number) => {
     const ease = (Math.sin(t) + 1) / 2;
-    const r = RADIAL_INNER + 4 + ease * (RADIAL_OUTER - 6 - (RADIAL_INNER + 4));
+    const r = 6 + ease * (40 - 6);
     return new THREE.Vector3(laneOffset, 0.2, r).applyQuaternion(qYaw);
   };
 
@@ -208,8 +208,8 @@ const RadialCar = ({ radialAngle, laneOffset, phaseSpeed, phaseOffset, reducedMo
 
 const Cars = ({ reducedMotion, isMobile }: { reducedMotion: boolean; isMobile: boolean }) => (
   <group raycast={() => null}>
-    <RingCar speed={0.12} startAngle={0} reducedMotion={reducedMotion} />
-    <RingCar speed={-0.18} startAngle={Math.PI} reducedMotion={reducedMotion} />
+    <RingCar speed={0.22} startAngle={0} reducedMotion={reducedMotion} />
+    <RingCar speed={-0.3} startAngle={Math.PI} reducedMotion={reducedMotion} />
     {!isMobile && (
       <>
         <RadialCar radialAngle={Math.PI} laneOffset={0.8} phaseSpeed={0.3} phaseOffset={0} reducedMotion={reducedMotion} />
@@ -219,7 +219,9 @@ const Cars = ({ reducedMotion, isMobile }: { reducedMotion: boolean; isMobile: b
   </group>
 );
 
-const ROOF_IDS: PlaceId[] = ['metrifica', 'prontiva', 'contact', 'exp-twiniti', 'delpupo'];
+// 'contact' fica de fora: o beacon próprio (ContactAntenna, em CityBuildings)
+// já ocupa o topo desse prédio — duplicar aqui causaria z-fighting.
+const ROOF_IDS: PlaceId[] = ['metrifica', 'prontiva', 'exp-twiniti', 'delpupo'];
 
 /** Mastro-antena com luz vermelha piscante + caixa de AC num telhado. */
 const RoofDetail = ({ id, index, reducedMotion }: { id: PlaceId; index: number; reducedMotion: boolean }) => {
