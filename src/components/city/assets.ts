@@ -25,12 +25,8 @@ export const CITY_MODELS = {
   roads: {
     straight: '/models/city/roads/road-straight.glb',
     crossroad: '/models/city/roads/road-crossroad.glb',
-    intersectionT: '/models/city/roads/road-intersection-t.glb',
     intersection: '/models/city/roads/road-intersection.glb',
-    curve: '/models/city/roads/road-curve.glb',
-    end: '/models/city/roads/road-end.glb',
     sidewalkStraight: '/models/city/roads/sidewalk-straight.glb',
-    sidewalkCorner: '/models/city/roads/sidewalk-corner.glb',
   },
   cars: {
     sedan: '/models/city/cars/car-sedan.glb',

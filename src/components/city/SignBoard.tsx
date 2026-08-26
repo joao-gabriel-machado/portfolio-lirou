@@ -17,7 +17,7 @@ import { CITY_COLORS } from './places';
 
 interface SignBoardProps {
   label: string;
-  /** Reservado para futura clamps por fachada — a largura do painel é hoje derivada só do texto. */
+  /** Largura da fachada (building width) — usada só pra limitar a posição das hastes (não-hero) quando o painel (derivado do texto) é mais largo que o prédio. */
   width?: number;
   comingSoon?: boolean;
   hero?: boolean;
@@ -104,9 +104,17 @@ function pointOnRectPerimeter(t: number, w: number, h: number): [number, number]
  * acendimento animado. `SignBoard` não se posiciona — o grupo é ancorado
  * pelo componente pai no topo do prédio (`y = place.size[1] + offset`).
  */
-const SignBoard = ({ label, comingSoon, hero, hovered, active, reducedMotion, seed }: SignBoardProps) => {
+const SignBoard = ({ label, width, comingSoon, hero, hovered, active, reducedMotion, seed }: SignBoardProps) => {
   const safeLen = Math.max(label.length, 1);
   const panelWidth = safeLen * 0.42 + 0.8;
+  // Hastes (não-hero): por padrão ficam a panelWidth/2-0.3 do centro, mas um
+  // label longo numa fachada estreita (ex. painel 9.6 numa building 3-wide)
+  // deixa a haste flutuando fora do prédio. Quando `width` (largura real da
+  // fachada) é conhecida, limita a haste a nunca passar de width/2-0.15 —
+  // o painel em si (texto) mantém seu tamanho label-sized.
+  const strutX = width != null
+    ? Math.min(panelWidth / 2 - 0.3, width / 2 - 0.15)
+    : panelWidth / 2 - 0.3;
   const frameWidth = panelWidth + FRAME_PAD * 2;
   const frameHeight = PANEL_HEIGHT + FRAME_PAD * 2;
   const fontSize = Math.min(0.7, (panelWidth - 0.6) / (safeLen * 0.55));
@@ -159,6 +167,11 @@ const SignBoard = ({ label, comingSoon, hero, hovered, active, reducedMotion, se
   const ignitedRef = useRef(false);
   const triggerTimeRef = useRef(0);
   const sequenceEnd = letters.length * LETTER_STAGGER + LETTER_RAMP;
+  // Fallback de tempo: se ninguém interagir, o pórtico hero acende sozinho
+  // aos ~4s de cena (escalonado pelo seed) — sem isso, um visitante que
+  // nunca passa o mouse/seleciona vê o texto-fantasma (fillOpacity 0.15)
+  // pra sempre (mesma lógica do fallback não-hero, que já dispara sozinho).
+  const heroIgnitionStart = useMemo(() => 4 + (seed % 6) * 0.28, [seed]);
 
   useFrame(({ clock }) => {
     if (!hero) return;
@@ -169,7 +182,7 @@ const SignBoard = ({ label, comingSoon, hero, hovered, active, reducedMotion, se
       if (heroGroupRef.current) heroGroupRef.current.visible = true;
       return;
     }
-    if (!ignitedRef.current && (hovered || active)) {
+    if (!ignitedRef.current && (hovered || active || t >= heroIgnitionStart)) {
       ignitedRef.current = true;
       triggerTimeRef.current = t;
     }
@@ -332,11 +345,11 @@ const SignBoard = ({ label, comingSoon, hero, hovered, active, reducedMotion, se
         </>
       ) : (
         <>
-          <mesh position={[-(panelWidth / 2 - 0.3), STRUT_HEIGHT / 2, 0]} raycast={() => null}>
+          <mesh position={[-strutX, STRUT_HEIGHT / 2, 0]} raycast={() => null}>
             <cylinderGeometry args={[STRUT_RADIUS, STRUT_RADIUS, STRUT_HEIGHT, 8]} />
             <meshStandardMaterial color={FRAME_COLOR} roughness={0.85} metalness={0.2} />
           </mesh>
-          <mesh position={[panelWidth / 2 - 0.3, STRUT_HEIGHT / 2, 0]} raycast={() => null}>
+          <mesh position={[strutX, STRUT_HEIGHT / 2, 0]} raycast={() => null}>
             <cylinderGeometry args={[STRUT_RADIUS, STRUT_RADIUS, STRUT_HEIGHT, 8]} />
             <meshStandardMaterial color={FRAME_COLOR} roughness={0.85} metalness={0.2} />
           </mesh>

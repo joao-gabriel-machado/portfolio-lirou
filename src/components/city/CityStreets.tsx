@@ -22,6 +22,9 @@ const RADIAL_OUTER = 42;
 const RING_RADIUS = 27;
 const RING_SEGMENTS = 16;
 
+/** Altura do topo da via (tiles têm 0.02 nativo × roadScale ~3 → topo em y≈0.06 — mesma referência usada pelas poças de luz dos postes). */
+const ROAD_TOP_Y = 0.06;
+
 /** Largura alvo (mundo) das faixas de rodagem — usada pra derivar a escala uniforme dos tiles do kit. */
 const ROAD_TILE_WIDTH = 3;
 
@@ -401,10 +404,28 @@ interface ParkedCarSpec {
 const PARKED_CAR_CURB_OFFSET = 1.05;
 
 /**
+ * Radiais/laneOffset usados pelos 2 `RadialCar` de tráfego (ver `Cars` mais
+ * abaixo — precisa casar com os `radialAngle`/`laneOffset` passados lá).
+ * Carros estacionados numa dessas radiais têm que ficar do lado OPOSTO à
+ * faixa de tráfego (`side = -sign(laneOffset)`): a faixa de tráfego em
+ * ±0.8 passa a só 0.25 do meio-fio de estacionamento em ±1.05 do MESMO
+ * lado — gap menor que a soma das meias-larguras (~0.8), ou seja, o carro
+ * de tráfego varria os estacionados. Do lado oposto (offset -0.8 vs +1.05,
+ * por ex.) as pistas não se tocam.
+ */
+const TRAFFIC_RADIAL_LANES = new Map<number, number>([
+  [Math.PI, 0.8],
+  [Math.PI / 2, -0.8],
+]);
+
+/**
  * Posições determinísticas de carros estacionados: a maioria nos meios-fios
  * das radiais (entre os postes, offset ±1.05 do eixo — dentro da via, meia-
  * largura 1.5), e 2 (1 no mobile) "estacionados em paralelo" no anel
- * (rotação tangencial à curva).
+ * (rotação tangencial à curva). Radiais com tráfego (`TRAFFIC_RADIAL_LANES`)
+ * forçam o lado oposto ao da faixa de tráfego; as demais alternam como antes.
+ * Y: carros radiais ficam sobre o tile de via (`ROAD_TOP_Y`); carros do anel
+ * ficam no chão nu fora do anel (r≈28.6), y=0.
  */
 function generateParkedCarSpecs(isMobile: boolean): ParkedCarSpec[] {
   const total = isMobile ? 4 : 8;
@@ -417,13 +438,14 @@ function generateParkedCarSpecs(isMobile: boolean): ParkedCarSpec[] {
   let placed = 0;
   RADIAL_ANGLES.forEach((angle, a) => {
     const qYaw = new THREE.Quaternion().setFromAxisAngle(Y_UP, angle);
+    const trafficLaneOffset = TRAFFIC_RADIAL_LANES.get(angle);
     for (let k = 0; k < perRadial && placed < radialCount; k++, placed++) {
       const z = Math.min(RADIAL_INNER + 6 + k * 9 + rand() * 2, RADIAL_OUTER - 3);
-      const side = (a + k) % 2 === 0 ? 1 : -1;
+      const side = trafficLaneOffset !== undefined ? -Math.sign(trafficLaneOffset) : ((a + k) % 2 === 0 ? 1 : -1);
       const p = new THREE.Vector3(side * PARKED_CAR_CURB_OFFSET, 0, z).applyQuaternion(qYaw);
       const jitter = (rand() - 0.5) * 0.25;
       specs.push({
-        pos: [p.x, 0, p.z],
+        pos: [p.x, ROAD_TOP_Y, p.z],
         yaw: angle + jitter,
         modelKey: PARKED_CAR_KEYS[placed % PARKED_CAR_KEYS.length],
         seed: placed * 13 + 3,
@@ -497,9 +519,6 @@ const ParkedCars = ({ isMobile }: { isMobile: boolean }) => {
  */
 const CAR_FRONT_OFFSET = Math.PI / 2;
 
-/** Altura do topo da via (tiles têm 0.02 nativo × roadScale ~3 → topo em y≈0.06 — mesma referência usada pelas poças de luz dos postes). */
-const ROAD_TOP_Y = 0.06;
-
 /**
  * Corpo de um carro de tráfego: modelo do Car Kit retintado (night materials)
  * + faróis brancos na frente + lanternas vermelhas atrás. Compartilhado por
@@ -547,7 +566,7 @@ const TrafficCarBody = ({ modelKey, seed }: { modelKey: keyof typeof CITY_MODELS
       {[-1, 1].map((side) => (
         <mesh key={`taillight-${side}`} position={[side * halfWidth * 0.6, lightY, -halfLength + 0.06]} raycast={() => null}>
           <sphereGeometry args={[0.045, 8, 8]} />
-          <meshStandardMaterial color="#ff5a5a" emissive="#ff5a5a" emissiveIntensity={1.3} />
+          <meshStandardMaterial color="#ff5a5a" emissive="#ff5a5a" emissiveIntensity={1.3} toneMapped={false} />
         </mesh>
       ))}
     </group>

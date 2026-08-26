@@ -77,6 +77,7 @@ const Stars = ({ count }: { count: number }) => {
         transparent
         opacity={0.8}
         depthWrite={false}
+        fog={false}
       />
     </points>
   );

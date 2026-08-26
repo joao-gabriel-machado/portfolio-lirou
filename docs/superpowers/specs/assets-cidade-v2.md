@@ -41,12 +41,8 @@ NÃO foram commitados (baixados/extraídos apenas em scratchpad local).
 | commercial/Textures/colormap.png | Textures/colormap.png | City Kit (Commercial) | 10.7 KB |
 | roads/road-straight.glb | road-straight.glb | City Kit (Roads) | 5.1 KB |
 | roads/road-crossroad.glb | road-crossroad.glb | City Kit (Roads) | 9.8 KB |
-| roads/road-intersection-t.glb | road-split.glb | City Kit (Roads) | 58.7 KB |
 | roads/road-intersection.glb | road-intersection.glb | City Kit (Roads) | 7.7 KB |
-| roads/road-curve.glb | road-curve.glb | City Kit (Roads) | 23.4 KB |
-| roads/road-end.glb | road-end.glb | City Kit (Roads) | 4.8 KB |
 | roads/sidewalk-straight.glb | road-side.glb | City Kit (Roads) | 5.1 KB |
-| roads/sidewalk-corner.glb | road-bend-sidewalk.glb | City Kit (Roads) | 16.6 KB |
 | roads/Textures/colormap.png | Textures/colormap.png | City Kit (Roads) | 11.2 KB |
 | cars/car-sedan.glb | sedan.glb | Car Kit | 168.2 KB |
 | cars/car-hatchback.glb | hatchback-sports.glb | Car Kit | 193.2 KB |
@@ -56,8 +52,11 @@ NÃO foram commitados (baixados/extraídos apenas em scratchpad local).
 | cars/car-suv.glb | suv.glb | Car Kit | 202.7 KB |
 | cars/Textures/colormap.png | Textures/colormap.png | Car Kit | 12.1 KB |
 
-**Total: 27 arquivos (24 modelos + 3 colormaps), ~2.11 MB** (limite do plano:
-12 MB — bem abaixo).
+**Total: 23 arquivos (20 modelos + 3 colormaps), ~2.01 MB** (limite do plano:
+12 MB — bem abaixo). *(Atualizado: 4 tiles do Roads Kit nunca referenciados
+pelo layout — `road-intersection-t` (T), `road-curve`, `road-end` e
+`sidewalk-corner` — foram removidos do manifesto e do repo; a malha viária
+usa só reta + cruzamento + interseção em cruz + calçada reta.)*
 
 ## Manifest
 
